@@ -1,0 +1,64 @@
+:root {
+    --primary-color: #00aaff;
+    --secondary-color: #00ffaa;
+    --background-color: #121212;
+    --surface-color: #1e1e1e;
+    --text-color: #ffffff;
+    --text-secondary-color: #aaaaaa;
+}
+
+[data-theme="light"] {
+    --primary-color: #007bff;
+    --secondary-color: #28a745;
+    --background-color: #ffffff;
+    --surface-color: #f8f9fa;
+    --text-color: #212529;
+    --text-secondary-color: #6c757d;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.navbar {
+    background-color: var(--surface-color) !important;
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.navbar-brand, .nav-link {
+    color: var(--text-color) !important;
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--primary-color);
+}
+
+.list-group-item {
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    border-color: #333;
+}
+
+a {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
