@@ -155,6 +155,8 @@ AUTHENTICATION_BACKENDS = [
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # Stripe
 STRIPE_API_KEY = 'card_1MKmCgGEnY9O6CoTY4fQogMF'
 STRIPE_WEBHOOK_SECRET = 'whsec_b0fuvelKajqdingrFrCCxxXKTiHdy7qj'
