@@ -16,43 +16,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                        <a class="nav-link" href="{% url 'home:home' %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'time_stamp' %}">Time Stamp</a>
+                        <a class="nav-link" href="{% url 'projects:project-list' %}">Projects</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'time_entries' %}">Time Entries</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts' %}">Accounts</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'projects' %}">Projects</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'reports' %}">Reports</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'daily_earnings' %}">Daily Earnings</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'income_calculator' %}">Income Calculator</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'invoices' %}">Invoices</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'analytics' %}">Analytics</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'schedule' %}">Schedule</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'retail' %}">Retail</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'pmail' %}">Pmail</a>
+                                        <li class="nav-item">
+                        <a class="nav-link" href="{% url 'invoices:invoice-list' %}">Invoices</a>
                     </li>
                 </ul>
             </div>

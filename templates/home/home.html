@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome to Puncha Mera</h1>
+    <p>This is the home page.</p>
+    <h2>Available Apps:</h2>
+    <ul>
+        <li><a href="{% url 'admin:index' %}">Admin</a></li>
+        <li><a href="/projects/">Projects</a></li>
+        <li><a href="/invoices/">Invoices</a></li>
+    </ul>
+</div>
+{% endblock %}

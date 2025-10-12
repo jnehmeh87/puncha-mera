@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Invoices</h1>
+  <ul>
+    {% for invoice in invoices %}
+      <li>
+        <a href="{% url 'invoices:invoice-pdf' invoice.pk %}">
+          Invoice #{{ invoice.invoice_number }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

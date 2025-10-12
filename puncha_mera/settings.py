@@ -25,8 +25,9 @@ SECRET_KEY = 'django-insecure-bt)t--mal86+6@d%!@y(qt9erxolvw070q%%4c@&us#kejeg-!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev', '127.0.0.1']
 
+CSRF_TRUSTED_ORIGINS = ['https://8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev']
 
 # Application definition
 
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     'schedule',
     'retail',
     'pmail',
+    'subscriptions',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -152,3 +154,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# Stripe
+STRIPE_API_KEY = 'card_1MKmCgGEnY9O6CoTY4fQogMF'
+STRIPE_WEBHOOK_SECRET = 'whsec_b0fuvelKajqdingrFrCCxxXKTiHdy7qj'
