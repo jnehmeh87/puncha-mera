@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+            font-size: 16px;
+            line-height: 24px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <h1>Invoice: {{ object.invoice_number }}</h1>
+        <p>Date: {{ object.date }}</p>
+        <p>Due Date: {{ object.due_date }}</p>
+        <h2>To:</h2>
+        <p>{{ object.client.name }}</p>
+        <h2>From:</h2>
+        <p>{{ object.organization.name }}</p>
+        <hr>
+        <h2>Items:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in object.items.all %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.unit_price }}</td>
+                    <td>{{ item.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+        <h3>Total Amount: {{ object.total_amount }}</h3>
+        <hr>
+        <img src="{{ qr_code }}" alt="QR Code">
+    </div>
+</body>
+</html>
