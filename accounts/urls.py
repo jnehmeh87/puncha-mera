@@ -7,7 +7,10 @@ from .views import (
     ContactCreateView,
     ContactDetailView,
     ContactUpdateView,
-    ContactDeleteView
+    ContactDeleteView,
+    OrganizationListView,
+    OrganizationDetailView,
+    OrganizationCreateView
 )
 
 app_name = 'accounts'
@@ -21,4 +24,7 @@ urlpatterns = [
     path('contacts/<int:pk>/', ContactDetailView.as_view(), name='contact-detail'),
     path('contacts/<int:pk>/edit/', ContactUpdateView.as_view(), name='contact-update'),
     path('contacts/<int:pk>/delete/', ContactDeleteView.as_view(), name='contact-delete'),
+    path('organizations/', OrganizationListView.as_view(), name='organization-list'),
+    path('organizations/new/', OrganizationCreateView.as_view(), name='organization-create'),
+    path('organizations/<int:pk>/', OrganizationDetailView.as_view(), name='organization-detail'),
 ]

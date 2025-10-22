@@ -1,107 +1,139 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
 {% block content %}
-    <h1>Puncha Mera</h1>
-
-    <div id="timer-display">00:00:00</div>
-
-    <button id="start-btn">Puncha In</button>
-    <button id="pause-btn" style="display:none;">Pause</button>
-    <button id="stop-btn" style="display:none;">Puncha Out</button>
-
-    <div id="entry-form" style="display:none;">
-        <form id="time-entry-form" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Save</button>
-        </form>
+<div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+        <h1 class="mb-4">Puncha Mera</h1>
+        <div id="timer-display" class="display-1 mb-4">00:00:00</div>
+        <div class="mb-4">
+            <button id="start-btn" class="btn btn-primary btn-lg">Puncha In</button>
+            <button id="pause-btn" class="btn btn-secondary btn-lg" style="display:none;">Pause</button>
+            <button id="stop-btn" class="btn btn-danger btn-lg" style="display:none;">Puncha Out</button>
+        </div>
+        <div id="entry-form" style="display:none;" class="card p-4">
+            <form id="time-entry-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary mt-3">Save</button>
+            </form>
+        </div>
     </div>
+</div>
 
-    <script>
-        let timer;
-        let startTime;
-        let elapsedTime = 0;
-        let paused = true;
+<div class="row mt-5">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Latest Time Entries</h2>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in time_entries %}
+                        <tr>
+                            <td>{{ entry.project }}</td>
+                            <td>{{ entry.description }}</td>
+                            <td>{{ entry.start_time|date:"Y-m-d" }}</td>
+                            <td>{{ entry.duration }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-        const timerDisplay = document.getElementById('timer-display');
-        const startBtn = document.getElementById('start-btn');
-        const pauseBtn = document.getElementById('pause-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const entryForm = document.getElementById('entry-form');
-        const timeEntryForm = document.getElementById('time-entry-form');
+<script>
+    let timer;
+    let startTime;
+    let elapsedTime = 0;
+    let paused = true;
 
-        function formatTime(ms) {
-            const totalSeconds = Math.floor(ms / 1000);
-            const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-            const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-            const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-            return `${hours}:${minutes}:${seconds}`;
+    const timerDisplay = document.getElementById('timer-display');
+    const startBtn = document.getElementById('start-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const entryForm = document.getElementById('entry-form');
+    const timeEntryForm = document.getElementById('time-entry-form');
+
+    function formatTime(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+        const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+    }
+
+    function updateTimer() {
+        const now = Date.now();
+        elapsedTime = now - startTime;
+        timerDisplay.textContent = formatTime(elapsedTime);
+    }
+
+    startBtn.addEventListener('click', () => {
+        if (paused) {
+            paused = false;
+            startTime = Date.now() - elapsedTime;
+            timer = setInterval(updateTimer, 1000);
+            startBtn.style.display = 'none';
+            pauseBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'inline-block';
+            pauseBtn.textContent = 'Pause';
         }
+    });
 
-        function updateTimer() {
-            const now = Date.now();
-            elapsedTime = now - startTime;
-            timerDisplay.textContent = formatTime(elapsedTime);
-        }
-
-        startBtn.addEventListener('click', () => {
-            if (paused) {
-                paused = false;
-                startTime = Date.now() - elapsedTime;
-                timer = setInterval(updateTimer, 1000);
-                startBtn.style.display = 'none';
-                pauseBtn.style.display = 'inline-block';
-                stopBtn.style.display = 'inline-block';
-                pauseBtn.textContent = 'Pause';
-            }
-        });
-
-        pauseBtn.addEventListener('click', () => {
-            if (!paused) {
-                paused = true;
-                clearInterval(timer);
-                pauseBtn.textContent = 'Puncha Mera';
-            } else {
-                paused = false;
-                startTime = Date.now() - elapsedTime;
-                timer = setInterval(updateTimer, 1000);
-                pauseBtn.textContent = 'Pause';
-            }
-        });
-
-        stopBtn.addEventListener('click', () => {
+    pauseBtn.addEventListener('click', () => {
+        if (!paused) {
             paused = true;
             clearInterval(timer);
-            entryForm.style.display = 'block';
-            // You might want to pre-fill the form with start and end times
-            const now = new Date();
-            const then = new Date(now.getTime() - elapsedTime);
-            document.getElementById('id_start_time').value = then.toISOString().slice(0, 19);
-            document.getElementById('id_end_time').value = now.toISOString().slice(0, 19);
-        });
+            pauseBtn.textContent = 'Puncha Mera';
+        } else {
+            paused = false;
+            startTime = Date.now() - elapsedTime;
+            timer = setInterval(updateTimer, 1000);
+            pauseBtn.textContent = 'Pause';
+        }
+    });
 
-        timeEntryForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const formData = new FormData(timeEntryForm);
-            fetch("{% url 'time_stamp:timer' %}", {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert('Time entry saved!');
-                    elapsedTime = 0;
-                    timerDisplay.textContent = formatTime(elapsedTime);
-                    startBtn.style.display = 'inline-block';
-                    pauseBtn.style.display = 'none';
-                    stopBtn.style.display = 'none';
-                    entryForm.style.display = 'none';
-                    timeEntryForm.reset();
-                } else {
-                    alert('Error saving time entry: ' + JSON.stringify(data.errors));
-                }
-            });
-        });
+    stopBtn.addEventListener('click', () => {
+        paused = true;
+        clearInterval(timer);
+        entryForm.style.display = 'block';
+        // You might want to pre-fill the form with start and end times
+        const now = new Date();
+        const then = new Date(now.getTime() - elapsedTime);
+        document.getElementById('id_start_time').value = then.toISOString().slice(0, 19);
+        document.getElementById('id_end_time').value = now.toISOString().slice(0, 19);
+    });
 
-    </script>
+    timeEntryForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(timeEntryForm);
+        fetch("{% url 'time_stamp:timer' %}", {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Time entry saved!');
+                // Refresh the page to show the new entry
+                location.reload();
+            } else {
+                alert('Error saving time entry: ' + JSON.stringify(data.errors));
+            }
+        });
+    });
+
+</script>
 {% endblock %}

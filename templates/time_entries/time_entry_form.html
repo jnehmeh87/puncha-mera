@@ -4,10 +4,10 @@
 {% block content %}
   <div class="card">
     <div class="card-header">
-      <h1 class="card-title">{% if object %}Edit Project{% else %}New Project{% endif %}</h1>
+      <h1 class="card-title">{% if object %}Edit Time Entry{% else %}New Time Entry{% endif %}</h1>
     </div>
     <div class="card-body">
-      <form method="post">
+      <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-primary mt-3">Save</button>

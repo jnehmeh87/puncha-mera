@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">Time Entry Details</h1>
+    </div>
+    <div class="card-body">
+      <p><strong>Project:</strong> {{ object.project }}</p>
+      <p><strong>User:</strong> {{ object.user }}</p>
+      <p><strong>Start Time:</strong> {{ object.start_time }}</p>
+      <p><strong>End Time:</strong> {{ object.end_time }}</p>
+      <p><strong>Duration:</strong> {{ object.duration }}</p>
+      <p><strong>Description:</strong> {{ object.description }}</p>
+      <p><strong>Notes:</strong> {{ object.notes }}</p>
+      {% if object.image %}
+        <p><strong>Image:</strong></p>
+        <img src="{{ object.image.url }}" alt="Time entry image" class="img-fluid">
+      {% endif %}
+    </div>
+    <div class="card-footer">
+      <a href="{% url 'time_entries:time_entry-update' object.pk %}" class="btn btn-secondary">Edit</a>
+      <a href="{% url 'time_entries:time_entry-delete' object.pk %}" class="btn btn-danger">Delete</a>
+      <a href="{% url 'time_entries:time_entry-list' %}" class="btn btn-primary">Back to List</a>
+    </div>
+  </div>
+{% endblock %}

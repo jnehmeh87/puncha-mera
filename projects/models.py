@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from accounts.models import Organization
 
 class Project(models.Model):
@@ -9,3 +10,6 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('projects:project-detail', kwargs={'pk': self.pk})

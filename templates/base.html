@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Puncha Mera</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{% static 'css/theme.css' %}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -18,7 +19,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'time_stamp:timer' %}">Puncha</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'home:home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'accounts:organization-list' %}">Organizations</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'projects:project-list' %}">Projects</a>
@@ -29,8 +36,10 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'invoices:invoice-list' %}">Invoices</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'time_entries:time_entry-list' %}">Time Entries</a>
+                    </li>
                 </ul>
-                <button id="theme-toggle" class="btn btn-outline-primary">Toggle Theme</button>
             </div>
         </div>
     </nav>
@@ -41,6 +50,5 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/theme.js' %}"></script>
 </body>
 </html>

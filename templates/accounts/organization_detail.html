@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">{{ object.name }}</h1>
+    </div>
+    <div class="card-body">
+      <p><strong>Created by:</strong> {{ object.created_by }}</p>
+      
+      <h2 class="mt-4">Members</h2>
+      <ul class="list-group">
+        {% for member in object.members.all %}
+          <li class="list-group-item">{{ member.user.username }} ({{ member.role }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a href="{% url 'accounts:organization-list' %}" class="btn btn-primary">Back to List</a>
+      <a href="{% url 'accounts:send-invitation' object.pk %}" class="btn btn-secondary">Invite Member</a>
+    </div>
+  </div>
+{% endblock %}

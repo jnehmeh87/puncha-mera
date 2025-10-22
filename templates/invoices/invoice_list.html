@@ -1,14 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Invoices</h1>
-  <ul>
-    {% for invoice in invoices %}
-      <li>
-        <a href="{% url 'invoices:invoice-pdf' invoice.pk %}">
-          Invoice #{{ invoice.invoice_number }}
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">Invoices</h1>
+    </div>
+    <div class="card-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Invoice Number</th>
+            <th>Contact</th>
+            <th>Issue Date</th>
+            <th>Due Date</th>
+            <th>Total Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for invoice in invoices %}
+            <tr>
+              <td>{{ invoice.invoice_number }}</td>
+              <td>{{ invoice.contact }}</td>
+              <td>{{ invoice.issue_date }}</td>
+              <td>{{ invoice.due_date }}</td>
+              <td>{{ invoice.total_amount }}</td>
+              <td>
+                <a href="{% url 'invoices:invoice-pdf' invoice.pk %}" class="btn btn-sm btn-info">View PDF</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 {% endblock %}

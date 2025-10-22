@@ -1,13 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Contacts</h1>
-  <a href="{% url 'accounts:contact-create' %}" class="btn btn-primary mb-3">New Contact</a>
-  <ul class="list-group">
-    {% for contact in object_list %}
-      <li class="list-group-item">
-        <a href="{% url 'accounts:contact-detail' contact.pk %}">{{ contact.name }}</a>
-      </li>
-    {% endfor %}
-  </ul>
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">Contacts</h1>
+    </div>
+    <div class="card-body">
+      <a href="{% url 'accounts:contact-create' %}" class="btn btn-primary mb-3">New Contact</a>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for contact in object_list %}
+            <tr>
+              <td>{{ contact.name }}</td>
+              <td>{{ contact.contact_type }}</td>
+              <td>{{ contact.company_email }}</td>
+              <td>
+                <a href="{% url 'accounts:contact-detail' contact.pk %}" class="btn btn-sm btn-info">View</a>
+                <a href="{% url 'accounts:contact-update' contact.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+                <a href="{% url 'accounts:contact-delete' contact.pk %}" class="btn btn-sm btn-danger">Delete</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 {% endblock %}

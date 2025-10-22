@@ -18,8 +18,8 @@ class Membership(models.Model):
         ('admin', 'Admin'),
         ('member', 'Member'),
     )
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='memberships')
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='members')
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
 
     def __str__(self):
