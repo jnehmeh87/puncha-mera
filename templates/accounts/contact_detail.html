@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ object.name }}</h1>
+  <p><strong>Type:</strong> {{ object.contact_type }}</p>
+  <p><strong>Email:</strong> {{ object.company_email }}</p>
+  <p><strong>Address:</strong> {{ object.company_address }}</p>
+  <p><strong>Contact Person:</strong> {{ object.company_contact_person }}</p>
+
+  <a href="{% url 'accounts:contact-update' object.pk %}" class="btn btn-secondary">Edit</a>
+  <a href="{% url 'accounts:contact-delete' object.pk %}" class="btn btn-danger">Delete</a>
+  <a href="{% url 'accounts:contact-list' %}" class="btn btn-primary">Back to List</a>
+{% endblock %}

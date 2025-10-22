@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .models import Subscription, SubscriptionPlan
 
-stripe.api_key = settings.STRIPE_API_KEY
+stripe.api_key = settings.STRIPE_API_KEY # This line is now correct
 
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):

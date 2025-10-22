@@ -1,5 +1,9 @@
 from django.urls import path
-from .views import ProjectListView, ProjectCreateView, ProjectDetailView
+from .views import (
+    ProjectListView, 
+    ProjectCreateView, 
+    ProjectDetailView
+)
 
 app_name = 'projects'
 
