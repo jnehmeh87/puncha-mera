@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
-from django.views.generic import FormView, View
+from django.views.generic import FormView, View, ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from allauth.account.views import SignupView
 from .forms import InvitationForm
-from .models import Invitation, Organization, CustomUser, Membership
+from .models import Invitation, Organization, CustomUser, Membership, Contact
+from projects.mixins import OrganizationPermissionMixin
 from .mixins import AdminOwnerRequiredMixin
 
 class SendInvitationView(LoginRequiredMixin, AdminOwnerRequiredMixin, FormView):
@@ -70,3 +71,38 @@ class CustomSignupView(SignupView):
             except Invitation.DoesNotExist:
                 pass
         return response
+
+class ContactListView(OrganizationPermissionMixin, ListView):
+    model = Contact
+    template_name = 'accounts/contact_list.html'
+
+class ContactDetailView(OrganizationPermissionMixin, DetailView):
+    model = Contact
+    template_name = 'accounts/contact_detail.html'
+
+class ContactCreateView(OrganizationPermissionMixin, CreateView):
+    model = Contact
+    fields = ['name', 'contact_type', 'company_email', 'company_address', 'company_contact_person']
+    template_name = 'accounts/contact_form.html'
+    success_url = reverse_lazy('accounts:contact-list')
+
+    def form_valid(self, form):
+        user = self.request.user
+        try:
+            membership = Membership.objects.get(user=user)
+            organization = membership.organization
+            form.instance.organization = organization
+        except Membership.DoesNotExist:
+            return super().form_invalid(form)
+        return super().form_valid(form)
+
+class ContactUpdateView(OrganizationPermissionMixin, UpdateView):
+    model = Contact
+    fields = ['name', 'contact_type', 'company_email', 'company_address', 'company_contact_person']
+    template_name = 'accounts/contact_form.html'
+    success_url = reverse_lazy('accounts:contact-list')
+
+class ContactDeleteView(OrganizationPermissionMixin, DeleteView):
+    model = Contact
+    template_name = 'accounts/contact_confirm_delete.html'
+    success_url = reverse_lazy('accounts:contact-list')

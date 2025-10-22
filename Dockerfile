@@ -1,0 +1,45 @@
+# Builder stage
+FROM python:3.12-slim AS builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y build-essential libpq-dev gcc
+
+# Create a virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Production stage
+FROM python:3.12-slim
+
+# Create a non-root user
+RUN useradd --create-home appuser
+
+WORKDIR /home/appuser/app
+
+# Copy virtual environment from builder stage
+COPY --from=builder /opt/venv /opt/venv
+
+# Copy application code
+COPY . .
+
+# Set ownership
+RUN chown -R appuser:appuser /home/appuser/app
+
+# Set the user
+USER appuser
+
+# Set environment variables
+ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+
+# Expose the port
+EXPOSE 8000
+
+# Run the application
+CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "puncha_mera.wsgi:application"]

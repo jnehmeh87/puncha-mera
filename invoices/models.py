@@ -1,10 +1,9 @@
 from django.db import models
 from accounts.models import Organization
-from projects.models import Contact
 
 class Invoice(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    contact = models.ForeignKey('accounts.Contact', on_delete=models.CASCADE)
     invoice_number = models.CharField(max_length=20)
     issue_date = models.DateField()
     due_date = models.DateField()

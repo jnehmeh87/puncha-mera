@@ -9,7 +9,7 @@ class ProjectListView(OrganizationPermissionMixin, ListView):
 
 class ProjectCreateView(OrganizationPermissionMixin, CreateView):
     model = Project
-    fields = ['name', 'contact']
+    fields = ['name', 'contact', 'description']
     template_name = 'projects/project_form.html'
 
     def form_valid(self, form):

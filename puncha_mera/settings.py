@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
+import dj_database_url
+from google.cloud import secretmanager
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -19,15 +22,64 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-bt)t--mal86+6@d%!@y(qt9erxolvw070q%%4c@&us#kejeg-!'
+# GCP Secret Manager settings
+# Make sure to set the GOOGLE_CLOUD_PROJECT environment variable.
+# Example: export GOOGLE_CLOUD_PROJECT=your-gcp-project-id
+#
+# You also need to install the following libraries:
+# pip install google-cloud-secret-manager dj-database-url
+try:
+    # Create the Secret Manager client.
+    client = secretmanager.SecretManagerServiceClient()
+
+    # Get the project id from the environment variable.
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+
+    def get_secret(secret_id, version_id="latest"):
+        """
+        Get a secret from Google Cloud Secret Manager.
+        """
+        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+        response = client.access_secret_version(request={"name": name})
+        return response.payload.data.decode("UTF-8")
+
+    SECRET_KEY = get_secret("django-secret-key")
+    DATABASE_URL = get_secret("database-url")
+    STRIPE_API_KEY = get_secret("stripe-api-key")
+    STRIPE_WEBHOOK_SECRET = get_secret("stripe-webhook-secret")
+
+    DATABASES = {
+        'default': dj_database_url.config(default=DATABASE_URL)
+    }
+
+    # Production security settings
+    DEBUG = False
+    ALLOWED_HOSTS = [get_secret("allowed-hosts")] # e.g., "your-domain.com,www.your-domain.com"
+    CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
+except Exception as e:
+    print(f"Error getting secrets from Google Cloud Secret Manager: {e}")
+    # Fallback to default settings for local development
+    SECRET_KEY = 'django-insecure-bt)t--mal86+6@d%!@y(qt9erxolvw070q%%4c@&us#kejeg-!'
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    # Local development security settings
+    DEBUG = True
+    ALLOWED_HOSTS = ['8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev', '127.0.0.1', 'localhost']
+    CSRF_TRUSTED_ORIGINS = ['https://8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev']
+    STRIPE_API_KEY = "your_local_stripe_api_key" # Use test keys for local dev
+    STRIPE_WEBHOOK_SECRET = "your_local_stripe_webhook_secret" # Use test keys for local dev
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev', '127.0.0.1']
+ALLOWED_HOSTS = ['8000-cs-953777466757-default.cs-europe-west4-bhnf.cloudshell.dev', '127.0.0.1']
 
-CSRF_TRUSTED_ORIGINS = ['https://8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev']
+CSRF_TRUSTED_ORIGINS = ['https://8000-cs-953777466757-default.cs-europe-west4-bhnf.cloudshell.dev']
 
 # Application definition
 
@@ -55,7 +107,12 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -89,15 +146,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'puncha_mera.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -148,6 +197,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # allauth settings
 SITE_ID = 1
 
+LOGIN_URL = '/auth/login/'
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -158,5 +211,3 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Stripe
-STRIPE_API_KEY = 'card_1MKmCgGEnY9O6CoTY4fQogMF'
-STRIPE_WEBHOOK_SECRET = 'whsec_b0fuvelKajqdingrFrCCxxXKTiHdy7qj'
