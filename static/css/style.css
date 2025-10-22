@@ -1,0 +1,39 @@
+/* Custom CSS for puncha-mera */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #6a5acd; /* SlateBlue */
+    --secondary-color: #f0f8ff; /* AliceBlue */
+    --dark-color: #333;
+    --light-color: #f4f4f4;
+    --font-family: 'Poppins', sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--light-color);
+    color: var(--dark-color);
+}
+
+.navbar {
+    background-color: var(--secondary-color) !important;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #5a4abd;
+    border-color: #5a4abd;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+}

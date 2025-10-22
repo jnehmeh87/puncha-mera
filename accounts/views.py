@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from allauth.account.views import SignupView
-from .forms import InvitationForm
+from .forms import InvitationForm, OrganizationForm
 from .models import Invitation, Organization, CustomUser, Membership, Contact
 from projects.mixins import OrganizationPermissionMixin
 from .mixins import AdminOwnerRequiredMixin
@@ -72,6 +72,29 @@ class CustomSignupView(SignupView):
                 pass
         return response
 
+class OrganizationListView(LoginRequiredMixin, ListView):
+    model = Organization
+    template_name = 'accounts/organization_list.html'
+
+    def get_queryset(self):
+        return Organization.objects.filter(members__user=self.request.user)
+
+class OrganizationDetailView(LoginRequiredMixin, DetailView):
+    model = Organization
+    template_name = 'accounts/organization_detail.html'
+
+class OrganizationCreateView(LoginRequiredMixin, CreateView):
+    model = Organization
+    form_class = OrganizationForm
+    template_name = 'accounts/organization_form.html'
+    success_url = reverse_lazy('accounts:organization-list')
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        response = super().form_valid(form)
+        Membership.objects.create(user=self.request.user, organization=self.object, role='owner')
+        return response
+
 class ContactListView(OrganizationPermissionMixin, ListView):
     model = Contact
     template_name = 'accounts/contact_list.html'
@@ -93,6 +116,7 @@ class ContactCreateView(OrganizationPermissionMixin, CreateView):
             organization = membership.organization
             form.instance.organization = organization
         except Membership.DoesNotExist:
+            form.add_error(None, "You are not a member of any organization. Please create or join an organization first.")
             return super().form_invalid(form)
         return super().form_valid(form)
 

@@ -3,14 +3,14 @@
 {% block content %}
   <div class="card">
     <div class="card-header">
-      <h1 class="card-title">Delete Contact</h1>
+      <h1 class="card-title">Delete Time Entry</h1>
     </div>
     <div class="card-body">
-      <p>Are you sure you want to delete <strong>{{ object.name }}</strong>?</p>
+      <p>Are you sure you want to delete this time entry?</p>
       <form method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">Delete</button>
-        <a href="{% url 'accounts:contact-detail' object.pk %}" class="btn btn-secondary">Cancel</a>
+        <a href="{% url 'time_entries:time_entry-detail' object.pk %}" class="btn btn-secondary">Cancel</a>
       </form>
     </div>
   </div>

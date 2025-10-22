@@ -3,25 +3,23 @@
 {% block content %}
   <div class="card">
     <div class="card-header">
-      <h1 class="card-title">Projects</h1>
+      <h1 class="card-title">Organizations</h1>
     </div>
     <div class="card-body">
-      <a href="{% url 'projects:project-create' %}" class="btn btn-primary mb-3">New Project</a>
+      <a href="{% url 'accounts:organization-create' %}" class="btn btn-primary mb-3">New Organization</a>
       <table class="table table-striped">
         <thead>
           <tr>
             <th>Name</th>
-            <th>Contact</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {% for project in object_list %}
+          {% for org in object_list %}
             <tr>
-              <td>{{ project.name }}</td>
-              <td>{{ project.contact }}</td>
+              <td>{{ org.name }}</td>
               <td>
-                <a href="{% url 'projects:project-detail' project.pk %}" class="btn btn-sm btn-info">View</a>
+                <a href="{% url 'accounts:organization-detail' org.pk %}" class="btn btn-sm btn-info">View</a>
               </td>
             </tr>
           {% endfor %}
