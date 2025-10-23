@@ -15,6 +15,7 @@
             <form id="time-entry-form" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form|crispy }}
+                <input type="hidden" name="pause_duration" id="id_pause_duration">
                 <button type="submit" class="btn btn-primary mt-3">Save</button>
             </form>
         </div>
@@ -58,6 +59,8 @@
     let startTime;
     let elapsedTime = 0;
     let paused = true;
+    let totalPausedTime = 0;
+    let pauseStartTime;
 
     const timerDisplay = document.getElementById('timer-display');
     const startBtn = document.getElementById('start-btn');
@@ -65,6 +68,7 @@
     const stopBtn = document.getElementById('stop-btn');
     const entryForm = document.getElementById('entry-form');
     const timeEntryForm = document.getElementById('time-entry-form');
+    const pauseDurationInput = document.getElementById('id_pause_duration');
 
     function formatTime(ms) {
         const totalSeconds = Math.floor(ms / 1000);
@@ -96,9 +100,11 @@
         if (!paused) {
             paused = true;
             clearInterval(timer);
+            pauseStartTime = Date.now();
             pauseBtn.textContent = 'Puncha Mera';
         } else {
             paused = false;
+            totalPausedTime += Date.now() - pauseStartTime;
             startTime = Date.now() - elapsedTime;
             timer = setInterval(updateTimer, 1000);
             pauseBtn.textContent = 'Pause';
@@ -109,11 +115,18 @@
         paused = true;
         clearInterval(timer);
         entryForm.style.display = 'block';
-        // You might want to pre-fill the form with start and end times
+        pauseDurationInput.value = totalPausedTime / 1000; // Convert to seconds
+        
         const now = new Date();
         const then = new Date(now.getTime() - elapsedTime);
-        document.getElementById('id_start_time').value = then.toISOString().slice(0, 19);
-        document.getElementById('id_end_time').value = now.toISOString().slice(0, 19);
+
+        const date = then.toISOString().slice(0, 10);
+        const startTimeStr = then.toTimeString().slice(0, 5);
+        const endTimeStr = now.toTimeString().slice(0, 5);
+
+        document.getElementById('id_date').value = date;
+        document.getElementById('id_start_time').value = startTimeStr;
+        document.getElementById('id_end_time').value = endTimeStr;
     });
 
     timeEntryForm.addEventListener('submit', (e) => {

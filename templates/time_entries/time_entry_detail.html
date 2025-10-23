@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load time_filters %}
 
 {% block content %}
   <div class="card">
@@ -8,9 +9,12 @@
     <div class="card-body">
       <p><strong>Project:</strong> {{ object.project }}</p>
       <p><strong>User:</strong> {{ object.user }}</p>
-      <p><strong>Start Time:</strong> {{ object.start_time }}</p>
-      <p><strong>End Time:</strong> {{ object.end_time }}</p>
-      <p><strong>Duration:</strong> {{ object.duration }}</p>
+      <p><strong>Title:</strong> {{ object.title }}</p>
+      <p><strong>Date:</strong> {{ object.date|date:"Y-m-d" }}</p>
+      <p><strong>Start Time:</strong> {{ object.start_time|time:"h:i A" }}</p>
+      <p><strong>End Time:</strong> {{ object.end_time|time:"h:i A" }}</p>
+      <p><strong>Pause Duration:</strong> {{ object.pause_duration|format_duration }}</p>
+      <p><strong>Duration:</strong> {{ object.duration|format_duration }}</p>
       <p><strong>Description:</strong> {{ object.description }}</p>
       <p><strong>Notes:</strong> {{ object.notes }}</p>
       {% if object.image %}
