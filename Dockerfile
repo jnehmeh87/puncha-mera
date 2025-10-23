@@ -4,7 +4,7 @@ FROM python:3.12-slim AS builder
 WORKDIR /app
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y build-essential libpq-dev gcc
+RUN apt-get update && apt-get install -y build-essential libpq-dev gcc pkg-config libcairo2-dev libgirepository1.0-dev
 
 # Create a virtual environment
 RUN python -m venv /opt/venv

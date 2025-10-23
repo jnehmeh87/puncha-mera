@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
+{% block title %}
+  {% if object %}Edit Time Entry{% else %}New Time Entry{% endif %} - Puncha Mera
+{% endblock %}
+
 {% block content %}
   <div class="card">
     <div class="card-header">
