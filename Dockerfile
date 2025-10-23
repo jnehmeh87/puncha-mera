@@ -28,6 +28,9 @@ COPY --from=builder /opt/venv /opt/venv
 # Copy application code
 COPY . .
 
+# Copy run script
+COPY run.sh .
+
 # Set ownership
 RUN chown -R appuser:appuser /home/appuser/app
 
@@ -42,4 +45,4 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 8000
 
 # Run the application
-CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "puncha_mera.wsgi:application"]
+CMD ["./run.sh"]
