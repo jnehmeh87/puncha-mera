@@ -18,6 +18,9 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# A more explicit way to detect production environment
+# In Cloud Run, you can set an environment variable `ENV=production`
+IN_PRODUCTION = os.environ.get('ENV') == 'production'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -27,38 +30,41 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Example: export GOOGLE_CLOUD_PROJECT=your-gcp-project-id
 #
 # You also need to install the following libraries:
-# pip install google-cloud-secret-manager dj-database-url
-try:
-    # Create the Secret Manager client.
-    client = secretmanager.SecretManagerServiceClient()
+# pip install google-cloud-secret-manager dj-database-url whitenoise
+if IN_PRODUCTION:
+    try:
+        # Create the Secret Manager client.
+        client = secretmanager.SecretManagerServiceClient()
+        project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
 
-    # Get the project id from the environment variable.
-    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+        def get_secret(secret_id, version_id="latest"):
+            name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+            response = client.access_secret_version(request={"name": name})
+            return response.payload.data.decode("UTF-8")
 
-    def get_secret(secret_id, version_id="latest"):
-        """
-        Get a secret from Google Cloud Secret Manager.
-        """
-        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-        response = client.access_secret_version(request={"name": name})
-        return response.payload.data.decode("UTF-8")
+        SECRET_KEY = get_secret("django-secret-key")
+        DATABASE_URL = get_secret("database-url")
+        STRIPE_API_KEY = get_secret("stripe-api-key")
+        STRIPE_WEBHOOK_SECRET = get_secret("stripe-webhook-secret")
+        FRONTEND_URL = get_secret("frontend-url") # e.g., "https://your-domain.com"
 
-    SECRET_KEY = get_secret("django-secret-key")
-    DATABASE_URL = get_secret("database-url")
-    STRIPE_API_KEY = get_secret("stripe-api-key")
-    STRIPE_WEBHOOK_SECRET = get_secret("stripe-webhook-secret")
+        DATABASES = {'default': dj_database_url.config(default=DATABASE_URL)}
 
-    DATABASES = {
-        'default': dj_database_url.config(default=DATABASE_URL)
-    }
+        # Production security settings
+        DEBUG = False
+        allowed_hosts_str = get_secret("allowed-hosts")
+        ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',')]
+        CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
 
-    # Production security settings
-    DEBUG = False
-    ALLOWED_HOSTS = [get_secret("allowed-hosts")] # e.g., "your-domain.com,www.your-domain.com"
-    CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
-except Exception as e:
-    print(f"Error getting secrets from Google Cloud Secret Manager: {e}")
-    # Fallback to default settings for local development
+        # Configure static files for production with WhiteNoise
+        STATIC_ROOT = BASE_DIR / "staticfiles"
+        STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+    except Exception as e:
+        # If secrets fail in production, we should raise an error and stop.
+        raise Exception(f"Could not load secrets in production: {e}") from e
+else:
+    # Local development settings
     SECRET_KEY = 'django-insecure-bt)t--mal86+6@d%!@y(qt9erxolvw070q%%4c@&us#kejeg-!'
     DATABASES = {
         'default': {
@@ -66,12 +72,12 @@ except Exception as e:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-    # Local development security settings
     DEBUG = True
     ALLOWED_HOSTS = ['8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev', '127.0.0.1', 'localhost']
     CSRF_TRUSTED_ORIGINS = ['https://8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev']
     STRIPE_API_KEY = "your_local_stripe_api_key" # Use test keys for local dev
     STRIPE_WEBHOOK_SECRET = "your_local_stripe_webhook_secret" # Use test keys for local dev
+    FRONTEND_URL = "http://127.0.0.1:8000" # Or your local frontend URL
 
 
 
@@ -111,6 +117,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Add WhiteNoise here
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
