@@ -74,12 +74,7 @@ except Exception as e:
     STRIPE_WEBHOOK_SECRET = "your_local_stripe_webhook_secret" # Use test keys for local dev
 
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ['8000-cs-953777466757-default.cs-europe-west4-bhnf.cloudshell.dev', '127.0.0.1']
-
-CSRF_TRUSTED_ORIGINS = ['https://8000-cs-953777466757-default.cs-europe-west4-bhnf.cloudshell.dev']
 
 # Application definition
 
