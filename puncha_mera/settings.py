@@ -78,6 +78,7 @@ else:
     STRIPE_API_KEY = "your_local_stripe_api_key" # Use test keys for local dev
     STRIPE_WEBHOOK_SECRET = "your_local_stripe_webhook_secret" # Use test keys for local dev
     FRONTEND_URL = "http://127.0.0.1:8000" # Or your local frontend URL
+    STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 
