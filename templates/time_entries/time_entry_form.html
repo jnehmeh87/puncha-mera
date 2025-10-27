@@ -15,6 +15,7 @@
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-primary mt-3">Save</button>
+        <a href="{% url 'time_entries:time_entry-list' %}" class="btn btn-secondary mt-3" onclick="return confirm('Are you sure you want to cancel?');">Cancel</a>
       </form>
     </div>
   </div>
