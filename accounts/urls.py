@@ -11,6 +11,9 @@ from .views import (
     OrganizationListView,
     OrganizationDetailView,
     OrganizationCreateView,
+    InvitationListView,
+    ResendInvitationView,
+    CancelInvitationView,
     archive_contact,
     unarchive_contact,
     archive_organization,
@@ -21,7 +24,10 @@ app_name = 'accounts'
 
 urlpatterns = [
     path('organization/<int:organization_pk>/invite/', SendInvitationView.as_view(), name='send-invitation'),
+    path('organization/<int:organization_pk>/invitations/', InvitationListView.as_view(), name='invitation-list'),
     path('invitation/accept/<uuid:token>/', AcceptInvitationView.as_view(), name='accept-invitation'),
+    path('invitation/<int:pk>/resend/', ResendInvitationView.as_view(), name='resend-invitation'),
+    path('invitation/<int:pk>/cancel/', CancelInvitationView.as_view(), name='cancel-invitation'),
     path('signup/', CustomSignupView.as_view(), name='account_signup'),
     path('contacts/', ContactListView.as_view(), name='contact-list'),
     path('contacts/new/', ContactCreateView.as_view(), name='contact-create'),

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">You have been invited to join {{ invitation.organization.name }}</h1>
+    </div>
+    <div class="card-body">
+      <p>You have been invited to join the organization **{{ invitation.organization.name }}** as a **{{ invitation.get_role_display }}**.</p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="action" value="accept" class="btn btn-primary">Accept Invitation</button>
+        <button type="submit" name="action" value="decline" class="btn btn-danger">Decline Invitation</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

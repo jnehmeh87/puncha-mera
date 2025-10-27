@@ -18,6 +18,7 @@
     <div class="card-footer">
       <a href="{% url 'accounts:organization-list' %}" class="btn btn-primary">Back to List</a>
       <a href="{% url 'accounts:send-invitation' object.pk %}" class="btn btn-secondary">Invite Member</a>
+      <a href="{% url 'accounts:invitation-list' object.pk %}" class="btn btn-info">Pending Invitations</a>
     </div>
   </div>
 {% endblock %}
