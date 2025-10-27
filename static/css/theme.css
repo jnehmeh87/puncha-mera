@@ -69,7 +69,7 @@ body {
     color: var(--text-color);
 }
 
-.card-title {
+.card-title, .form-label {
     color: var(--text-color);
 }
 
@@ -103,6 +103,12 @@ body {
     color: var(--text-color);
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.25rem rgba(var(--primary-color), 0.25);
+}
+
+.form-control:disabled, .form-select:disabled {
+    background-color: var(--input-bg-color);
+    color: #ffffff;
+    border-color: var(--input-border-color);
 }
 
 a {

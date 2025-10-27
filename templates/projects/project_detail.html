@@ -10,6 +10,13 @@
       <p><strong>Description:</strong> {{ object.description }}</p>
     </div>
     <div class="card-footer">
+      <a href="{% url 'projects:project-update' object.pk %}" class="btn btn-secondary">Edit</a>
+      <a href="{% url 'projects:project-delete' object.pk %}" class="btn btn-danger">Delete</a>
+      {% if object.archived %}
+        <a href="{% url 'projects:project-unarchive' object.pk %}" class="btn btn-warning">Unarchive</a>
+      {% else %}
+        <a href="{% url 'projects:project-archive' object.pk %}" class="btn btn-info">Archive</a>
+      {% endif %}
       <a href="{% url 'projects:project-list' %}" class="btn btn-primary">Back to List</a>
     </div>
   </div>
