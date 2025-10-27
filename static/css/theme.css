@@ -111,6 +111,14 @@ body {
     border-color: var(--input-border-color);
 }
 
+.form-label,
+.form-text,
+#hint_id_password1,
+#hint_id_password2,
+.text-muted {
+    color: var(--text-color) !important;
+}
+
 a {
     color: var(--primary-color);
 }
