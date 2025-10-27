@@ -33,6 +33,7 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th>Title</th>
                             <th>Project</th>
                             <th>Description</th>
                             <th>Date</th>
@@ -42,6 +43,7 @@
                     <tbody>
                         {% for entry in time_entries %}
                         <tr>
+                            <td>{{ entry.title }}</td>
                             <td>{{ entry.project }}</td>
                             <td>{{ entry.description }}</td>
                             <td>{{ entry.start_time|date:"Y-m-d" }}</td>

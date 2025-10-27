@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import AccessMixin
-from .models import Membership
+from .models import Membership, Invitation
 
 class AdminOwnerRequiredMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
@@ -7,6 +7,10 @@ class AdminOwnerRequiredMixin(AccessMixin):
             return self.handle_no_permission()
         
         organization_pk = self.kwargs.get('organization_pk')
+        if not organization_pk:
+            invitation = Invitation.objects.get(pk=self.kwargs.get('pk'))
+            organization_pk = invitation.organization.pk
+
         membership = Membership.objects.filter(user=request.user, organization_id=organization_pk).first()
         
         if not (membership and (membership.role == 'admin' or membership.role == 'owner')):

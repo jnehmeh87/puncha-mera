@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import FormView, View, ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from allauth.account.views import SignupView
@@ -40,19 +41,33 @@ class SendInvitationView(LoginRequiredMixin, AdminOwnerRequiredMixin, FormView):
             fail_silently=False,
         )
 
+        messages.success(self.request, f'Invitation sent to {email}.')
         return redirect('home:home')
 
-class AcceptInvitationView(View):
-    def get(self, request, *args, **kwargs):
-        token = kwargs.get('token')
-        try:
-            invitation = Invitation.objects.get(token=token)
-        except Invitation.DoesNotExist:
-            # Handle invalid token
-            return redirect('home:home')
+class AcceptInvitationView(DetailView):
+    model = Invitation
+    template_name = 'accounts/accept_invitation.html'
+    context_object_name = 'invitation'
+    slug_field = 'token'
+    slug_url_kwarg = 'token'
 
-        request.session['invitation_token'] = str(invitation.token)
-        return redirect('account_signup')
+    def post(self, request, *args, **kwargs):
+        invitation = self.get_object()
+        action = request.POST.get('action')
+
+        if action == 'accept':
+            if request.user.is_authenticated:
+                Membership.objects.create(user=request.user, organization=invitation.organization, role=invitation.role)
+                invitation.delete()
+                messages.success(request, f'You have successfully joined {invitation.organization.name}.')
+                return redirect('home:home')
+            else:
+                request.session['invitation_token'] = str(invitation.token)
+                return redirect('account_signup')
+        elif action == 'decline':
+            invitation.delete()
+            messages.info(request, 'You have declined the invitation.')
+            return redirect('home:home')
 
 class CustomSignupView(SignupView):
     def form_valid(self, form):
@@ -100,6 +115,37 @@ class OrganizationCreateView(LoginRequiredMixin, CreateView):
         response = super().form_valid(form)
         Membership.objects.create(user=self.request.user, organization=self.object, role='owner')
         return response
+
+class InvitationListView(LoginRequiredMixin, AdminOwnerRequiredMixin, ListView):
+    model = Invitation
+    template_name = 'accounts/invitation_list.html'
+    context_object_name = 'invitations'
+
+    def get_queryset(self):
+        return Invitation.objects.filter(organization_id=self.kwargs['organization_pk'])
+
+class ResendInvitationView(LoginRequiredMixin, AdminOwnerRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        invitation = get_object_or_404(Invitation, pk=self.kwargs['pk'])
+        invitation_link = request.build_absolute_uri(
+            reverse('accounts:accept-invitation', kwargs={'token': invitation.token})
+        )
+        send_mail(
+            'You have been invited to join an organization',
+            f'Click the link to accept the invitation: {invitation_link}',
+            'from@example.com',
+            [invitation.email],
+            fail_silently=False,
+        )
+        messages.success(request, f'Invitation resent to {invitation.email}.')
+        return redirect('accounts:invitation-list', organization_pk=invitation.organization.pk)
+
+class CancelInvitationView(LoginRequiredMixin, AdminOwnerRequiredMixin, DeleteView):
+    model = Invitation
+    template_name = 'accounts/invitation_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:invitation-list', kwargs={'organization_pk': self.object.organization.pk})
 
 class ContactListView(OrganizationPermissionMixin, ListView):
     model = Contact

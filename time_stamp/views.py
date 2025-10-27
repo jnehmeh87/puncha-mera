@@ -8,7 +8,7 @@ import datetime
 @login_required
 def timer_view(request):
     if request.method == 'POST':
-        form = TimeEntryForm(request.POST, request.FILES)
+        form = TimeEntryForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             time_entry = form.save(commit=False)
             time_entry.user = request.user
@@ -19,7 +19,7 @@ def timer_view(request):
         else:
             return JsonResponse({'status': 'error', 'errors': form.errors})
     else:
-        form = TimeEntryForm()
+        form = TimeEntryForm(user=request.user)
         time_entries = TimeEntry.objects.filter(user=request.user).order_by('-date', '-start_time')[:10]
         context = {
             'form': form,
