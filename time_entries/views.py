@@ -2,7 +2,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 from django.urls import reverse_lazy
 from .models import TimeEntry
 from .forms import TimeEntryForm
-from projects.mixins import OrganizationPermissionMixin
+from accounts.mixins import OrganizationPermissionMixin
 
 class TimeEntryListView(OrganizationPermissionMixin, ListView):
     model = TimeEntry

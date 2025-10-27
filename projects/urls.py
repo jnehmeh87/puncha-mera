@@ -6,7 +6,9 @@ from .views import (
     ProjectUpdateView,
     ProjectDeleteView,
     archive_project,
-    unarchive_project
+    unarchive_project,
+    ProjectAddMemberView,
+    ProjectUpdateMemberView
 )
 
 app_name = 'projects'
@@ -19,4 +21,6 @@ urlpatterns = [
     path('<int:pk>/delete/', ProjectDeleteView.as_view(), name='project-delete'),
     path('<int:pk>/archive/', archive_project, name='project-archive'),
     path('<int:pk>/unarchive/', unarchive_project, name='project-unarchive'),
+    path('<int:project_pk>/add-member/', ProjectAddMemberView.as_view(), name='project-add-member'),
+    path('member/<int:pk>/update/', ProjectUpdateMemberView.as_view(), name='project-update-member'),
 ]

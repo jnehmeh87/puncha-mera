@@ -1,6 +1,6 @@
 from django.db import models
 from django.urls import reverse
-from accounts.models import Organization
+from accounts.models import Organization, CustomUser
 
 class ProjectManager(models.Manager):
     def get_queryset(self):
@@ -13,6 +13,7 @@ class Project(models.Model):
     description = models.TextField(blank=True)
     archived = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
+    members = models.ManyToManyField(CustomUser, through='ProjectMember', related_name='projects')
 
     objects = ProjectManager()
     all_objects = models.Manager()
@@ -22,3 +23,13 @@ class Project(models.Model):
 
     def get_absolute_url(self):
         return reverse('projects:project-detail', kwargs={'pk': self.pk})
+
+class ProjectMember(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    can_view = models.BooleanField(default=True)
+    can_edit = models.BooleanField(default=False)
+    can_delete = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.user.username} on {self.project.name}'

@@ -8,6 +8,8 @@ class CustomUser(AbstractUser):
 class Organization(models.Model):
     name = models.CharField(max_length=100)
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    archived = models.BooleanField(default=False)
+    deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -45,6 +47,8 @@ class Contact(models.Model):
     company_email = models.EmailField(blank=True)
     company_address = models.CharField(max_length=255, blank=True)
     company_contact_person = models.CharField(max_length=100, blank=True)
+    archived = models.BooleanField(default=False)
+    deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
