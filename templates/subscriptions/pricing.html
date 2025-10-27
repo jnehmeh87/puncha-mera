@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Small Business</h2>
+      </div>
+      <div class="card-body">
+        <p class="card-text">$10/month</p>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">1 User</li>
+          <li class="list-group-item">Timer</li>
+          <li class="list-group-item">Time Entries</li>
+          <li class="list-group-item">Reports</li>
+          <li class="list-group-item">Income and Tax Calculator</li>
+          <li class="list-group-item">Basic Analytics</li>
+        </ul>
+        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="price_id" value="{{ small_business_price_id }}">
+          <button type="submit" class="btn btn-primary">Choose Plan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Company (1-10 Members)</h2>
+      </div>
+      <div class="card-body">
+        <p class="card-text">$50/month</p>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Up to 10 Members</li>
+          <li class="list-group-item">All features from Small Business</li>
+          <li class="list-group-item">Translate Report</li>
+          <li class="list-group-item">Invoicing</li>
+          <li class="list-group-item">Advanced Analytics</li>
+        </ul>
+        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="price_id" value="{{ company_10_price_id }}">
+          <button type="submit" class="btn btn-primary">Choose Plan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Company (1-50 Members)</h2>
+      </div>
+      <div class="card-body">
+        <p class="card-text">$150/month</p>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Up to 50 Members</li>
+          <li class="list-group-item">All features from Company (1-10 Members)</li>
+        </ul>
+        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="price_id" value="{{ company_50_price_id }}">
+          <button type="submit" class="btn btn-primary">Choose Plan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12 text-center">
+        <h2>Company (50+ Members)</h2>
+        <p>Contact us for a custom plan.</p>
+        <a href="#" class="btn btn-primary">Contact Us</a>
+    </div>
+</div>
+{% endblock %}

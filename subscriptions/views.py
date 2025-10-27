@@ -2,11 +2,22 @@ import stripe
 from django.conf import settings
 from django.http import JsonResponse
 from django.views import View
+from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from .models import Subscription, SubscriptionPlan
+from .models import Subscription, Plan
 
 stripe.api_key = settings.STRIPE_API_KEY # This line is now correct
+
+class PricingView(TemplateView):
+    template_name = 'subscriptions/pricing.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['small_business_price_id'] = 'price_12345' # Replace with your actual price ID
+        context['company_10_price_id'] = 'price_67890' # Replace with your actual price ID
+        context['company_50_price_id'] = 'price_abcde' # Replace with your actual price ID
+        return context
 
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):

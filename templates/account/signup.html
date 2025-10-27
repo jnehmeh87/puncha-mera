@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block extra_head %}
+<style>
+  /* Make form input placeholders white in dark mode */
+  [data-bs-theme="dark"] .form-control::placeholder {
+    color: #fff;
+  }
+</style>
+{% endblock extra_head %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h1 class="card-title">Sign Up</h1>
+      </div>
+      <div class="card-body">
+        <form method="post" action="{% url 'account_signup' %}">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
