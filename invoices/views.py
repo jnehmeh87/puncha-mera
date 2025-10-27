@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from .models import Invoice
-from projects.mixins import OrganizationPermissionMixin
+from accounts.mixins import OrganizationPermissionMixin
 from .utils import generate_epc_qr_code
 
 

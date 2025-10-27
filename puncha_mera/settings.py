@@ -73,8 +73,8 @@ else:
         }
     }
     DEBUG = True
-    ALLOWED_HOSTS = ['8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev', '127.0.0.1', 'localhost']
-    CSRF_TRUSTED_ORIGINS = ['https://8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev']
+    ALLOWED_HOSTS = ['8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev', '127.0.0.1', 'localhost', '8000-cs-953777466757-default.cs-europe-west4-bhnf.cloudshell.dev']
+    CSRF_TRUSTED_ORIGINS = ['https://8080-cs-04265eee-570c-41b3-94f9-e53a43701d5f.cs-europe-west4-pear.cloudshell.dev', 'https://8000-cs-953777466757-default.cs-europe-west4-bhnf.cloudshell.dev']
     STRIPE_API_KEY = "your_local_stripe_api_key" # Use test keys for local dev
     STRIPE_WEBHOOK_SECRET = "your_local_stripe_webhook_secret" # Use test keys for local dev
     FRONTEND_URL = "http://127.0.0.1:8000" # Or your local frontend URL

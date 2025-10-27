@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import FormView, View, ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
@@ -6,8 +6,7 @@ from django.urls import reverse, reverse_lazy
 from allauth.account.views import SignupView
 from .forms import InvitationForm, OrganizationForm
 from .models import Invitation, Organization, CustomUser, Membership, Contact
-from projects.mixins import OrganizationPermissionMixin
-from .mixins import AdminOwnerRequiredMixin
+from .mixins import OrganizationPermissionMixin, AdminOwnerRequiredMixin
 
 class SendInvitationView(LoginRequiredMixin, AdminOwnerRequiredMixin, FormView):
     template_name = 'accounts/send_invitation.html'
@@ -77,7 +76,14 @@ class OrganizationListView(LoginRequiredMixin, ListView):
     template_name = 'accounts/organization_list.html'
 
     def get_queryset(self):
-        return Organization.objects.filter(members__user=self.request.user)
+        return Organization.objects.filter(members__user=self.request.user, deleted=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        context['active_organizations'] = queryset.filter(archived=False)
+        context['archived_organizations'] = queryset.filter(archived=True)
+        return context
 
 class OrganizationDetailView(LoginRequiredMixin, DetailView):
     model = Organization
@@ -98,6 +104,22 @@ class OrganizationCreateView(LoginRequiredMixin, CreateView):
 class ContactListView(OrganizationPermissionMixin, ListView):
     model = Contact
     template_name = 'accounts/contact_list.html'
+
+    def get_queryset(self):
+        user = self.request.user
+        try:
+            membership = Membership.objects.get(user=user)
+            organization = membership.organization
+            return Contact.objects.filter(organization=organization, deleted=False)
+        except Membership.DoesNotExist:
+            return Contact.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        context['active_contacts'] = queryset.filter(archived=False)
+        context['archived_contacts'] = queryset.filter(archived=True)
+        return context
 
 class ContactDetailView(OrganizationPermissionMixin, DetailView):
     model = Contact
@@ -130,3 +152,33 @@ class ContactDeleteView(OrganizationPermissionMixin, DeleteView):
     model = Contact
     template_name = 'accounts/contact_confirm_delete.html'
     success_url = reverse_lazy('accounts:contact-list')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.deleted = True
+        self.object.save()
+        return redirect(self.get_success_url())
+
+def archive_contact(request, pk):
+    contact = get_object_or_404(Contact, pk=pk)
+    contact.archived = True
+    contact.save()
+    return redirect('accounts:contact-list')
+
+def unarchive_contact(request, pk):
+    contact = get_object_or_404(Contact, pk=pk)
+    contact.archived = False
+    contact.save()
+    return redirect('accounts:contact-list')
+
+def archive_organization(request, pk):
+    organization = get_object_or_404(Organization, pk=pk)
+    organization.archived = True
+    organization.save()
+    return redirect('accounts:organization-list')
+
+def unarchive_organization(request, pk):
+    organization = get_object_or_404(Organization, pk=pk)
+    organization.archived = False
+    organization.save()
+    return redirect('accounts:organization-list')

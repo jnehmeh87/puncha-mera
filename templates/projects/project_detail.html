@@ -20,4 +20,42 @@
       <a href="{% url 'projects:project-list' %}" class="btn btn-primary">Back to List</a>
     </div>
   </div>
+
+  <div class="card mt-4">
+    <div class="card-header">
+      <h2 class="card-title">Project Members</h2>
+    </div>
+    <div class="card-body">
+      <a href="{% url 'projects:project-add-member' project_pk=object.pk %}" class="btn btn-primary mb-3">Add Member</a>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Can View</th>
+            <th>Can Edit</th>
+            <th>Can Delete</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for member in object.projectmember_set.all %}
+            <tr>
+              <td>{{ member.user.username }}</td>
+              <td>{{ member.can_view|yesno:"Yes,No" }}</td>
+              <td>{{ member.can_edit|yesno:"Yes,No" }}</td>
+              <td>{{ member.can_delete|yesno:"Yes,No" }}</td>
+              <td>
+                <a href="{% url 'projects:project-update-member' member.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+                <a href="#" class="btn btn-sm btn-danger">Remove</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">No members in this project yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 {% endblock %}
