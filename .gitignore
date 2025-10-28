@@ -11,4 +11,13 @@ pip-wheel-metadata/
 
 # Django
 *.log
+.idea/
+.vscode/
+*.pyc
+__pycache__/
+.env
 db.sqlite3
+/media/
+/static/
+media/time_entry_images/
+
