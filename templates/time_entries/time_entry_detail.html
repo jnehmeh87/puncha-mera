@@ -2,30 +2,124 @@
 {% load time_filters %}
 
 {% block content %}
+<style>
+.thumbnail {
+  max-width: 200px;
+  max-height: 200px;
+  cursor: pointer;
+}
+
+.lightbox {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.9);
+}
+
+.lightbox-content {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+}
+
+.lightbox-content {
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@keyframes zoom {
+  from {transform:scale(0)} 
+  to {transform:scale(1)}
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
+
   <div class="card">
     <div class="card-header">
       <h1 class="card-title">Time Entry Details</h1>
     </div>
     <div class="card-body">
-      <p><strong>Project:</strong> {{ object.project }}</p>
-      <p><strong>User:</strong> {{ object.user }}</p>
-      <p><strong>Title:</strong> {{ object.title }}</p>
-      <p><strong>Date:</strong> {{ object.date|date:"Y-m-d" }}</p>
-      <p><strong>Start Time:</strong> {{ object.start_time|time:"h:i A" }}</p>
-      <p><strong>End Time:</strong> {{ object.end_time|time:"h:i A" }}</p>
-      <p><strong>Pause Duration:</strong> {{ object.pause_duration|format_duration }}</p>
-      <p><strong>Duration:</strong> {{ object.duration|format_duration }}</p>
-      <p><strong>Description:</strong> {{ object.description }}</p>
-      <p><strong>Notes:</strong> {{ object.notes }}</p>
-      {% if object.image %}
-        <p><strong>Image:</strong></p>
-        <img src="{{ object.image.url }}" alt="Time entry image" class="img-fluid">
-      {% endif %}
+      <div class="row">
+        <div class="col-md-4">
+          <p><strong>Project:</strong> {{ object.project }}</p>
+          <p><strong>User:</strong> {{ object.user }}</p>
+          <p><strong>Title:</strong> {{ object.title }}</p>
+          <p><strong>Date:</strong> {{ object.date|date:"Y-m-d" }}</p>
+          <p><strong>Start Time:</strong> {{ object.start_time|time:"h:i A" }}</p>
+          <p><strong>End Time:</strong> {{ object.end_time|time:"h:i A" }}</p>
+          <p><strong>Pause Duration:</strong> {{ object.pause_duration|format_duration }}</p>
+          <p><strong>Duration:</strong> {{ object.duration|format_duration }}</p>
+        </div>
+        <div class="col-md-8">
+          <p><strong>Description:</strong></p>
+          <p>{{ object.description|linebreaks }}</p>
+          <p><strong>Notes:</strong></p>
+          <p>{{ object.notes|linebreaks }}</p>
+          {% if object.image %}
+            <p><strong>Image:</strong></p>
+            <img id="myImg" src="{{ object.image.url }}" alt="Time entry image" class="img-fluid thumbnail">
+          {% endif %}
+        </div>
+      </div>
     </div>
     <div class="card-footer">
       <a href="{% url 'time_entries:time_entry-update' object.pk %}" class="btn btn-secondary">Edit</a>
       <a href="{% url 'time_entries:time_entry-delete' object.pk %}" class="btn btn-danger">Delete</a>
-      <a href="{% url 'time_entries:time_entry-list' %}" class="btn btn-primary">Back to List</a>
     </div>
   </div>
+
+<div id="myModal" class="lightbox">
+  <span class="close">&times;</span>
+  <img class="lightbox-content" id="img01">
+</div>
+
+<script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the image and insert it inside the modal - use its "alt" text as a caption
+var img = document.getElementById('myImg');
+var modalImg = document.getElementById("img01");
+if (img) {
+    img.onclick = function(){
+        modal.style.display = "block";
+        modalImg.src = this.src;
+    }
+}
+
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+if (span) {
+    span.onclick = function() { 
+        modal.style.display = "none";
+    }
+}
+</script>
+
 {% endblock %}
