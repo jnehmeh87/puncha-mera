@@ -14,26 +14,24 @@
 <body>
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Puncha Mera</a>
+            <a class="navbar-brand" href="{% url 'time_stamp:timer' %}">Puncha Mera</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'time_stamp:timer' %}">Puncha</a>
-                    </li>
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home:home' %}">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:organization-list' %}">Organizations</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'projects:project-list' %}">Projects</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:contact-list' %}">Contacts</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="manageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Manage
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="manageDropdown">
+                            <li><a class="dropdown-item" href="{% url 'accounts:organization-list' %}">Organizations</a></li>
+                            <li><a class="dropdown-item" href="{% url 'projects:project-list' %}">Projects</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:contact-list' %}">Contacts</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'invoices:invoice-list' %}">Invoices</a>

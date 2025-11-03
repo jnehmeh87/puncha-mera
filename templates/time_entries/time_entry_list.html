@@ -111,8 +111,10 @@
                 <button type="button" class="btn btn-sm btn-info view-details" data-url="{% url 'time_entries:time_entry-detail' entry.pk %}">
                   View
                 </button>
+                {% if request.user.memberships.first.role == 'admin' or request.user.memberships.first.role == 'owner' %}
                 <a href="{% url 'time_entries:time_entry-update' entry.pk %}" class="btn btn-sm btn-secondary">Edit</a>
                 <a href="{% url 'time_entries:time_entry-delete' entry.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                {% endif %}
               </td>
             </tr>
           {% endfor %}

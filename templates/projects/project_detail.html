@@ -1,61 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="card">
-    <div class="card-header">
-      <h1 class="card-title">{{ object.name }}</h1>
-    </div>
-    <div class="card-body">
-      <p><strong>Contact:</strong> {{ object.contact }}</p>
-      <p><strong>Description:</strong> {{ object.description }}</p>
-    </div>
-    <div class="card-footer">
-      <a href="{% url 'projects:project-update' object.pk %}" class="btn btn-secondary">Edit</a>
-      <a href="{% url 'projects:project-delete' object.pk %}" class="btn btn-danger">Delete</a>
-      {% if object.archived %}
-        <a href="{% url 'projects:project-unarchive' object.pk %}" class="btn btn-warning">Unarchive</a>
-      {% else %}
-        <a href="{% url 'projects:project-archive' object.pk %}" class="btn btn-info">Archive</a>
-      {% endif %}
-      <a href="{% url 'projects:project-list' %}" class="btn btn-primary">Back to List</a>
-    </div>
-  </div>
+  <h1>{{ object.name }}</h1>
+  <p>{{ object.description }}</p>
 
-  <div class="card mt-4">
-    <div class="card-header">
-      <h2 class="card-title">Project Members</h2>
-    </div>
-    <div class="card-body">
-      <a href="{% url 'projects:project-add-member' project_pk=object.pk %}" class="btn btn-primary mb-3">Add Member</a>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Can View</th>
-            <th>Can Edit</th>
-            <th>Can Delete</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for member in object.projectmember_set.all %}
-            <tr>
-              <td>{{ member.user.username }}</td>
-              <td>{{ member.can_view|yesno:"Yes,No" }}</td>
-              <td>{{ member.can_edit|yesno:"Yes,No" }}</td>
-              <td>{{ member.can_delete|yesno:"Yes,No" }}</td>
-              <td>
-                <a href="{% url 'projects:project-update-member' member.pk %}" class="btn btn-sm btn-secondary">Edit</a>
-                <a href="#" class="btn btn-sm btn-danger">Remove</a>
-              </td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="5" class="text-center">No members in this project yet.</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <h2>Members</h2>
+  <ul>
+    {% for member in object.projectmember_set.all %}
+      <li>{{ member.user.username }}</li>
+    {% endfor %}
+  </ul>
+
+  <a href="{% url 'projects:send-invitation' project_pk=object.pk %}" class="btn btn-primary">Invite User</a>
+  <a href="{% url 'projects:project-update' object.pk %}" class="btn btn-secondary">Edit</a>
+  <a href="{% url 'projects:project-delete' object.pk %}" class="btn btn-danger">Delete</a>
 {% endblock %}

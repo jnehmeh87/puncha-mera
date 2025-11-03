@@ -11,9 +11,15 @@ class ProjectListView(ListView):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated:
-            return Project.objects.filter(members=user, deleted=False)
-        return Project.objects.none()
+        if not user.is_authenticated:
+            return Project.objects.none()
+
+        try:
+            membership = Membership.objects.get(user=user)
+            organization = membership.organization
+            return Project.objects.filter(organization=organization, deleted=False)
+        except Membership.DoesNotExist:
+            return Project.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -68,6 +74,13 @@ class ProjectAddMemberView(CreateView):
     def get_success_url(self):
         return reverse_lazy('projects:project-detail', kwargs={'pk': self.kwargs['project_pk']})
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        project = get_object_or_404(Project, pk=self.kwargs['project_pk'])
+        organization = project.organization
+        form.fields['user'].queryset = CustomUser.objects.filter(memberships__organization=organization)
+        return form
+
     def form_valid(self, form):
         project = get_object_or_404(Project, pk=self.kwargs['project_pk'])
         form.instance.project = project
@@ -77,6 +90,18 @@ class ProjectUpdateMemberView(UpdateView):
     model = ProjectMember
     fields = ['can_view', 'can_edit', 'can_delete']
     template_name = 'projects/project_update_member.html'
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            return ProjectMember.objects.none()
+
+        try:
+            membership = Membership.objects.get(user=user)
+            organization = membership.organization
+            return ProjectMember.objects.filter(project__organization=organization)
+        except Membership.DoesNotExist:
+            return ProjectMember.objects.none()
 
     def get_success_url(self):
         return reverse_lazy('projects:project-detail', kwargs={'pk': self.object.project.pk})

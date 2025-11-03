@@ -86,8 +86,10 @@
       </div>
     </div>
     <div class="card-footer">
+      {% if request.user.memberships.first.role == 'admin' or request.user.memberships.first.role == 'owner' %}
       <a href="{% url 'time_entries:time_entry-update' object.pk %}" class="btn btn-secondary">Edit</a>
       <a href="{% url 'time_entries:time_entry-delete' object.pk %}" class="btn btn-danger">Delete</a>
+      {% endif %}
     </div>
   </div>
 

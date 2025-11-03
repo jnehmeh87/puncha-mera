@@ -84,6 +84,10 @@ class CustomSignupView(SignupView):
                 del self.request.session['invitation_token']
             except Invitation.DoesNotExist:
                 pass
+        else:
+            user = self.user
+            organization = Organization.objects.create(name=f"{user.username}'s Organization", created_by=user)
+            Membership.objects.create(user=user, organization=organization, role='owner')
         return response
 
 class OrganizationListView(LoginRequiredMixin, ListView):
