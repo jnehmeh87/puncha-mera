@@ -1,0 +1,188 @@
+{% load crispy_forms_tags %}
+
+<div id="profile-completion-popup" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Complete Your Profile</h5>
+                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div id="profile-progress-bar" class="progress-bar" role="progressbar" style="width: {{ completion_percentage }}%;" aria-valuenow="{{ completion_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ completion_percentage }}%</div>
+                </div>
+                <hr>
+                <form id="profile-completion-form" method="post" action="{% url 'accounts:profile-completion-wizard' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div id="step-1" class="wizard-step">
+                        <h3>Personal Information</h3>
+                        {{ user_form.first_name|as_crispy_field }}
+                        {{ user_form.last_name|as_crispy_field }}
+                        {{ user_profile_form.bio|as_crispy_field }}
+                        {{ user_profile_form.profile_picture|as_crispy_field }}
+                        <button type="button" class="btn btn-primary next-step">Next</button>
+                    </div>
+                    <div id="step-2" class="wizard-step" style="display: none;">
+                        <h3>Address</h3>
+                        {{ user_profile_form.country|as_crispy_field }}
+                        {{ user_profile_form.county_region|as_crispy_field }}
+                        {{ user_profile_form.address|as_crispy_field }}
+                        {{ user_profile_form.postal_code|as_crispy_field }}
+                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                        <button type="button" class="btn btn-primary next-step">Next</button>
+                    </div>
+                    <div id="step-3" class="wizard-step" style="display: none;">
+                        <h3>Settings</h3>
+                        {{ settings_form|crispy }}
+                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
+                        <button type="submit" class="btn btn-success">Save & Exit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" id="save-and-continue" class="btn btn-info">Save and Continue Later</button>
+                <button type="button" id="skip-step" class="btn btn-light">Skip</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentStep = 1;
+    const steps = document.querySelectorAll('.wizard-step');
+    const progressBar = document.getElementById('profile-progress-bar');
+    const form = document.getElementById('profile-completion-form');
+
+    function showStep(step) {
+        steps.forEach(s => s.style.display = 'none');
+        document.getElementById(`step-${step}`).style.display = 'block';
+    }
+
+    function saveStep(step, andExit = false) {
+        const formData = new FormData(form);
+        formData.append('step', step);
+
+        fetch("{% url 'accounts:profile-completion-ajax' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateProgressBar(data.completion_percentage);
+            if (andExit) {
+                $('#profile-completion-popup').modal('hide');
+            }
+        });
+    }
+
+    function updateProgressBar(percentage) {
+        progressBar.style.width = percentage + '%';
+        progressBar.innerText = percentage + '%';
+        progressBar.setAttribute('aria-valuenow', percentage);
+    }
+
+    document.querySelectorAll('.next-step').forEach(btn => {
+        btn.addEventListener('click', () => {
+            saveStep(currentStep);
+            if (currentStep < steps.length) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        });
+    });
+
+    document.querySelectorAll('.prev-step').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        });
+    });
+
+    document.getElementById('save-and-continue').addEventListener('click', () => {
+        saveStep(currentStep, true);
+    });
+
+    document.getElementById('skip-step').addEventListener('click', () => {
+        if (currentStep < steps.length) {
+            currentStep++;
+            showStep(currentStep);
+        } else {
+            $('#profile-completion-popup').modal('hide');
+        }
+    });
+
+    form.addEventListener('input', () => {
+        const formData = new FormData(form);
+        let completedFields = 0;
+        const totalFields = {{ total_fields }};
+
+        // This is a simplified client-side calculation. 
+        // The authoritative calculation is done on the server.
+        for (const value of formData.values()) {
+            if (value) {
+                completedFields++;
+            }
+        }
+        const percentage = Math.round((completedFields / totalFields) * 100);
+        updateProgressBar(percentage);
+    });
+
+
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark') {
+        document.getElementById('profile-completion-popup').querySelector('.modal-content').classList.add('text-bg-dark');
+    }
+
+    $('#profile-completion-popup').modal('show');
+
+    function initAutocomplete() {
+        const addressInput = document.getElementById('id_address');
+        addressInput.removeAttribute('disabled');
+        addressInput.removeAttribute('readonly');
+        const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+            types: ['address']
+        });
+
+        autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+
+            if (place.address_components) {
+                let country = '';
+                let county_region = '';
+                let postal_code = '';
+
+                for (const component of place.address_components) {
+                    const componentType = component.types[0];
+
+                    switch (componentType) {
+                        case 'postal_code':
+                            postal_code = component.long_name;
+                            break;
+                        case 'administrative_area_level_1':
+                            county_region = component.long_name;
+                            break;
+                        case 'country':
+                            country = component.long_name;
+                            break;
+                    }
+                }
+
+                document.getElementById('id_address').value = place.formatted_address;
+                document.getElementById('id_country').value = country;
+                document.getElementById('id_county_region').value = county_region;
+                document.getElementById('id_postal_code').value = postal_code;
+            }
+        });
+    }
+
+    initAutocomplete();
+});
+</script>

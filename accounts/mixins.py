@@ -18,18 +18,15 @@ class AdminOwnerRequiredMixin(AccessMixin):
         
         return super().dispatch(request, *args, **kwargs)
 
-class OrganizationPermissionMixin:
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        user = self.request.user
+class OrganizationPermissionMixin(AccessMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
 
-        if not user.is_authenticated:
-            return queryset.none()
-            
         try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            queryset = queryset.filter(organization=organization)
+            membership = Membership.objects.get(user=request.user)
+            # Further checks can be added here if needed
         except Membership.DoesNotExist:
-            queryset = queryset.none()
-        return queryset
+            return self.handle_no_permission()
+
+        return super().dispatch(request, *args, **kwargs)

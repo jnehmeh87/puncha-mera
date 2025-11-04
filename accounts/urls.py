@@ -20,7 +20,9 @@ from .views import (
     unarchive_organization,
     ProfileAndSettingsView,
     ProfileUpdatePopupView,
-    SettingsUpdatePopupView
+    SettingsUpdatePopupView,
+    ProfileCompletionWizardView,
+    ProfileCompletionAjaxView
 )
 
 app_name = 'accounts'
@@ -47,4 +49,6 @@ urlpatterns = [
     path('profile-and-settings/', ProfileAndSettingsView.as_view(), name='profile-and-settings'),
     path('profile/edit/', ProfileUpdatePopupView.as_view(), name='profile-edit'),
     path('settings/edit/', SettingsUpdatePopupView.as_view(), name='settings-edit'),
+    path('profile/completion-wizard/', ProfileCompletionWizardView.as_view(), name='profile-completion-wizard'),
+    path('profile/completion-ajax/', ProfileCompletionAjaxView.as_view(), name='profile-completion-ajax'),
 ]

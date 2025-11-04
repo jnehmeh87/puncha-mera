@@ -12,9 +12,7 @@ class UserProfile(models.Model):
     address = models.CharField(max_length=255, blank=True)
     country = models.CharField(max_length=100, blank=True)
     postal_code = models.CharField(max_length=20, blank=True)
-    street_address = models.CharField(max_length=255, blank=True)
-    house_number = models.CharField(max_length=20, blank=True)
-    district = models.CharField(max_length=100, blank=True)
+    county_region = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.user.username

@@ -82,6 +82,15 @@ body {
     border-color: #333;
 }
 
+.list-group-item:hover {
+    background-color: var(--primary-color);
+    color: var(--surface-color);
+}
+
+.list-group {
+    border: 1px solid var(--primary-color);
+}
+
 .table {
     border: 1px solid var(--primary-color);
     color: var(--text-color);
@@ -119,6 +128,10 @@ body {
 #hint_id_password1,
 #hint_id_password2,
 .text-muted {
+    color: var(--text-color) !important;
+}
+
+.allauth-form-inner-content label {
     color: var(--text-color) !important;
 }
 
@@ -160,5 +173,25 @@ a:hover {
 
 [data-theme="dark"] .bi-moon-fill,
 [data-theme="dark"] .bi-brightness-high-fill {
+    color: var(--text-color);
+}
+
+.accordion-item {
+    background-color: var(--surface-color);
+    border-color: var(--primary-color);
+}
+
+.accordion-button {
+    background-color: var(--surface-color);
+    color: var(--text-color);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--primary-color);
+    color: var(--surface-color);
+}
+
+.accordion-body {
+    background-color: var(--surface-color);
     color: var(--text-color);
 }

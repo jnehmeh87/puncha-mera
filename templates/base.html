@@ -22,6 +22,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home:home' %}">Home</a>
                     </li>
+                    {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="manageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Manage
@@ -38,6 +39,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'time_entries:time_entry-list' %}">Time Entries</a>
                     </li>
+                    {% endif %}
                 </ul>
                 <div class="d-flex align-items-center">
                     {% if user.is_authenticated %}
@@ -117,6 +119,7 @@
             }, 3000);
         });
     </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

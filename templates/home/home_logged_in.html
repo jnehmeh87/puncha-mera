@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load profile_tags %}
 
 {% block content %}
 <div class="container text-center">
@@ -70,4 +72,11 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+    {% get_profile_completion_percentage as completion_percentage %}
+    {% if completion_percentage < 100 %}
+        {% include 'accounts/profile_completion_wizard.html' %}
+    {% endif %}
 {% endblock %}

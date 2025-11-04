@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -5,7 +7,7 @@ from .models import Project, ProjectMember
 from .mixins import ProjectMemberPermissionMixin
 from accounts.models import Membership, CustomUser
 
-class ProjectListView(ListView):
+class ProjectListView(LoginRequiredMixin, ListView):
     model = Project
     template_name = 'projects/project_list.html'
 
@@ -28,7 +30,7 @@ class ProjectListView(ListView):
         context['archived_projects'] = queryset.filter(archived=True)
         return context
 
-class ProjectCreateView(CreateView):
+class ProjectCreateView(LoginRequiredMixin, CreateView):
     model = Project
     fields = ['name', 'contact', 'description']
     template_name = 'projects/project_form.html'
@@ -46,16 +48,16 @@ class ProjectCreateView(CreateView):
         except Membership.DoesNotExist:
             return super().form_invalid(form)
 
-class ProjectDetailView(ProjectMemberPermissionMixin, DetailView):
+class ProjectDetailView(LoginRequiredMixin, ProjectMemberPermissionMixin, DetailView):
     model = Project
     template_name = 'projects/project_detail.html'
 
-class ProjectUpdateView(ProjectMemberPermissionMixin, UpdateView):
+class ProjectUpdateView(LoginRequiredMixin, ProjectMemberPermissionMixin, UpdateView):
     model = Project
     fields = ['name', 'contact', 'description']
     template_name = 'projects/project_form.html'
 
-class ProjectDeleteView(ProjectMemberPermissionMixin, DeleteView):
+class ProjectDeleteView(LoginRequiredMixin, ProjectMemberPermissionMixin, DeleteView):
     model = Project
     template_name = 'projects/project_confirm_delete.html'
     success_url = reverse_lazy('projects:project-list')
@@ -66,7 +68,7 @@ class ProjectDeleteView(ProjectMemberPermissionMixin, DeleteView):
         self.object.save()
         return redirect(self.get_success_url())
 
-class ProjectAddMemberView(CreateView):
+class ProjectAddMemberView(LoginRequiredMixin, CreateView):
     model = ProjectMember
     fields = ['user', 'can_view', 'can_edit', 'can_delete']
     template_name = 'projects/project_add_member.html'
@@ -86,7 +88,7 @@ class ProjectAddMemberView(CreateView):
         form.instance.project = project
         return super().form_valid(form)
 
-class ProjectUpdateMemberView(UpdateView):
+class ProjectUpdateMemberView(LoginRequiredMixin, UpdateView):
     model = ProjectMember
     fields = ['can_view', 'can_edit', 'can_delete']
     template_name = 'projects/project_update_member.html'
@@ -106,12 +108,14 @@ class ProjectUpdateMemberView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('projects:project-detail', kwargs={'pk': self.object.project.pk})
 
+@login_required
 def archive_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     project.archived = True
     project.save()
     return redirect('projects:project-list')
 
+@login_required
 def unarchive_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     project.archived = False

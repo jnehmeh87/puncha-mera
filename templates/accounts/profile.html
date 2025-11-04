@@ -9,12 +9,10 @@
     <div class="col-md-8">
         <h1>{{ user.username }}</h1>
         <p>{{ user.userprofile.bio }}</p>
-        <p><strong>Address:</strong> {{ user.userprofile.address }}</p>
         <p><strong>Country:</strong> {{ user.userprofile.country }}</p>
+        <p><strong>County/Region:</strong> {{ user.userprofile.county_region }}</p>
+        <p><strong>Address:</strong> {{ user.userprofile.address }}</p>
         <p><strong>Postal Code:</strong> {{ user.userprofile.postal_code }}</p>
-        <p><strong>Street Address:</strong> {{ user.userprofile.street_address }}</p>
-        <p><strong>House Number:</strong> {{ user.userprofile.house_number }}</p>
-        <p><strong>District:</strong> {{ user.userprofile.district }}</p>
         <button type="button" class="btn btn-primary edit-btn" data-url="{% url 'accounts:profile-edit' %}">Edit Profile</button>
     </div>
 </div>

@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import TimeEntry
@@ -5,7 +6,7 @@ from .forms import TimeEntryForm
 from accounts.mixins import OrganizationPermissionMixin
 from accounts.models import Membership
 
-class TimeEntryListView(ListView):
+class TimeEntryListView(LoginRequiredMixin, ListView):
     model = TimeEntry
     template_name = 'time_entries/time_entry_list.html'
     context_object_name = 'time_entries'
@@ -27,7 +28,7 @@ class TimeEntryListView(ListView):
         except Membership.DoesNotExist:
             return TimeEntry.objects.none()
 
-class TimeEntryDetailView(DetailView):
+class TimeEntryDetailView(LoginRequiredMixin, DetailView):
     model = TimeEntry
     template_name = 'time_entries/time_entry_detail.html'
 
@@ -48,7 +49,7 @@ class TimeEntryDetailView(DetailView):
         except Membership.DoesNotExist:
             return TimeEntry.objects.none()
 
-class TimeEntryCreateView(CreateView):
+class TimeEntryCreateView(LoginRequiredMixin, CreateView):
     model = TimeEntry
     form_class = TimeEntryForm
     template_name = 'time_entries/time_entry_form.html'
@@ -60,7 +61,7 @@ class TimeEntryCreateView(CreateView):
         form.instance.organization = membership.organization
         return super().form_valid(form)
 
-class TimeEntryUpdateView(UpdateView):
+class TimeEntryUpdateView(LoginRequiredMixin, UpdateView):
     model = TimeEntry
     form_class = TimeEntryForm
     template_name = 'time_entries/time_entry_form.html'
@@ -83,7 +84,7 @@ class TimeEntryUpdateView(UpdateView):
         except Membership.DoesNotExist:
             return TimeEntry.objects.none()
 
-class TimeEntryDeleteView(DeleteView):
+class TimeEntryDeleteView(LoginRequiredMixin, DeleteView):
     model = TimeEntry
     template_name = 'time_entries/time_entry_confirm_delete.html'
     success_url = reverse_lazy('time_entries:time_entry-list')

@@ -5,9 +5,10 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from allauth.account.views import SignupView
-from .forms import InvitationForm, OrganizationForm, UserProfileForm, SettingsForm
+from .forms import InvitationForm, OrganizationForm, UserProfileForm, SettingsForm, CustomUserForm
 from .models import Invitation, Organization, CustomUser, Membership, Contact, UserProfile, Settings
 from .mixins import OrganizationPermissionMixin, AdminOwnerRequiredMixin
+from django.http import JsonResponse
 
 class SendInvitationView(LoginRequiredMixin, AdminOwnerRequiredMixin, FormView):
     template_name = 'accounts/send_invitation.html'
@@ -155,7 +156,7 @@ class CancelInvitationView(LoginRequiredMixin, AdminOwnerRequiredMixin, DeleteVi
     def get_success_url(self):
         return reverse_lazy('accounts:invitation-list', kwargs={'organization_pk': self.object.organization.pk})
 
-class ContactListView(OrganizationPermissionMixin, ListView):
+class ContactListView(LoginRequiredMixin, OrganizationPermissionMixin, ListView):
     model = Contact
     template_name = 'accounts/contact_list.html'
 
@@ -257,3 +258,121 @@ class SettingsUpdatePopupView(LoginRequiredMixin, UpdateView):
 
     def get_object(self):
         return self.request.user.settings
+
+class ProfileCompletionWizardView(LoginRequiredMixin, TemplateView):
+    template_name = 'accounts/profile_completion_wizard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        user_profile, _ = UserProfile.objects.get_or_create(user=user)
+        settings, _ = Settings.objects.get_or_create(user=user)
+
+        profile_fields = [
+            'first_name', 'last_name',
+            'bio', 'profile_picture', 'address', 'country', 'county_region', 'postal_code'
+        ]
+        user_fields = ['first_name', 'last_name', 'email']
+        settings_fields = ['currency', 'timezone', 'language', 'color_theme']
+
+        total_fields = len(profile_fields) + len(settings_fields)
+        completed_fields = 0
+
+        for field in user_fields:
+            if hasattr(user, field) and getattr(user, field):
+                completed_fields += 1
+        
+        for field in profile_fields:
+            if field not in user_fields:
+                if hasattr(user_profile, field) and getattr(user_profile, field):
+                    completed_fields += 1
+        
+        for field in settings_fields:
+            if hasattr(settings, field) and getattr(settings, field):
+                completed_fields += 1
+
+        completion_percentage = (completed_fields / total_fields) * 100
+        context['completion_percentage'] = int(completion_percentage)
+        context['user_form'] = CustomUserForm(instance=user)
+        context['user_profile_form'] = UserProfileForm(instance=user_profile)
+        context['settings_form'] = SettingsForm(instance=settings)
+        context['total_fields'] = total_fields
+        return context
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        user_profile, _ = UserProfile.objects.get_or_create(user=user)
+        settings, _ = Settings.objects.get_or_create(user=user)
+
+        user_form = CustomUserForm(request.POST, instance=user)
+        user_profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        settings_form = SettingsForm(request.POST, instance=settings)
+
+        if user_form.is_valid() and user_profile_form.is_valid() and settings_form.is_valid():
+            user_form.save()
+            user_profile_form.save()
+            settings_form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('home:home')
+
+        context = self.get_context_data()
+        context['user_form'] = user_form
+        context['user_profile_form'] = user_profile_form
+        context['settings_form'] = settings_form
+        return self.render_to_response(context)
+
+class ProfileCompletionAjaxView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        user_profile, _ = UserProfile.objects.get_or_create(user=user)
+        settings, _ = Settings.objects.get_or_create(user=user)
+
+        form_data = request.POST
+        step = form_data.get('step')
+
+        if step == '1':
+            user_form = CustomUserForm(form_data, instance=user)
+            user_profile_form = UserProfileForm(form_data, instance=user_profile)
+            if user_form.is_valid() and user_profile_form.is_valid():
+                user_form.save()
+                user_profile_form.save()
+        elif step == '2':
+            user_profile_form = UserProfileForm(form_data, instance=user_profile)
+            if user_profile_form.is_valid():
+                user_profile_form.save()
+        elif step == '3':
+            settings_form = SettingsForm(form_data, instance=settings)
+            if settings_form.is_valid():
+                settings_form.save()
+
+        # Recalculate completion percentage
+        profile_fields = [
+            'first_name', 'last_name',
+            'bio', 'profile_picture', 'address', 'country', 'county_region', 'postal_code'
+        ]
+        user_fields = ['first_name', 'last_name', 'email']
+        settings_fields = ['currency', 'timezone', 'language', 'color_theme']
+
+        total_fields = len(profile_fields) + len(settings_fields)
+        completed_fields = 0
+
+        user.refresh_from_db()
+        user_profile.refresh_from_db()
+        settings.refresh_from_db()
+
+        for field in user_fields:
+            if hasattr(user, field) and getattr(user, field):
+                completed_fields += 1
+        
+        for field in profile_fields:
+            if field not in user_fields:
+                if hasattr(user_profile, field) and getattr(user_profile, field):
+                    completed_fields += 1
+        
+        for field in settings_fields:
+            if hasattr(settings, field) and getattr(settings, field):
+                completed_fields += 1
+        
+        completion_percentage = (completed_fields / total_fields) * 100
+
+        return JsonResponse({'completion_percentage': int(completion_percentage)})

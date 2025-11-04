@@ -45,9 +45,59 @@ $(document).ready(function(){
     $.get(url, function(data){
       var form = $(data).find("form");
       $("#edit-modal .modal-body").html(form);
+
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark') {
+          $('#edit-modal .modal-content').addClass('text-bg-dark');
+          $('#edit-modal .btn-close').addClass('btn-close-white');
+      }
+
       $("#edit-modal").modal("show");
+      initAutocomplete(); // Call initAutocomplete after the form is loaded
     });
   });
 });
+
+function initAutocomplete() {
+    const addressInput = document.getElementById('id_address');
+    if (addressInput) { // Check if the address field is present
+        addressInput.removeAttribute('disabled');
+        addressInput.removeAttribute('readonly');
+        const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+            types: ['address']
+        });
+
+        autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+
+            if (place.address_components) {
+                let country = '';
+                let county_region = '';
+                let postal_code = '';
+
+                for (const component of place.address_components) {
+                    const componentType = component.types[0];
+
+                    switch (componentType) {
+                        case 'postal_code':
+                            postal_code = component.long_name;
+                            break;
+                        case 'administrative_area_level_1':
+                            county_region = component.long_name;
+                            break;
+                        case 'country':
+                            country = component.long_name;
+                            break;
+                    }
+                }
+
+                document.getElementById('id_address').value = place.formatted_address;
+                document.getElementById('id_country').value = country;
+                document.getElementById('id_county_region').value = county_region;
+                document.getElementById('id_postal_code').value = postal_code;
+            }
+        });
+    }
+}
 </script>
 {% endblock %}
