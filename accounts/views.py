@@ -5,7 +5,8 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from allauth.account.views import SignupView
-from .forms import InvitationForm, OrganizationForm, UserProfileForm, SettingsForm, CustomUserForm
+from .forms import InvitationForm, OrganizationForm, UserProfileForm, SettingsForm, CustomUserForm, ContactForm
+from projects.forms import ProjectForm
 from .models import Invitation, Organization, CustomUser, Membership, Contact, UserProfile, Settings
 from .mixins import OrganizationPermissionMixin, AdminOwnerRequiredMixin
 from django.http import JsonResponse
@@ -376,3 +377,13 @@ class ProfileCompletionAjaxView(LoginRequiredMixin, View):
         completion_percentage = (completed_fields / total_fields) * 100
 
         return JsonResponse({'completion_percentage': int(completion_percentage)})
+
+class GettingStartedWizardView(LoginRequiredMixin, TemplateView):
+    template_name = 'accounts/getting_started_wizard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['organization_form'] = OrganizationForm()
+        context['contact_form'] = ContactForm()
+        context['project_form'] = ProjectForm()
+        return context

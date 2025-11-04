@@ -31,47 +31,13 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <h2 class="mb-4">Tutorial</h2>
-            <div class="accordion shadow-sm" id="tutorialAccordion">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Step 1: Create a Project
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#tutorialAccordion">
-                        <div class="accordion-body">
-                            Start by creating a new project. Go to the <a href="{% url 'projects:project-list' %}">Projects</a> page and click on the "New Project" button.
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Step 2: Start the Timer
-                        </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#tutorialAccordion">
-                        <div class="accordion-body">
-                            Once you have a project, you can start tracking your time. Go to the <a href="{% url 'time_stamp:timer' %}">Puncha Mera</a> page and click on the "Puncha In" button.
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingThree">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            Step 3: Create an Invoice
-                        </button>
-                    </h2>
-                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#tutorialAccordion">
-                        <div class="accordion-body">
-                            When you have completed your work, you can create an invoice. Go to the <a href="{% url 'invoices:invoice-list' %}">Invoices</a> page and create a new invoice.
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <button id="start-tutorial-btn" class="btn btn-primary">Start Tutorial</button>
         </div>
     </div>
 </div>
+
+{% include 'home/tutorial_popup.html' %}
+
 {% endblock %}
 
 {% block extra_js %}
@@ -79,4 +45,64 @@
     {% if completion_percentage < 100 %}
         {% include 'accounts/profile_completion_wizard.html' %}
     {% endif %}
+
+<script>
+$(document).ready(function() {
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    $('#start-tutorial-btn').click(function() {
+        $('#tutorialModal').modal('show');
+    });
+
+    $('#next-step').click(function() {
+        const currentFormId = '#step-' + currentStep + ' form';
+        const formData = $(currentFormId).serialize();
+        let url = '';
+
+        if (currentStep === 1) {
+            url = '{% url "home:create_organization_from_tutorial" %}';
+        } else if (currentStep === 2) {
+            url = '{% url "home:create_contact_from_tutorial" %}';
+        } else if (currentStep === 3) {
+            url = '{% url "home:create_project_from_tutorial" %}';
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: formData,
+            headers: {'X-CSRFToken': $('[name="csrfmiddlewaretoken"]').val()},
+            success: function(response) {
+                if (response.success) {
+                    if (currentStep < totalSteps) {
+                        const currentStepElement = $('#step-' + currentStep);
+                        const nextStepElement = $('#step-' + (currentStep + 1));
+
+                        currentStepElement.removeClass('active').addClass('prev');
+                        nextStepElement.addClass('active');
+
+                        currentStep++;
+
+                        if (currentStep === totalSteps) {
+                            $('#next-step').hide();
+                            $('#finish-tutorial').show();
+                        }
+                    }
+                } else {
+                    // Display errors
+                    alert('Error: ' + JSON.stringify(response.errors));
+                }
+            },
+            error: function(response) {
+                alert('An error occurred during form submission.');
+            }
+        });
+    });
+
+    $('#finish-tutorial').click(function() {
+        $('#tutorialModal').modal('hide');
+    });
+});
+</script>
 {% endblock %}

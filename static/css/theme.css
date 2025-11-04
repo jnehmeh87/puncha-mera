@@ -195,3 +195,80 @@ a:hover {
     background-color: var(--surface-color);
     color: var(--text-color);
 }
+
+/* Tutorial Popup Styles */
+.tutorial-steps-container {
+    overflow: hidden;
+    position: relative;
+    min-height: 300px;
+}
+
+.tutorial-step {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 100%;
+    padding: 20px;
+    transition: left 0.5s ease-in-out;
+}
+
+.tutorial-step.active {
+    left: 0;
+}
+
+.tutorial-step.prev {
+    left: -100%;
+}
+
+/* Explicit Modal Styling for Dark Theme (default) */
+.modal-content {
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.modal-title {
+    color: var(--text-color);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--primary-color);
+}
+
+.modal-body {
+    max-height: 70vh; /* Adjust as needed, 70% of viewport height */
+    overflow-y: auto;
+}
+
+/* Explicit Modal Styling for Light Theme */
+[data-theme="light"] .modal-content {
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+}
+
+[data-theme="light"] .modal-header {
+    border-bottom: 1px solid var(--primary-color);
+}
+
+[data-theme="light"] .modal-title {
+    color: var(--text-color);
+}
+
+[data-theme="light"] .modal-footer {
+    border-top: 1px solid var(--primary-color);
+}
+
+.btn-close {
+    filter: invert(var(--bs-btn-close-white-filter)); /* Reset default filter */
+    color: var(--primary-color);
+}
+
+[data-theme="light"] .btn-close {
+    filter: none;
+    color: var(--primary-color);
+}
