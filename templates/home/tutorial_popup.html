@@ -1,0 +1,44 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="tutorialModal" tabindex="-1" aria-labelledby="tutorialModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tutorialModalLabel">Welcome to Puncha Mera!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="tutorial-steps-container">
+                    <div class="tutorial-step active" id="step-1">
+                        <h3>Step 1: Create an Organization</h3>
+                        <p>Start by creating a new organization. This will be the entity that your projects and contacts are associated with.</p>
+                        <form id="organization-form">
+                            {% csrf_token %}
+                            {% crispy organization_form %}
+                        </form>
+                    </div>
+                    <div class="tutorial-step" id="step-2">
+                        <h3>Step 2: Create a Contact</h3>
+                        <p>Now, let's create a contact. Contacts are the people you'll be working with on your projects.</p>
+                        <form id="contact-form">
+                            {% csrf_token %}
+                            {% crispy contact_form %}
+                        </form>
+                    </div>
+                    <div class="tutorial-step" id="step-3">
+                        <h3>Step 3: Create a Project</h3>
+                        <p>Great! Now you can create your first project. Projects are the core of Puncha Mera, where you'll track your time and manage your work.</p>
+                        <form id="project-form">
+                            {% csrf_token %}
+                            {% crispy project_form %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="next-step">Next</button>
+                <button type="button" class="btn btn-success" id="finish-tutorial" style="display: none;">Finish</button>
+            </div>
+        </div>
+    </div>
+</div>
