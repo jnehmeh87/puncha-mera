@@ -17,7 +17,10 @@ from .views import (
     archive_contact,
     unarchive_contact,
     archive_organization,
-    unarchive_organization
+    unarchive_organization,
+    ProfileAndSettingsView,
+    ProfileUpdatePopupView,
+    SettingsUpdatePopupView
 )
 
 app_name = 'accounts'
@@ -41,4 +44,7 @@ urlpatterns = [
     path('organizations/<int:pk>/', OrganizationDetailView.as_view(), name='organization-detail'),
     path('organizations/<int:pk>/archive/', archive_organization, name='organization-archive'),
     path('organizations/<int:pk>/unarchive/', unarchive_organization, name='organization-unarchive'),
+    path('profile-and-settings/', ProfileAndSettingsView.as_view(), name='profile-and-settings'),
+    path('profile/edit/', ProfileUpdatePopupView.as_view(), name='profile-edit'),
+    path('settings/edit/', SettingsUpdatePopupView.as_view(), name='settings-edit'),
 ]

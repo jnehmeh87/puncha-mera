@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import FormView, View, ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.views.generic import FormView, View, ListView, CreateView, DetailView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from allauth.account.views import SignupView
-from .forms import InvitationForm, OrganizationForm
-from .models import Invitation, Organization, CustomUser, Membership, Contact
+from .forms import InvitationForm, OrganizationForm, UserProfileForm, SettingsForm
+from .models import Invitation, Organization, CustomUser, Membership, Contact, UserProfile, Settings
 from .mixins import OrganizationPermissionMixin, AdminOwnerRequiredMixin
 
 class SendInvitationView(LoginRequiredMixin, AdminOwnerRequiredMixin, FormView):
@@ -80,6 +80,8 @@ class CustomSignupView(SignupView):
                 organization = invitation.organization
                 role = invitation.role
                 Membership.objects.create(user=user, organization=organization, role=role)
+                UserProfile.objects.create(user=user)
+                Settings.objects.create(user=user)
                 invitation.delete()
                 del self.request.session['invitation_token']
             except Invitation.DoesNotExist:
@@ -88,6 +90,8 @@ class CustomSignupView(SignupView):
             user = self.user
             organization = Organization.objects.create(name=f"{user.username}'s Organization", created_by=user)
             Membership.objects.create(user=user, organization=organization, role='owner')
+            UserProfile.objects.create(user=user)
+            Settings.objects.create(user=user)
         return response
 
 class OrganizationListView(LoginRequiredMixin, ListView):
@@ -141,7 +145,7 @@ class ResendInvitationView(LoginRequiredMixin, AdminOwnerRequiredMixin, View):
             [invitation.email],
             fail_silently=False,
         )
-        messages.success(request, f'Invitation resent to {invitation.email}.')
+        messages.success(self.request, f'Invitation resent to {invitation.email}.')
         return redirect('accounts:invitation-list', organization_pk=invitation.organization.pk)
 
 class CancelInvitationView(LoginRequiredMixin, AdminOwnerRequiredMixin, DeleteView):
@@ -232,3 +236,24 @@ def unarchive_organization(request, pk):
     organization.archived = False
     organization.save()
     return redirect('accounts:organization-list')
+
+class ProfileAndSettingsView(LoginRequiredMixin, TemplateView):
+    template_name = 'accounts/profile_and_settings.html'
+
+class ProfileUpdatePopupView(LoginRequiredMixin, UpdateView):
+    model = UserProfile
+    form_class = UserProfileForm
+    template_name = 'accounts/profile_form.html'
+    success_url = reverse_lazy('accounts:profile-and-settings')
+
+    def get_object(self):
+        return self.request.user.userprofile
+
+class SettingsUpdatePopupView(LoginRequiredMixin, UpdateView):
+    model = Settings
+    form_class = SettingsForm
+    template_name = 'accounts/settings_form.html'
+    success_url = reverse_lazy('accounts:profile-and-settings')
+
+    def get_object(self):
+        return self.request.user.settings

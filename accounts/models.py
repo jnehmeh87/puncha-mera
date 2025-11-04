@@ -5,6 +5,30 @@ from django.db import models
 class CustomUser(AbstractUser):
     pass
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True)
+    country = models.CharField(max_length=100, blank=True)
+    postal_code = models.CharField(max_length=20, blank=True)
+    street_address = models.CharField(max_length=255, blank=True)
+    house_number = models.CharField(max_length=20, blank=True)
+    district = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+class Settings(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    currency = models.CharField(max_length=3, default='USD')
+    timezone = models.CharField(max_length=100, default='UTC')
+    language = models.CharField(max_length=10, default='en')
+    color_theme = models.CharField(max_length=20, default='blue')
+
+    def __str__(self):
+        return f"{self.user.username}'s Settings"
+
 class Organization(models.Model):
     name = models.CharField(max_length=100)
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="#profile" class="list-group-item list-group-item-action active" data-bs-toggle="tab">Profile</a>
+                <a href="#settings" class="list-group-item list-group-item-action" data-bs-toggle="tab">Settings</a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="profile">
+                    {% include 'accounts/profile.html' %}
+                </div>
+                <div class="tab-pane fade" id="settings">
+                    {% include 'accounts/settings.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="edit-modal" tabindex="-1" role="dialog" aria-labelledby="edit-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="edit-modal-label">Edit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function(){
+  $(".edit-btn").click(function(){
+    var url = $(this).data("url");
+    $.get(url, function(data){
+      var form = $(data).find("form");
+      $("#edit-modal .modal-body").html(form);
+      $("#edit-modal").modal("show");
+    });
+  });
+});
+</script>
+{% endblock %}

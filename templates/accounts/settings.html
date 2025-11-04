@@ -1,0 +1,6 @@
+<h1>Settings</h1>
+<p><strong>Currency:</strong> {{ user.settings.currency }}</p>
+<p><strong>Timezone:</strong> {{ user.settings.timezone }}</p>
+<p><strong>Language:</strong> {{ user.settings.language }}</p>
+<p><strong>Color Theme:</strong> {{ user.settings.color_theme }}</p>
+<button type="button" class="btn btn-primary edit-btn" data-url="{% url 'accounts:settings-edit' %}">Edit Settings</button>
