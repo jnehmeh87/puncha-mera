@@ -157,3 +157,8 @@ a:hover {
     background-color: var(--primary-color);
     color: var(--surface-color);
 }
+
+[data-theme="dark"] .bi-moon-fill,
+[data-theme="dark"] .bi-brightness-high-fill {
+    color: var(--text-color);
+}

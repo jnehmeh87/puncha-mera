@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="display-4">Welcome, {{ user.username }}!</h1>
+            <p class="lead">This is your dashboard. Here you can get a quick overview of your work and access all the features of Puncha Mera.</p>
+            <a href="{% url 'time_stamp:timer' %}" class="btn btn-primary btn-lg my-4">Puncha Mera</a>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4">Quick Actions</h2>
+            <div class="list-group shadow-sm">
+                <a href="{% url 'projects:project-list' %}" class="list-group-item list-group-item-action">Projects</a>
+                <a href="{% url 'invoices:invoice-list' %}" class="list-group-item list-group-item-action">Invoices</a>
+                <a href="{% url 'time_entries:time_entry-list' %}" class="list-group-item list-group-item-action">Time Entries</a>
+                <a href="{% url 'accounts:contact-list' %}" class="list-group-item list-group-item-action">Contacts</a>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4">Tutorial</h2>
+            <div class="accordion shadow-sm" id="tutorialAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Step 1: Create a Project
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#tutorialAccordion">
+                        <div class="accordion-body">
+                            Start by creating a new project. Go to the <a href="{% url 'projects:project-list' %}">Projects</a> page and click on the "New Project" button.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Step 2: Start the Timer
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#tutorialAccordion">
+                        <div class="accordion-body">
+                            Once you have a project, you can start tracking your time. Go to the <a href="{% url 'time_stamp:timer' %}">Puncha Mera</a> page and click on the "Puncha In" button.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Step 3: Create an Invoice
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#tutorialAccordion">
+                        <div class="accordion-body">
+                            When you have completed your work, you can create an invoice. Go to the <a href="{% url 'invoices:invoice-list' %}">Invoices</a> page and create a new invoice.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
