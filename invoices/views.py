@@ -3,7 +3,6 @@ from django.views.generic import DetailView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-# from weasyprint import HTML
 from .models import Invoice
 from accounts.mixins import OrganizationPermissionMixin
 from .utils import generate_epc_qr_code
@@ -31,10 +30,7 @@ class InvoicePDFView(LoginRequiredMixin, OrganizationPermissionMixin, DetailView
         return context
 
     def render_to_response(self, context, **response_kwargs):
-        # html_string = render_to_string(self.template_name, context)
-        # html = HTML(string=html_string)
-        # pdf = html.write_pdf()
-        # 
-        # response = HttpResponse(pdf, content_type='application/pdf')
-        # response['Content-Disposition'] = f'attachment; filename="invoice_{self.object.invoice_number}.pdf"'
-        return HttpResponse("PDF generation is temporarily disabled.")
+        html_string = render_to_string(self.template_name, context)
+        # For local development without C-dependencies, just return the HTML
+        # Users can use Cmd+P to "Print to PDF" from the browser.
+        return HttpResponse(html_string)

@@ -21,8 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # In Cloud Run, you can set an environment variable `ENV=production`
 IN_PRODUCTION = os.environ.get('ENV') == 'production'
 
+import secrets
+
 if IN_PRODUCTION:
-    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_urlsafe(50))
     DATABASE_URL = os.environ.get("DATABASE_URL")
     STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY")
     STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
@@ -35,6 +37,14 @@ if IN_PRODUCTION:
     allowed_hosts_str = os.environ.get("ALLOWED_HOSTS", "")
     ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',')] if allowed_hosts_str else []
     CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
+
+    # HTTPS & Security headers
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000 # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
     # Configure static files for production with WhiteNoise
     STATIC_ROOT = BASE_DIR / "staticfiles"
