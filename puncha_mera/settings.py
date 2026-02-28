@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 import dj_database_url
-from google.cloud import secretmanager
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,47 +21,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # In Cloud Run, you can set an environment variable `ENV=production`
 IN_PRODUCTION = os.environ.get('ENV') == 'production'
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# GCP Secret Manager settings
-# Make sure to set the GOOGLE_CLOUD_PROJECT environment variable.
-# Example: export GOOGLE_CLOUD_PROJECT=your-gcp-project-id
-#
-# You also need to install the following libraries:
-# pip install google-cloud-secret-manager dj-database-url whitenoise
 if IN_PRODUCTION:
-    try:
-        # Create the Secret Manager client.
-        client = secretmanager.SecretManagerServiceClient()
-        project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+    DATABASE_URL = os.environ.get("DATABASE_URL")
+    STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY")
+    STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
+    FRONTEND_URL = os.environ.get("FRONTEND_URL") # e.g., "https://your-domain.com"
 
-        def get_secret(secret_id, version_id="latest"):
-            name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-            response = client.access_secret_version(request={"name": name})
-            return response.payload.data.decode("UTF-8")
+    DATABASES = {'default': dj_database_url.config(default=DATABASE_URL)}
 
-        SECRET_KEY = get_secret("django-secret-key")
-        DATABASE_URL = get_secret("database-url")
-        STRIPE_API_KEY = get_secret("stripe-api-key")
-        STRIPE_WEBHOOK_SECRET = get_secret("stripe-webhook-secret")
-        FRONTEND_URL = get_secret("frontend-url") # e.g., "https://your-domain.com"
+    # Production security settings
+    DEBUG = False
+    allowed_hosts_str = os.environ.get("ALLOWED_HOSTS", "")
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',')] if allowed_hosts_str else []
+    CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
 
-        DATABASES = {'default': dj_database_url.config(default=DATABASE_URL)}
-
-        # Production security settings
-        DEBUG = False
-        allowed_hosts_str = get_secret("allowed-hosts")
-        ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',')]
-        CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS]
-
-        # Configure static files for production with WhiteNoise
-        STATIC_ROOT = BASE_DIR / "staticfiles"
-        STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-    except Exception as e:
-        # If secrets fail in production, we should raise an error and stop.
-        raise Exception(f"Could not load secrets in production: {e}") from e
+    # Configure static files for production with WhiteNoise
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 else:
     # Local development settings
     SECRET_KEY = 'django-insecure-bt)t--mal86+6@d%!@y(qt9erxolvw070q%%4c@&us#kejeg-!'
