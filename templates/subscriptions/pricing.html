@@ -1,67 +1,91 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-4">
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">Small Business</h2>
+<div class="row align-items-stretch">
+  <div class="col-md-4 mb-4">
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-header bg-transparent d-flex align-items-center" style="min-height: 85px;">
+        <h2 class="card-title h4 mb-0">Small Business</h2>
       </div>
-      <div class="card-body">
-        <p class="card-text">$10/month</p>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">1 User</li>
-          <li class="list-group-item">Timer</li>
-          <li class="list-group-item">Time Entries</li>
-          <li class="list-group-item">Reports</li>
-          <li class="list-group-item">Income and Tax Calculator</li>
-          <li class="list-group-item">Basic Analytics</li>
+      <div class="card-body d-flex flex-column p-4">
+        <div class="mb-4">
+          <h3 class="display-6 fw-bold mb-0">$10<span class="fs-5 text-muted fw-normal">/mo</span></h3>
+        </div>
+
+        <ul class="list-group list-group-flush mb-4 flex-grow-1">
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-person-check text-primary me-2"></i>1 User</li>
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-clock-history text-primary me-2"></i>Timer</li>
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-list-check text-primary me-2"></i>Time Entries</li>
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-graph-up text-primary me-2"></i>Reports</li>
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-calculator text-primary me-2"></i>Income and Tax Calculator</li>
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-pie-chart text-primary me-2"></i>Basic Analytics</li>
         </ul>
-        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST">
+        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST" class="mt-auto pt-3 border-top">
           {% csrf_token %}
           <input type="hidden" name="price_id" value="{{ small_business_price_id }}">
-          <button type="submit" class="btn btn-primary">Choose Plan</button>
+          <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">Choose Plan</button>
         </form>
       </div>
     </div>
   </div>
-  <div class="col-md-4">
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">Company (1-10 Members)</h2>
+  <div class="col-md-4 mb-4">
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-header bg-transparent d-flex align-items-center" style="min-height: 85px;">
+        <h2 class="card-title h4 mb-0">Company (1-10 Members)</h2>
       </div>
-      <div class="card-body">
-        <p class="card-text">$50/month</p>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Up to 10 Members</li>
-          <li class="list-group-item">All features from Small Business</li>
-          <li class="list-group-item">Translate Report</li>
-          <li class="list-group-item">Invoicing</li>
-          <li class="list-group-item">Advanced Analytics</li>
+      <div class="card-body d-flex flex-column p-4">
+        <div class="mb-4">
+          <h3 class="display-6 fw-bold mb-0">$50<span class="fs-5 text-muted fw-normal">/mo</span></h3>
+        </div>
+
+        <ul class="list-group list-group-flush mb-4 flex-grow-1">
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-people text-primary me-2"></i>Up to 10 Members</li>
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-check2-circle text-primary me-2"></i>All features from Small Business</li>
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-translate text-primary me-2"></i>Translate Report</li>
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-receipt text-primary me-2"></i>Invoicing</li>
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-bar-chart-steps text-primary me-2"></i>Advanced Analytics</li>
         </ul>
-        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST">
+
+        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST" class="mt-auto pt-3 border-top">
           {% csrf_token %}
           <input type="hidden" name="price_id" value="{{ company_10_price_id }}">
-          <button type="submit" class="btn btn-primary">Choose Plan</button>
+          <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">Choose Plan</button>
         </form>
       </div>
     </div>
   </div>
-  <div class="col-md-4">
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">Company (1-50 Members)</h2>
+  <div class="col-md-4 mb-4">
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-header bg-transparent d-flex align-items-center" style="min-height: 85px;">
+        <h2 class="card-title h4 mb-0">Company (1-50 Members)</h2>
       </div>
-      <div class="card-body">
-        <p class="card-text">$150/month</p>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Up to 50 Members</li>
-          <li class="list-group-item">All features from Company (1-10 Members)</li>
+      <div class="card-body d-flex flex-column p-4">
+        <div class="mb-4">
+          <h3 class="display-6 fw-bold mb-0">$150<span class="fs-5 text-muted fw-normal">/mo</span></h3>
+        </div>
+
+        <ul class="list-group list-group-flush mb-4 flex-grow-1">
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-building text-primary me-2"></i>Up to 50 Members</li>
+          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
+              class="bi bi-check2-all text-primary me-2"></i>All features from Company (1-10 Members)</li>
         </ul>
-        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST">
+
+        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST" class="mt-auto pt-3 border-top">
           {% csrf_token %}
           <input type="hidden" name="price_id" value="{{ company_50_price_id }}">
-          <button type="submit" class="btn btn-primary">Choose Plan</button>
+          <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">Choose Plan</button>
         </form>
       </div>
     </div>
@@ -69,10 +93,10 @@
 </div>
 
 <div class="row mt-4">
-    <div class="col-md-12 text-center">
-        <h2>Company (50+ Members)</h2>
-        <p>Contact us for a custom plan.</p>
-        <a href="#" class="btn btn-primary">Contact Us</a>
-    </div>
+  <div class="col-md-12 text-center">
+    <h2>Company (50+ Members)</h2>
+    <p>Contact us for a custom plan.</p>
+    <a href="#" class="btn btn-primary">Contact Us</a>
+  </div>
 </div>
 {% endblock %}
