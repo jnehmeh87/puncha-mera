@@ -1,32 +1,35 @@
 {% extends "account/base_entrance.html" %}
-{% load allauth i18n socialaccount %}
-{% block head_title %}
-    {% trans "Signup" %}
-{% endblock head_title %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}{% trans "Sign Up" %}{% endblock %}
+
 {% block content %}
-    {% element h1 %}
-        {% trans "Sign Up" %}
-    {% endelement %}
-    <p>
-        {% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}
-    </p>
-    {% url 'account_signup' as action_url %}
-    {% element form form=form method="post" action=action_url tags="entrance,signup" %}
-        {% slot body %}
-            {% csrf_token %}
-            {% element fields form=form unlabeled=True %}
-            {% endelement %}
-            {% if redirect_field_value %}
-                <input type="hidden"
-                       name="{{ redirect_field_name }}"
-                       value="{{ redirect_field_value }}" />
-            {% endif %}
-        {% endslot %}
-        {% slot actions %}
-            {% element button tags="prominent,signup" type="submit" %}
-                {% trans "Sign Up" %}
-            {% endelement %}
-        {% endslot %}
-    {% endelement %}
-    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-4 p-md-5">
+                <h1 class="h3 mb-4 text-center">{% trans "Sign Up" %}</h1>
+                <p class="text-center text-muted mb-4">
+                    {% url 'account_login' as login_url %}
+                    {% blocktrans with u=login_url %}Already have an account? Then please <a href="{{ u }}">sign
+                        in</a>.{% endblocktrans %}
+                </p>
+
+                {% url 'account_signup' as action_url %}
+                <form class="signup" method="POST" action="{{ action_url }}">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                    {% endif %}
+                    <div class="d-grid mt-4">
+                        <button class="btn btn-primary btn-lg" type="submit">{% trans "Sign Up" %}</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}
