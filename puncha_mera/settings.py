@@ -45,6 +45,7 @@ if IN_PRODUCTION:
     SECURE_HSTS_SECONDS = 31536000 # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
     # Configure static files for production with WhiteNoise
     STATIC_ROOT = BASE_DIR / "staticfiles"
