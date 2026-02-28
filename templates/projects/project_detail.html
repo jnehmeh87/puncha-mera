@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>{{ object.name }}</h1>
-  <p>{{ object.description }}</p>
+<h1>{{ object.name }}</h1>
+<p>{{ object.description }}</p>
 
-  <h2>Members</h2>
-  <ul>
-    {% for member in object.projectmember_set.all %}
-      <li>{{ member.user.username }}</li>
-    {% endfor %}
-  </ul>
+<h2>Members</h2>
+<ul>
+  {% for member in object.projectmember_set.all %}
+  <li>{{ member.user.username }}</li>
+  {% endfor %}
+</ul>
 
-  <a href="{% url 'projects:send-invitation' project_pk=object.pk %}" class="btn btn-primary">Invite User</a>
-  <a href="{% url 'projects:project-update' object.pk %}" class="btn btn-secondary">Edit</a>
-  <a href="{% url 'projects:project-delete' object.pk %}" class="btn btn-danger">Delete</a>
+<a href="{% url 'projects:project-add-member' project_pk=object.pk %}" class="btn btn-primary mb-3">Add Member</a>
+<a href="{% url 'projects:project-update' object.pk %}" class="btn btn-secondary">Edit</a>
+<a href="{% url 'projects:project-delete' object.pk %}" class="btn btn-danger">Delete</a>
 {% endblock %}
