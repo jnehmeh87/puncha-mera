@@ -74,9 +74,20 @@ COMMON_LANGUAGES = [
 ]
 
 class SettingsForm(forms.ModelForm):
+    COLOR_THEMES = [
+        ('blue', 'Classic Blue'),
+        ('green', 'Emerald Green'),
+        ('purple', 'Deep Purple'),
+        ('orange', 'Sunset Orange'),
+        ('pink', 'Hot Pink'),
+        ('red', 'Crimson Red'),
+        ('teal', 'Ocean Teal'),
+    ]
+    
     currency = forms.ChoiceField(choices=[(currency.alpha_3, currency.name) for currency in pycountry.currencies])
     language = forms.ChoiceField(choices=COMMON_LANGUAGES)
     timezone = forms.ChoiceField(choices=[(tz, tz) for tz in pytz.all_timezones])
+    color_theme = forms.ChoiceField(choices=COLOR_THEMES)
 
     class Meta:
         model = Settings

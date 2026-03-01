@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from .models import Project, ProjectMember
 from .mixins import ProjectMemberPermissionMixin
+from .forms import ProjectMemberForm
 from accounts.models import Membership, CustomUser
 
 class ProjectListView(LoginRequiredMixin, ListView):
@@ -70,7 +71,7 @@ class ProjectDeleteView(LoginRequiredMixin, ProjectMemberPermissionMixin, Delete
 
 class ProjectAddMemberView(LoginRequiredMixin, CreateView):
     model = ProjectMember
-    fields = ['user', 'can_view', 'can_edit', 'can_delete']
+    form_class = ProjectMemberForm
     template_name = 'projects/project_add_member.html'
 
     def get_success_url(self):
@@ -90,7 +91,7 @@ class ProjectAddMemberView(LoginRequiredMixin, CreateView):
 
 class ProjectUpdateMemberView(LoginRequiredMixin, UpdateView):
     model = ProjectMember
-    fields = ['can_view', 'can_edit', 'can_delete']
+    fields = ['hourly_rate', 'can_view', 'can_edit', 'can_delete']
     template_name = 'projects/project_update_member.html'
 
     def get_queryset(self):

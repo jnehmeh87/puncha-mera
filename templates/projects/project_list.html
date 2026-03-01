@@ -6,19 +6,25 @@
     table-layout: fixed;
     width: 100%;
   }
-  .table-fixed th, .table-fixed td {
+
+  .table-fixed th,
+  .table-fixed td {
     width: 33.33%;
   }
+
   .nav-tabs .nav-link.active {
     border-color: #00aaff;
   }
+
   .nav-tabs .nav-link:hover {
     border-color: #00aaff;
   }
+
   [data-theme="dark"] .nav-tabs .nav-link.active {
     background-color: #444;
     color: #fff;
   }
+
   [data-theme="dark"] .nav-tabs .nav-link:hover {
     background-color: #444;
     color: #fff;
@@ -29,10 +35,12 @@
   <div class="card-header">
     <ul class="nav nav-tabs card-header-tabs" id="projectTabs" role="tablist">
       <li class="nav-item">
-        <a class="nav-link active" id="active-tab" data-bs-toggle="tab" href="#active" role="tab" aria-controls="active" aria-selected="true">Active Projects</a>
+        <a class="nav-link active" id="active-tab" data-bs-toggle="tab" href="#active" role="tab" aria-controls="active"
+          aria-selected="true">Active Projects</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="archived-tab" data-bs-toggle="tab" href="#archived" role="tab" aria-controls="archived" aria-selected="false">Archived Projects</a>
+        <a class="nav-link" id="archived-tab" data-bs-toggle="tab" href="#archived" role="tab" aria-controls="archived"
+          aria-selected="false">Archived Projects</a>
       </li>
     </ul>
   </div>
@@ -50,20 +58,35 @@
           </thead>
           <tbody>
             {% for project in active_projects %}
-              <tr>
-                <td>{{ project.name }}</td>
-                <td>{{ project.contact }}</td>
-                <td>
-                  <a href="{% url 'projects:project-detail' project.pk %}" class="btn btn-sm btn-info">View</a>
-                  <a href="{% url 'projects:project-update' project.pk %}" class="btn btn-sm btn-secondary">Edit</a>
-                  <a href="{% url 'projects:project-archive' project.pk %}" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to archive this project?')">Archive</a>
-                  <a href="{% url 'projects:project-delete' project.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this project?')">Delete</a>
-                </td>
-              </tr>
+            <tr>
+              <td>{{ project.name }}</td>
+              <td>{{ project.contact }}</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <a href="{% url 'projects:project-detail' project.pk %}" class="btn btn-sm btn-outline-info"
+                    title="View">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  <a href="{% url 'projects:project-update' project.pk %}" class="btn btn-sm btn-outline-secondary"
+                    title="Edit">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <a href="{% url 'projects:project-archive' project.pk %}" class="btn btn-sm btn-outline-warning"
+                    title="Archive" onclick="return confirm('Are you sure you want to archive this project?')">
+                    <i class="bi bi-archive"></i>
+                  </a>
+                  <a href="{% url 'projects:project-delete' project.pk %}" class="btn btn-sm btn-outline-danger"
+                    title="Delete" onclick="return confirm('Are you sure you want to delete this project?')">
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
             {% empty %}
-              <tr>
-                <td colspan="3" class="text-center">No active projects. <a href="{% url 'projects:project-create' %}">Start a new project</a>.</td>
-              </tr>
+            <tr>
+              <td colspan="3" class="text-center">No active projects. <a
+                  href="{% url 'projects:project-create' %}">Start a new project</a>.</td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
@@ -79,20 +102,34 @@
           </thead>
           <tbody>
             {% for project in archived_projects %}
-              <tr>
-                <td>{{ project.name }}</td>
-                <td>{{ project.contact }}</td>
-                <td>
-                  <a href="{% url 'projects:project-detail' project.pk %}" class="btn btn-sm btn-info">View</a>
-                  <a href="{% url 'projects:project-update' project.pk %}" class="btn btn-sm btn-secondary">Edit</a>
-                  <a href="{% url 'projects:project-unarchive' project.pk %}" class="btn btn-sm btn-warning">Unarchive</a>
-                  <a href="{% url 'projects:project-delete' project.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this project?')">Delete</a>
-                </td>
-              </tr>
+            <tr>
+              <td>{{ project.name }}</td>
+              <td>{{ project.contact }}</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <a href="{% url 'projects:project-detail' project.pk %}" class="btn btn-sm btn-outline-info"
+                    title="View">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  <a href="{% url 'projects:project-update' project.pk %}" class="btn btn-sm btn-outline-secondary"
+                    title="Edit">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <a href="{% url 'projects:project-unarchive' project.pk %}" class="btn btn-sm btn-outline-warning"
+                    title="Unarchive">
+                    <i class="bi bi-box-arrow-up"></i>
+                  </a>
+                  <a href="{% url 'projects:project-delete' project.pk %}" class="btn btn-sm btn-outline-danger"
+                    title="Delete" onclick="return confirm('Are you sure you want to delete this project?')">
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
             {% empty %}
-              <tr>
-                <td colspan="3" class="text-center">No archived projects.</td>
-              </tr>
+            <tr>
+              <td colspan="3" class="text-center">No archived projects.</td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>

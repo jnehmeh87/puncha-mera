@@ -3,127 +3,138 @@
 
 {% block content %}
 <style>
-.modal-body {
+  .modal-body {
     max-height: 70vh;
     overflow-y: auto;
-}
+  }
 
-.thumbnail {
-  max-width: 200px;
-  max-height: 200px;
-  cursor: pointer;
-}
+  .thumbnail {
+    max-width: 200px;
+    max-height: 200px;
+    cursor: pointer;
+  }
 
-.lightbox {
-  display: none;
-  position: fixed;
-  z-index: 1060; /* Higher z-index */
-  padding-top: 100px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.9);
-}
+  .lightbox {
+    display: none;
+    position: fixed;
+    z-index: 1060;
+    /* Higher z-index */
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9);
+  }
 
-.lightbox-content {
-  display: block;
-  margin: auto;
-  border: 3px solid #007bff;
-}
+  .lightbox-content {
+    display: block;
+    margin: auto;
+    border: 3px solid #007bff;
+  }
 
-.close-lightbox {
-  position: absolute;
-  color: #007bff;
-  font-size: 40px;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.close-lightbox:hover,
-.close-lightbox:focus {
-  color: #bbb;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-[data-theme="dark"] .modal-content {
-    background-color: #343a40; /* Darker grey for dark mode */
-}
-
-.modal-content {
-    border: 1px solid #007bff;
-}
-
-.modal-header {
-    border-bottom: 1px solid #007bff;
-}
-
-[data-theme="dark"] .custom-close {
+  .close-lightbox {
+    position: absolute;
     color: #007bff;
-}
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
 
-.custom-close {
+  .close-lightbox:hover,
+  .close-lightbox:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  [data-theme="dark"] .modal-content {
+    background-color: #343a40;
+    /* Darker grey for dark mode */
+  }
+
+  .modal-content {
+    border: 1px solid #007bff;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid #007bff;
+  }
+
+  [data-theme="dark"] .custom-close {
+    color: #007bff;
+  }
+
+  .custom-close {
     background-color: transparent;
     border: none;
     font-size: 1.5rem;
     color: #007bff;
-}
+  }
 
-.modal-footer-custom {
+  .modal-footer-custom {
     border-top: 1px solid #007bff;
     padding: 0.5rem 0 0;
     margin: 1rem -1rem 0 -1rem;
-}
-
+  }
 </style>
-  <div class="card">
-    <div class="card-header">
-      <h1 class="card-title">Time Entries</h1>
-    </div>
-    <div class="card-body">
-      <a href="{% url 'time_entries:time_entry-create' %}" class="btn btn-primary mb-3">New Time Entry</a>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Project</th>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Pause Duration</th>
-            <th>Duration</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for entry in time_entries %}
-            <tr>
-              <td>{{ entry.project }}</td>
-              <td>{{ entry.title }}</td>
-              <td>{{ entry.date|date:"Y-m-d" }}</td>
-              <td>{{ entry.start_time|time:"h:i A" }}</td>
-              <td>{{ entry.end_time|time:"h:i A" }}</td>
-              <td>{{ entry.pause_duration|format_duration }}</td>
-              <td>{{ entry.duration|format_duration }}</td>
-              <td>
-                <button type="button" class="btn btn-sm btn-info view-details" data-url="{% url 'time_entries:time_entry-detail' entry.pk %}">
-                  View
-                </button>
-                {% if request.user.memberships.first.role == 'admin' or request.user.memberships.first.role == 'owner' %}
-                <a href="{% url 'time_entries:time_entry-update' entry.pk %}" class="btn btn-sm btn-secondary">Edit</a>
-                <a href="{% url 'time_entries:time_entry-delete' entry.pk %}" class="btn btn-sm btn-danger">Delete</a>
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+<div class="card">
+  <div class="card-header">
+    <h1 class="card-title">Time Entries</h1>
   </div>
+  <div class="card-body">
+    <a href="{% url 'time_entries:time_entry-create' %}" class="btn btn-primary mb-3">New Time Entry</a>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Title</th>
+          <th>Date</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Pause Duration</th>
+          <th>Duration</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in time_entries %}
+        <tr>
+          <td>{{ entry.project }}</td>
+          <td>{{ entry.title }}</td>
+          <td>{{ entry.date|date:"Y-m-d" }}</td>
+          <td>{{ entry.start_time|time:"h:i:s A" }}</td>
+          <td>{{ entry.end_time|time:"h:i:s A" }}</td>
+          <td>{{ entry.pause_duration|format_duration }}</td>
+          <td>{{ entry.duration|format_duration }}</td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-outline-info view-details" title="View"
+                data-url="{% url 'time_entries:time_entry-detail' entry.pk %}">
+                <i class="bi bi-eye"></i>
+              </button>
+              {% if request.user.memberships.first.role == 'admin' or request.user.memberships.first.role == 'owner' %}
+              <a href="{% url 'time_entries:time_entry-update' entry.pk %}" class="btn btn-sm btn-outline-secondary"
+                title="Edit">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a href="{% url 'time_entries:time_entry-delete' entry.pk %}" class="btn btn-sm btn-outline-danger"
+                title="Delete">
+                <i class="bi bi-trash"></i>
+              </a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 
-<div class="modal fade" id="entry-modal" tabindex="-1" role="dialog" aria-labelledby="entry-modal-label" aria-hidden="true">
+<div class="modal fade" id="entry-modal" tabindex="-1" role="dialog" aria-labelledby="entry-modal-label"
+  aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -140,77 +151,77 @@
 </div>
 
 <div id="myModal" class="lightbox">
-    <span class="close-lightbox">&times;</span>
-    <img class="lightbox-content" id="img01">
+  <span class="close-lightbox">&times;</span>
+  <img class="lightbox-content" id="img01">
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-$(document).ready(function(){
-  $(".view-details").click(function(){
-    var url = $(this).data("url");
-    $.get(url, function(data){
-      var cardBody = $(data).find(".card-body").html();
-      var cardFooter = $(data).find(".card-footer").html();
-      $("#entry-modal .modal-body").html(cardBody).append("<div class='modal-footer-custom text-center'>" + cardFooter + "</div>");
-      $("#entry-modal").modal("show");
-    });
-  });
-
-    $(document).on('click', '.close', function(){
-        $("#entry-modal").modal("hide");
+  $(document).ready(function () {
+    $(".view-details").click(function () {
+      var url = $(this).data("url");
+      $.get(url, function (data) {
+        var cardBody = $(data).find(".card-body").html();
+        var cardFooter = $(data).find(".card-footer").html();
+        $("#entry-modal .modal-body").html(cardBody).append("<div class='modal-footer-custom text-center'>" + cardFooter + "</div>");
+        $("#entry-modal").modal("show");
+      });
     });
 
-  $(document).on('click', '#myImg', function(){
-    var modal = document.getElementById('myModal');
-    var modalImg = document.getElementById("img01");
-    var closeBtn = document.getElementsByClassName("close-lightbox")[0];
-    
-    modal.style.display = "block";
-    modalImg.src = this.src;
+    $(document).on('click', '.close', function () {
+      $("#entry-modal").modal("hide");
+    });
 
-    modalImg.onload = function() {
+    $(document).on('click', '#myImg', function () {
+      var modal = document.getElementById('myModal');
+      var modalImg = document.getElementById("img01");
+      var closeBtn = document.getElementsByClassName("close-lightbox")[0];
+
+      modal.style.display = "block";
+      modalImg.src = this.src;
+
+      modalImg.onload = function () {
         var isVertical = modalImg.naturalHeight > modalImg.naturalWidth;
         var screenWidth = window.innerWidth;
         var screenHeight = window.innerHeight;
 
         if (isVertical) {
-            if (screenWidth < 768) {
-                modalImg.style.maxHeight = "95vh";
-                modalImg.style.maxWidth = "95vw";
-            } else {
-                modalImg.style.maxHeight = "80vh";
-                modalImg.style.maxWidth = "80vw";
-            }
+          if (screenWidth < 768) {
+            modalImg.style.maxHeight = "95vh";
+            modalImg.style.maxWidth = "95vw";
+          } else {
+            modalImg.style.maxHeight = "80vh";
+            modalImg.style.maxWidth = "80vw";
+          }
         } else {
-            if (screenWidth < 768) {
-                modalImg.style.maxWidth = "95vw";
-                modalImg.style.maxHeight = "95vh";
-            }
-            else {
-                modalImg.style.maxWidth = "80vw";
-                modalImg.style.maxHeight = "80vh";
-            }
+          if (screenWidth < 768) {
+            modalImg.style.maxWidth = "95vw";
+            modalImg.style.maxHeight = "95vh";
+          }
+          else {
+            modalImg.style.maxWidth = "80vw";
+            modalImg.style.maxHeight = "80vh";
+          }
         }
 
         var rect = modalImg.getBoundingClientRect();
         closeBtn.style.top = (rect.top - 50) + 'px';
         closeBtn.style.right = (window.innerWidth - rect.right - 40) + 'px';
-    }
-  });
+      }
+    });
 
-  $(document).on('click', '.lightbox', function(e) {
-    if (e.target !== this) return;
-    var modal = document.getElementById('myModal');
-    modal.style.display = "none";
-  });
+    $(document).on('click', '.lightbox', function (e) {
+      if (e.target !== this) return;
+      var modal = document.getElementById('myModal');
+      modal.style.display = "none";
+    });
 
-  $(document).on('click', '.close-lightbox', function(){
-    var modal = document.getElementById('myModal');
-    modal.style.display = "none";
+    $(document).on('click', '.close-lightbox', function () {
+      var modal = document.getElementById('myModal');
+      modal.style.display = "none";
+    });
   });
-});
 </script>
 {% endblock %}

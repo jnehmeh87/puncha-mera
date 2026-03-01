@@ -132,13 +132,13 @@
         clearInterval(timer);
         entryForm.style.display = 'block';
         pauseDurationInput.value = totalPausedTime / 1000; // Convert to seconds
-        
+
         const now = new Date();
         const then = new Date(now.getTime() - elapsedTime);
 
         const date = then.toISOString().slice(0, 10);
-        const startTimeStr = then.toTimeString().slice(0, 5);
-        const endTimeStr = now.toTimeString().slice(0, 5);
+        const startTimeStr = then.toTimeString().slice(0, 8);
+        const endTimeStr = now.toTimeString().slice(0, 8);
 
         document.getElementById('id_date').value = date;
         document.getElementById('id_start_time').value = startTimeStr;
@@ -152,16 +152,16 @@
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert('Time entry saved!');
-                // Refresh the page to show the new entry
-                location.reload();
-            } else {
-                alert('Error saving time entry: ' + JSON.stringify(data.errors));
-            }
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Time entry saved!');
+                    // Refresh the page to show the new entry
+                    location.reload();
+                } else {
+                    alert('Error saving time entry: ' + JSON.stringify(data.errors));
+                }
+            });
     });
 
 </script>

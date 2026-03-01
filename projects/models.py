@@ -11,6 +11,7 @@ class Project(models.Model):
     contact = models.ForeignKey('accounts.Contact', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    currency = models.CharField(max_length=3, default='USD')
     archived = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
     members = models.ManyToManyField(CustomUser, through='ProjectMember', related_name='projects')
@@ -27,6 +28,7 @@ class Project(models.Model):
 class ProjectMember(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     can_view = models.BooleanField(default=True)
     can_edit = models.BooleanField(default=False)
     can_delete = models.BooleanField(default=False)
