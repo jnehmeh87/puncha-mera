@@ -30,3 +30,20 @@ class TimeEntry(models.Model):
                 end_datetime += datetime.timedelta(days=1)
             return end_datetime - start_datetime
         return None
+
+    @property
+    def actual_duration(self):
+        dur = self.duration
+        if dur:
+            actual = dur - self.pause_duration
+            return max(actual, datetime.timedelta(0))
+        return datetime.timedelta(0)
+
+    @property
+    def earnings(self):
+        from decimal import Decimal
+        member = self.project.projectmember_set.filter(user=self.user).first()
+        if member and member.hourly_rate:
+            hours = Decimal(self.actual_duration.total_seconds() / 3600)
+            return round(member.hourly_rate * hours, 2)
+        return Decimal('0.00')
