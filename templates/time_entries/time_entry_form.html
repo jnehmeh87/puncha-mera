@@ -2,21 +2,24 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-  {% if object %}Edit Time Entry{% else %}New Time Entry{% endif %} - Puncha Mera
+{% if object %}Edit Time Entry{% else %}New Time Entry{% endif %} - Puncha Mera
 {% endblock %}
 
 {% block content %}
-  <div class="card">
-    <div class="card-header">
-      <h1 class="card-title">{% if object %}Edit Time Entry{% else %}New Time Entry{% endif %}</h1>
-    </div>
-    <div class="card-body">
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <button type="submit" class="btn btn-primary mt-3">Save</button>
-        <a href="{% url 'time_entries:time_entry-list' %}" class="btn btn-secondary mt-3" onclick="return confirm('Are you sure you want to cancel?');">Cancel</a>
-      </form>
-    </div>
+<div class="card">
+  <div class="card-header">
+    <h1 class="card-title">{% if object %}Edit Time Entry{% else %}New Time Entry{% endif %}</h1>
   </div>
+  <div class="card-body">
+    <form method="post"
+      action="{% if object %}{% url 'time_entries:time_entry-update' object.pk %}{% else %}{% url 'time_entries:time_entry-create' %}{% endif %}"
+      enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <button type="submit" class="btn btn-primary mt-3">Save</button>
+      <button type="button" class="btn btn-secondary mt-3 d-none d-md-inline-block d-lg-inline-block close-modal-btn"
+        data-bs-dismiss="modal">Cancel</button>
+    </form>
+  </div>
+</div>
 {% endblock %}

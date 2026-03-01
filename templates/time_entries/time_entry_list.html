@@ -66,7 +66,7 @@
   <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-opacity-10">
     <h1 class="h2 fw-bolder mb-0 bg-gradient-text">{% trans "Time Entries" %}</h1>
     <div class="d-flex gap-2">
-      <a href="{% url 'time_entries:time_entry-create' %}" class="btn btn-primary btn-premium">
+      <a href="{% url 'time_entries:time_entry-create' %}" class="btn btn-primary btn-premium open-form-modal">
         <i class="bi bi-plus-circle me-1"></i> {% trans "New Time Entry" %}
       </a>
     </div>
@@ -137,7 +137,7 @@
                     {% with role=request.user.memberships.first.role %}
                     {% if role == 'admin' or role == 'owner' %}
                     <a href="{% url 'time_entries:time_entry-update' entry.pk %}"
-                      class="btn btn-sm btn-outline-secondary" title="Edit">
+                      class="btn btn-sm btn-outline-secondary open-form-modal" title="Edit">
                       <i class="bi bi-pencil"></i>
                     </a>
                     <a href="{% url 'time_entries:time_entry-delete' entry.pk %}" class="btn btn-sm btn-outline-danger"
@@ -155,7 +155,7 @@
                 <i class="bi bi-person me-1"></i> {{ entry.user.username }}
               </h6>
 
-              <div class="d-flex gap-3 mt-3">
+              <div class="d-flex gap-5 mt-3">
                 <div>
                   <small class="text-muted d-block">{% trans "Time" %}</small>
                   <span class="fw-semibold">
@@ -251,7 +251,7 @@
                     {% with role=request.user.memberships.first.role %}
                     {% if role == 'admin' or role == 'owner' %}
                     <a href="{% url 'time_entries:time_entry-update' entry.pk %}"
-                      class="btn btn-sm btn-outline-secondary" title="Edit">
+                      class="btn btn-sm btn-outline-secondary open-form-modal" title="Edit">
                       <i class="bi bi-pencil"></i>
                     </a>
                     <a href="{% url 'time_entries:time_entry-delete' entry.pk %}" class="btn btn-sm btn-outline-danger"
@@ -310,6 +310,49 @@
         var cardFooter = $(data).find(".card-footer").html();
         $("#entry-modal .modal-body").html(cardBody).append("<div class='modal-footer-custom text-center'>" + cardFooter + "</div>");
         $("#entry-modal").modal("show");
+      });
+    });
+
+    $(document).on('click', '.open-form-modal', function (e) {
+      e.preventDefault();
+      var url = $(this).attr('href') || $(this).data("url");
+
+      $.get(url, function (data) {
+        var cardBody = $(data).find(".card-body").html();
+
+        $("#entry-modal .modal-body").html(cardBody);
+        $("#entry-modal .modal-body .modal-footer-custom").remove();
+        $("#entry-modal").modal("show");
+      });
+    });
+
+    $(document).on("submit", "#entry-modal form", function (e) {
+      e.preventDefault();
+      var form = $(this);
+      var url = form.attr('action');
+      var formData = new FormData(this);
+
+      form.find('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+
+      $.ajax({
+        url: url,
+        type: 'POST',
+        data: formData,
+        success: function (data) {
+          if ($(data).find("form").length > 0) {
+            var formHtml = $(data).find(".card-body").html();
+            $("#entry-modal .modal-body").html(formHtml);
+          } else {
+            window.location.reload();
+          }
+        },
+        error: function () {
+          alert('An error occurred. Please try again.');
+          form.find('button[type="submit"]').prop('disabled', false).text('Save');
+        },
+        cache: false,
+        contentType: false,
+        processData: false
       });
     });
 

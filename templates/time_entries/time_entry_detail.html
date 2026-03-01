@@ -181,7 +181,7 @@
   <div class="card-footer d-flex gap-2 justify-content-center border-0 pt-0">
     {% if request.user.memberships.first.role == 'admin' or request.user.memberships.first.role == 'owner' %}
     <a href="{% url 'time_entries:time_entry-update' object.pk %}"
-      class="btn btn-outline-secondary btn-premium px-4">Edit</a>
+      class="btn btn-outline-secondary btn-premium px-4 open-form-modal">Edit</a>
     <a href="{% url 'time_entries:time_entry-delete' object.pk %}" class="btn btn-danger btn-premium px-4">Delete</a>
     {% endif %}
   </div>
