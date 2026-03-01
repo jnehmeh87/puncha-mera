@@ -7,7 +7,8 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <h1 class="display-4">Welcome, {{ user.username }}!</h1>
-            <p class="lead">This is your dashboard. Here you can get a quick overview of your work and access all the features of Puncha Mera.</p>
+            <p class="lead">This is your dashboard. Here you can get a quick overview of your work and access all the
+                features of Puncha Mera.</p>
             <a href="{% url 'time_stamp:timer' %}" class="btn btn-primary btn-lg my-4">Puncha Mera</a>
         </div>
     </div>
@@ -20,7 +21,8 @@
             <div class="list-group shadow-sm">
                 <a href="{% url 'projects:project-list' %}" class="list-group-item list-group-item-action">Projects</a>
                 <a href="{% url 'invoices:invoice-list' %}" class="list-group-item list-group-item-action">Invoices</a>
-                <a href="{% url 'time_entries:time_entry-list' %}" class="list-group-item list-group-item-action">Time Entries</a>
+                <a href="{% url 'time_entries:time_entry-list' %}" class="list-group-item list-group-item-action">Time
+                    Entries</a>
                 <a href="{% url 'accounts:contact-list' %}" class="list-group-item list-group-item-action">Contacts</a>
             </div>
         </div>
@@ -41,68 +43,42 @@
 {% endblock %}
 
 {% block extra_js %}
-    {% get_profile_completion_percentage as completion_percentage %}
-    {% if completion_percentage < 100 %}
-        {% include 'accounts/profile_completion_wizard.html' %}
-    {% endif %}
-
-<script>
-$(document).ready(function() {
+{% get_profile_completion_percentage as completion_percentage %}
+{% if completion_percentage < 100 %} {% include 'accounts/profile_completion_wizard.html' %} {% endif %} <script>
+    $(document).ready(function() {
     let currentStep = 1;
     const totalSteps = 3;
 
     $('#start-tutorial-btn').click(function() {
-        $('#tutorialModal').modal('show');
+    $('#tutorialModal').modal('show');
     });
 
     $('#next-step').click(function() {
-        const currentFormId = '#step-' + currentStep + ' form';
-        const formData = $(currentFormId).serialize();
-        let url = '';
+    const currentFormId = '#step-' + currentStep + ' form';
+    const formData = $(currentFormId).serialize();
+    let url = '';
 
-        if (currentStep === 1) {
-            url = '{% url "home:create_organization_from_tutorial" %}';
-        } else if (currentStep === 2) {
-            url = '{% url "home:create_contact_from_tutorial" %}';
-        } else if (currentStep === 3) {
-            url = '{% url "home:create_project_from_tutorial" %}';
-        }
+    if (currentStep === 1) {
+    url = '{% url "home:create_organization_from_tutorial" %}';
+    } else if (currentStep === 2) {
+    url = '{% url "home:create_contact_from_tutorial" %}';
+    } else if (currentStep === 3) {
+    url = '{% url "home:create_project_from_tutorial" %}';
+    }
 
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: formData,
-            headers: {'X-CSRFToken': $('[name="csrfmiddlewaretoken"]').val()},
-            success: function(response) {
-                if (response.success) {
-                    if (currentStep < totalSteps) {
-                        const currentStepElement = $('#step-' + currentStep);
-                        const nextStepElement = $('#step-' + (currentStep + 1));
-
-                        currentStepElement.removeClass('active').addClass('prev');
-                        nextStepElement.addClass('active');
-
-                        currentStep++;
-
-                        if (currentStep === totalSteps) {
-                            $('#next-step').hide();
-                            $('#finish-tutorial').show();
-                        }
-                    }
-                } else {
-                    // Display errors
-                    alert('Error: ' + JSON.stringify(response.errors));
-                }
-            },
-            error: function(response) {
-                alert('An error occurred during form submission.');
-            }
-        });
-    });
-
-    $('#finish-tutorial').click(function() {
-        $('#tutorialModal').modal('hide');
-    });
-});
-</script>
-{% endblock %}
+    $.ajax({
+    type: 'POST',
+    url: url,
+    data: formData,
+    headers: {'X-CSRFToken': $('[name="csrfmiddlewaretoken"]').val()},
+    success: function(response) {
+    if (response.success) {
+    if (currentStep < totalSteps) { const currentStepElement=$('#step-' + currentStep); const nextStepElement=$('#step-'
+        + (currentStep + 1)); currentStepElement.removeClass('active').addClass('prev');
+        nextStepElement.addClass('active'); currentStep++; if (currentStep===totalSteps) { $('#next-step').hide();
+        $('#finish-tutorial').show(); } } else { // This else block is for when currentStep===totalSteps
+        location.reload(); // Reload after the last step is successfully submitted } } else { // Display errors
+        showToast('Error: ' + JSON.stringify(response.errors), ' danger'); } }, error: function(response) {
+        showToast('An error occurred during form submission.', 'danger' ); } }); });
+        $('#finish-tutorial').click(function() { $('#tutorialModal').modal('hide'); }); }); </script>
+        {% endblock %}

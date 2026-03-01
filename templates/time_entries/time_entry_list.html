@@ -347,7 +347,7 @@
           }
         },
         error: function () {
-          alert('An error occurred. Please try again.');
+          showToast('An error occurred. Please try again.', 'danger');
           form.find('button[type="submit"]').prop('disabled', false).text('Save');
         },
         cache: false,

@@ -155,11 +155,12 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    alert('Time entry saved!');
-                    // Refresh the page to show the new entry
-                    location.reload();
+                    showToast('Time entry saved!', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 } else {
-                    alert('Error saving time entry: ' + JSON.stringify(data.errors));
+                    showToast('Error saving time entry', 'danger');
                 }
             });
     });
