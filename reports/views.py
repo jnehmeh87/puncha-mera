@@ -15,6 +15,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 
 from time_entries.models import TimeEntry
+from time_entries.templatetags.time_filters import format_duration
 from .forms import ReportFilterForm
 
 class ReportBaseView(LoginRequiredMixin, View):
@@ -42,6 +43,10 @@ class ReportBaseView(LoginRequiredMixin, View):
             project = form.cleaned_data.get('project')
             if project:
                 queryset = queryset.filter(project=project)
+                
+            member = form.cleaned_data.get('member')
+            if member:
+                queryset = queryset.filter(user=member)
                 
             start_date = form.cleaned_data.get('start_date')
             if start_date:
@@ -95,7 +100,7 @@ class ExportExcelView(ReportBaseView):
         ws = wb.active
         ws.title = "Time Entries Report"
         
-        headers = ['Date', 'Project', 'User', 'Title', 'Duration', 'Est. Revenue', 'Currency', 'Description', 'Notes']
+        headers = ['Date', 'Project', 'User', 'Title', 'Pause', 'Duration', 'Est. Revenue', 'Currency', 'Description', 'Notes']
         ws.append(headers)
         
         for entry in queryset:
@@ -104,7 +109,8 @@ class ExportExcelView(ReportBaseView):
                 entry.project.name,
                 entry.user.username,
                 entry.title,
-                str(entry.actual_duration),
+                format_duration(entry.pause_duration),
+                format_duration(entry.actual_duration),
                 float(entry.earnings),
                 entry.project.currency,
                 entry.description,
@@ -129,7 +135,7 @@ class ExportPdfView(ReportBaseView):
         
         elements.append(Paragraph("Time Entries Report", styles['Title']))
         
-        data = [['Date', 'Project', 'User', 'Title', 'Duration', 'Revenue']]
+        data = [['Date', 'Project', 'User', 'Title', 'Pause', 'Duration', 'Revenue']]
         for entry in queryset:
             revenue_str = f"{entry.earnings} {entry.project.currency}"
             data.append([
@@ -137,11 +143,12 @@ class ExportPdfView(ReportBaseView):
                 entry.project.name[:15] + "..." if len(entry.project.name) > 15 else entry.project.name,
                 entry.user.username,
                 entry.title[:20] + "..." if len(entry.title) > 20 else entry.title,
-                str(entry.actual_duration),
+                format_duration(entry.pause_duration),
+                format_duration(entry.actual_duration),
                 revenue_str
             ])
             
-        table = Table(data, colWidths=[70, 100, 80, 140, 70, 80])
+        table = Table(data, colWidths=[65, 95, 75, 120, 50, 60, 75])
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),

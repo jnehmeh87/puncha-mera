@@ -47,3 +47,12 @@ class TimeEntry(models.Model):
             hours = Decimal(self.actual_duration.total_seconds() / 3600)
             return round(member.hourly_rate * hours, 2)
         return Decimal('0.00')
+
+    @property
+    def earnings(self):
+        from decimal import Decimal
+        member = self.project.projectmember_set.filter(user=self.user).first()
+        if member and member.hourly_rate:
+            hours = Decimal(self.actual_duration.total_seconds() / 3600)
+            return round(member.hourly_rate * hours, 2)
+        return Decimal('0.00')

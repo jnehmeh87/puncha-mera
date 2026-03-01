@@ -1,6 +1,6 @@
 from django import forms
 from projects.models import Project
-from accounts.models import Contact, Organization
+from accounts.models import Contact, Organization, CustomUser
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit
 
@@ -23,6 +23,12 @@ class ReportFilterForm(forms.Form):
         empty_label="All Projects",
         widget=forms.Select(attrs={'class': 'form-select'})
     )
+    member = forms.ModelChoiceField(
+        queryset=CustomUser.objects.none(),
+        required=False,
+        empty_label="All Members",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
     start_date = forms.DateField(
         required=False, 
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
@@ -40,14 +46,14 @@ class ReportFilterForm(forms.Form):
         self.helper.form_method = 'GET'
         self.helper.layout = Layout(
             Row(
-                Column('organization', css_class='form-group col-md-4 mb-3'),
-                Column('client', css_class='form-group col-md-4 mb-3'),
-                Column('project', css_class='form-group col-md-4 mb-3'),
+                Column('organization', css_class='form-group col-md-3 mb-3'),
+                Column('client', css_class='form-group col-md-3 mb-3'),
+                Column('project', css_class='form-group col-md-3 mb-3'),
+                Column('member', css_class='form-group col-md-3 mb-3'),
             ),
             Row(
-                Column('start_date', css_class='form-group col-md-4 mb-3'),
-                Column('end_date', css_class='form-group col-md-4 mb-3'),
-                Column(Submit('submit', 'Filter', css_class='btn btn-primary w-100 mt-4'), css_class='form-group col-md-4 mb-3 d-flex align-items-end'),
+                Column('start_date', css_class='form-group col-md-6 mb-0'),
+                Column('end_date', css_class='form-group col-md-6 mb-0'),
             )
         )
 
@@ -60,3 +66,7 @@ class ReportFilterForm(forms.Form):
             if organizations.exists():
                 self.fields['client'].queryset = Contact.objects.filter(organization__in=organizations)
                 self.fields['project'].queryset = Project.objects.filter(organization__in=organizations)
+                
+                # Fetch members belonging to these organizations
+                from accounts.models import CustomUser
+                self.fields['member'].queryset = CustomUser.objects.filter(memberships__organization__in=organizations).distinct()

@@ -15,9 +15,12 @@ def format_duration(duration):
     parts = []
     if hours > 0:
         parts.append(f'{hours}h')
-    if minutes > 0:
         parts.append(f'{minutes}m')
-    if seconds > 0 or not parts:
+        parts.append(f'{seconds}s')
+    elif minutes > 0:
+        parts.append(f'{minutes}m')
+        parts.append(f'{seconds}s')
+    else:
         parts.append(f'{seconds}s')
 
-    return "".join(parts)
+    return " ".join(parts)

@@ -1,51 +1,79 @@
 {% extends 'base.html' %}
-{% load i18n crispy_forms_tags %}
+{% load i18n crispy_forms_tags time_filters %}
 
 {% block content %}
 <div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 fw-bold mb-0">{% trans "Advanced Reports" %}</h1>
-        <div>
-            <button class="btn btn-outline-secondary me-2" onclick="window.print()">
-                <i class="bi bi-printer"></i> {% trans "Print" %}
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-opacity-10">
+        <h1 class="h2 fw-bolder mb-0 bg-gradient-text">{% trans "Advanced Reports" %}</h1>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-premium" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i> {% trans "Print" %}
             </button>
-            <a href="#" class="btn btn-outline-success me-2" id="exportExcelBtn">
-                <i class="bi bi-file-earmark-excel"></i> {% trans "Excel" %}
+            <a href="#" class="btn btn-outline-success btn-premium" id="exportExcelBtn">
+                <i class="bi bi-file-earmark-excel me-1"></i> {% trans "Excel" %}
             </a>
-            <a href="#" class="btn btn-outline-danger" id="exportPdfBtn">
-                <i class="bi bi-file-earmark-pdf"></i> {% trans "PDF" %}
+            <a href="#" class="btn btn-outline-danger btn-premium" id="exportPdfBtn">
+                <i class="bi bi-file-earmark-pdf me-1"></i> {% trans "PDF" %}
             </a>
         </div>
     </div>
 
     <!-- Summary Statistics -->
-    <div class="row mb-4">
+    <div class="row mb-5 g-4">
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 h-100 bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title fw-normal">{% trans "Total Time Logged" %}</h5>
-                    <h2 class="fw-bold mb-0">{{ total_hours_formatted }}</h2>
+            <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+                <div class="card-body p-4 position-relative z-1">
+                    <h5 class="card-title fw-medium text-white-50 mb-3">{% trans "Total Time Logged" %}</h5>
+                    <h2 class="display-6 fw-bold mb-0 text-white">{{ total_hours_formatted }}</h2>
+                    <i class="bi bi-clock-history card-icon-bg"></i>
                 </div>
             </div>
         </div>
+        {% if not revenue_by_currency %}
+        <div class="col-md-3">
+            <div class="card shadow border-0 h-100 dashboard-card gradient-success">
+                <div class="card-body p-4 position-relative z-1">
+                    <h5 class="card-title fw-medium text-white-50 mb-3">{% trans "Total Revenue" %}</h5>
+                    <h2 class="display-6 fw-bold mb-0 text-white">0.00</h2>
+                    <i class="bi bi-cash-stack card-icon-bg"></i>
+                </div>
+            </div>
+        </div>
+        {% else %}
         {% for curr, amt in revenue_by_currency.items %}
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 h-100 bg-success text-white">
-                <div class="card-body">
-                    <h5 class="card-title fw-normal">{% trans "Total Revenue" %} ({{ curr }})</h5>
-                    <h2 class="fw-bold mb-0">{{ amt }}</h2>
+            <div class="card shadow border-0 h-100 dashboard-card gradient-success">
+                <div class="card-body p-4 position-relative z-1">
+                    <h5 class="card-title fw-medium text-white-50 mb-3">{% trans "Total Revenue" %} ({{ curr }})</h5>
+                    <h2 class="display-6 fw-bold mb-0 text-white">{{ amt }}</h2>
+                    <i class="bi bi-cash-stack card-icon-bg"></i>
                 </div>
             </div>
         </div>
         {% endfor %}
+        {% endif %}
     </div>
 
-    <!-- Filters -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <form method="get" class="mb-0" id="filterForm">
-                {% crispy form %}
-            </form>
+    <!-- Collapsible Filter Section -->
+    <div class="mb-5">
+        <div class="filter-trigger d-inline-flex align-items-center mb-3" data-bs-toggle="collapse"
+            href="#filterCollapse" role="button" aria-expanded="{% if request.GET %}true{% else %}false{% endif %}"
+            aria-controls="filterCollapse"
+            onclick="document.getElementById('filterArrow').classList.toggle('rotate-180')">
+            <i class="bi bi-funnel me-2 fs-5"></i>
+            <h2 class="h5 fw-bold mb-0 me-3">{% trans "Filter Results" %}</h2>
+            <i id="filterArrow" class="bi bi-chevron-down {% if request.GET %}rotate-180{% endif %}"
+                style="transition: transform 0.3s ease;"></i>
+        </div>
+
+        <div class="collapse {% if request.GET %}show{% endif %}" id="filterCollapse">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <form method="get" class="mb-0" id="filterForm">
+                        {% crispy form %}
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -55,13 +83,17 @@
         <div class="btn-group" role="group" aria-label="View Toggle">
             <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked
                 onclick="toggleView('card')">
-            <label class="btn btn-outline-primary" for="btnradio1"><i class="bi bi-grid"></i> {% trans "Card View"
-                %}</label>
+            <label class="btn btn-outline-primary" for="btnradio1">
+                <i class="bi bi-grid"></i>
+                {% trans "Card View" %}
+            </label>
 
             <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"
                 onclick="toggleView('table')">
-            <label class="btn btn-outline-primary" for="btnradio2"><i class="bi bi-list"></i> {% trans "Table View"
-                %}</label>
+            <label class="btn btn-outline-primary" for="btnradio2">
+                <i class="bi bi-list"></i>
+                {% trans "Table View" %}
+            </label>
         </div>
     </div>
 
@@ -71,8 +103,7 @@
         <div class="col-12 mb-3">
             <div class="card shadow-sm border-0">
                 <div class="row g-0">
-                    <div
-                        class="col-md-{% if entry.description or entry.notes or entry.image %}6{% else %}12{% endif %}">
+                    <div class="col-md-{% if entry.image %}9{% else %}12{% endif %}">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <h5 class="card-title fw-bold mb-0">{{ entry.title }}</h5>
@@ -87,39 +118,55 @@
                             <div class="d-flex gap-3 mt-3">
                                 <div>
                                     <small class="text-muted d-block">{% trans "Time" %}</small>
-                                    <span class="fw-semibold">{{ entry.start_time|time:"H:i"|default:"-" }} - {{
-                                        entry.end_time|time:"H:i"|default:"-" }}</span>
+                                    <span class="fw-semibold">
+                                        <span>{{ entry.start_time|time:"H:i"|default:"-" }}</span>
+                                        <span>-</span>
+                                        <span>{{ entry.end_time|time:"H:i"|default:"-" }}</span>
+                                    </span>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">{% trans "Pause" %}</small>
+                                    <span class="fw-semibold">
+                                        {{ entry.pause_duration|format_duration }}
+                                    </span>
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">{% trans "Duration" %}</small>
-                                    <span class="fw-semibold">{{ entry.actual_duration }}</span>
+                                    <span class="fw-semibold">
+                                        {{ entry.actual_duration|format_duration }}
+                                    </span>
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">{% trans "Est. Revenue" %}</small>
-                                    <span class="fw-semibold text-success">{{ entry.earnings }} {{
-                                        entry.project.currency }}</span>
+                                    <span class="fw-semibold text-success">
+                                        {{ entry.earnings }} {{ entry.project.currency }}
+                                    </span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    {% if entry.description or entry.notes or entry.image %}
-                    <div class="col-md-6 border-start">
-                        <div class="card-body p-4 bg-light h-100 rounded-end">
-                            <h6 class="fw-bold mb-3 border-bottom pb-2">{% trans "Additional Details" %}</h6>
-                            {% if entry.description %}
-                            <p class="mb-2"><strong class="text-muted">{% trans "Description:" %}</strong> {{
-                                entry.description }}</p>
-                            {% endif %}
-                            {% if entry.notes %}
-                            <p class="mb-2"><strong class="text-muted">{% trans "Notes:" %}</strong> {{ entry.notes }}
-                            </p>
-                            {% endif %}
-                            {% if entry.image %}
-                            <div class="mt-3">
-                                <img src="{{ entry.image.url }}" alt="Attachment" class="img-fluid rounded shadow-sm"
-                                    style="max-height: 150px;">
+
+                            {% if entry.description or entry.notes %}
+                            <div class="mt-4 pt-3 border-top">
+                                {% if entry.description %}
+                                <p class="mb-2"><strong class="text-muted">{% trans "Description:" %}</strong>
+                                    {{ entry.description }}
+                                </p>
+                                {% endif %}
+                                {% if entry.notes %}
+                                <p class="mb-0"><strong class="text-muted">{% trans "Notes:" %}</strong>
+                                    {{ entry.notes }}
+                                </p>
+                                {% endif %}
                             </div>
                             {% endif %}
+                        </div>
+                    </div>
+                    {% if entry.image %}
+                    <div class="col-md-3 border-start d-flex align-items-center justify-content-center rounded-end">
+                        <div class="p-3 text-center w-100">
+                            <a href="{{ entry.image.url }}" target="_blank">
+                                <img src="{{ entry.image.url }}" alt="Attachment" class="img-fluid rounded shadow-sm"
+                                    style="max-height: 200px; object-fit: contain;">
+                            </a>
                         </div>
                     </div>
                     {% endif %}
@@ -147,6 +194,7 @@
                                 <th>{% trans "Project" %}</th>
                                 <th>{% trans "User" %}</th>
                                 <th>{% trans "Title" %}</th>
+                                <th>{% trans "Pause" %}</th>
                                 <th>{% trans "Duration" %}</th>
                                 <th>{% trans "Est. Revenue" %}</th>
                                 <th>{% trans "Details" %}</th>
@@ -159,8 +207,10 @@
                                 <td>{{ entry.project.name }}</td>
                                 <td>{{ entry.user.username }}</td>
                                 <td><strong>{{ entry.title }}</strong></td>
-                                <td>{{ entry.actual_duration }}</td>
-                                <td class="text-success fw-semibold">{{ entry.earnings }} {{ entry.project.currency }}
+                                <td>{{ entry.pause_duration|format_duration }}</td>
+                                <td>{{ entry.actual_duration|format_duration }}</td>
+                                <td class="text-success fw-semibold">
+                                    {{ entry.earnings }} {{ entry.project.currency }}
                                 </td>
                                 <td>
                                     {% if entry.description or entry.notes or entry.image %}
@@ -213,5 +263,104 @@
         const formQuery = new URLSearchParams(new FormData(document.getElementById('filterForm'))).toString();
         window.location.href = actionBase + '?' + formQuery;
     });
+
+    // Auto-submit filter form on input change
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterForm = document.getElementById('filterForm');
+        if (filterForm) {
+            const inputs = filterForm.querySelectorAll('select, input');
+            inputs.forEach(input => {
+                // For select elements, 'change' is fine.
+                // For text/date inputs, blurring or changing triggers it.
+                input.addEventListener('change', function () {
+                    filterForm.submit();
+                });
+            });
+        }
+    });
 </script>
+
+<style>
+    /* Premium Dashboard Styles */
+    .bg-gradient-text {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+    }
+
+    .btn-premium {
+        border-radius: 50rem;
+        padding: 0.4rem 1.25rem;
+        font-weight: 500;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border-width: 2px;
+    }
+
+    .btn-premium:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 1.25rem !important;
+        overflow: hidden;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .gradient-primary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+    }
+
+    .gradient-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    }
+
+    .card-icon-bg {
+        position: absolute;
+        right: -10px;
+        bottom: -20px;
+        font-size: 7rem;
+        color: rgba(255, 255, 255, 0.15);
+        transform: rotate(-15deg);
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .filter-trigger {
+        cursor: pointer;
+        padding: 0.75rem 1.5rem;
+        border-radius: 50rem;
+        background: rgba(128, 128, 128, 0.08);
+        /* Adapts to light/dark mode */
+        transition: all 0.2s ease;
+        border: 1px solid rgba(128, 128, 128, 0.1);
+    }
+
+    .filter-trigger:hover {
+        background: rgba(128, 128, 128, 0.15);
+        transform: translateY(-1px);
+    }
+
+    .rotate-180 {
+        transform: rotate(180deg);
+    }
+
+    /* Polish the entries cards */
+    #cardView .card {
+        border-radius: 1rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    #cardView .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .08) !important;
+    }
+</style>
 {% endblock %}
