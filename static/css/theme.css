@@ -223,14 +223,20 @@ body {
 .form-control,
 .form-select {
     background-color: var(--input-bg-color);
-    color: var(--text-color);
+    color: var(--primary-color) !important;
     border-color: var(--input-border-color);
+}
+
+.form-control::placeholder,
+.form-select::placeholder {
+    color: var(--primary-color) !important;
+    opacity: 0.6;
 }
 
 .form-control:focus,
 .form-select:focus {
     background-color: var(--input-bg-color);
-    color: var(--text-color);
+    color: var(--primary-color) !important;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.25rem rgba(var(--primary-color), 0.25);
 }
