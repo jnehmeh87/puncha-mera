@@ -54,7 +54,7 @@ class ReportFilterForm(forms.Form):
         if user:
             # Filter dropdowns based on user's organizations
             memberships = user.memberships.all()
-            organizations = Organization.objects.filter(membership__in=memberships)
+            organizations = Organization.objects.filter(members__in=memberships).distinct()
             self.fields['organization'].queryset = organizations
 
             if organizations.exists():
