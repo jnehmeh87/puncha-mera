@@ -28,14 +28,16 @@
     <!-- Team Members Card -->
     <div class="col-md-4 mb-4">
       <div class="card shadow-sm border-0 h-100">
-        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
-          <h2 class="h5 mb-0 fw-bold">Team Members</h2>
+        <div
+          class="card-header border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center bg-transparent">
+          <h2 class="card-title h5 mb-0 fw-bold">Team Members</h2>
           <span class="badge bg-primary rounded-pill">{{ object.projectmember_set.count }}</span>
         </div>
         <div class="card-body p-4">
           <ul class="list-group list-group-flush mb-4">
             {% for member in object.projectmember_set.all %}
-            <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 border-bottom">
+            <li
+              class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-3 py-3 border-bottom">
               <div class="d-flex align-items-center">
                 <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3"
                   style="width: 40px; height: 40px;">
@@ -52,7 +54,7 @@
               </div>
             </li>
             {% empty %}
-            <li class="list-group-item px-0 py-3 text-muted text-center border-0">
+            <li class="list-group-item bg-transparent px-3 py-3 text-muted text-center border-0">
               No team members yet.
             </li>
             {% endfor %}
