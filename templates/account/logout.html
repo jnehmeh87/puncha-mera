@@ -18,8 +18,9 @@
                     {% endif %}
                     <div class="d-grid gap-2">
                         <button class="btn btn-danger btn-lg" type="submit">{% trans 'Sign Out' %}</button>
-                        <a href="{% url 'home:home' %}" class="btn btn-outline-secondary btn-lg">{% trans 'Cancel'
-                            %}</a>
+                        <a href="{% url 'home:home' %}" class="btn btn-outline-secondary btn-lg">
+                            {% trans 'Cancel' %}
+                        </a>
                     </div>
                 </form>
             </div>
