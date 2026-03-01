@@ -14,6 +14,6 @@ class TimeEntryForm(forms.ModelForm):
         fields = ['project', 'organization', 'title', 'date', 'start_time', 'end_time', 'description', 'notes', 'image']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
-            'start_time': forms.TimeInput(attrs={'type': 'time'}),
-            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+            'start_time': forms.TimeInput(attrs={'type': 'time', 'step': '1'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time', 'step': '1'}),
         }
