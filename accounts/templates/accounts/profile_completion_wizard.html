@@ -10,10 +10,13 @@
             </div>
             <div class="modal-body">
                 <div class="progress">
-                    <div id="profile-progress-bar" class="progress-bar" role="progressbar" style="width: {{ completion_percentage }}%;" aria-valuenow="{{ completion_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ completion_percentage }}%</div>
+                    <div id="profile-progress-bar" class="progress-bar" role="progressbar"
+                        style="width: {{ completion_percentage }}%;" aria-valuenow="{{ completion_percentage }}"
+                        aria-valuemin="0" aria-valuemax="100">{{ completion_percentage }}%</div>
                 </div>
                 <hr>
-                <form id="profile-completion-form" method="post" action="{% url 'accounts:profile-completion-wizard' %}" enctype="multipart/form-data">
+                <form id="profile-completion-form" method="post" action="{% url 'accounts:profile-completion-wizard' %}"
+                    enctype="multipart/form-data">
                     {% csrf_token %}
                     <div id="step-1" class="wizard-step">
                         <h3>Personal Information</h3>
@@ -50,79 +53,82 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    let currentStep = 1;
-    const steps = document.querySelectorAll('.wizard-step');
-    const progressBar = document.getElementById('profile-progress-bar');
-    const form = document.getElementById('profile-completion-form');
+    document.addEventListener('DOMContentLoaded', function () {
+        let currentStep = 1;
+        const steps = document.querySelectorAll('.wizard-step');
+        const progressBar = document.getElementById('profile-progress-bar');
+        const form = document.getElementById('profile-completion-form');
 
-    function showStep(step) {
-        steps.forEach(s => s.style.display = 'none');
-        document.getElementById(`step-${step}`).style.display = 'block';
-    }
+        function showStep(step) {
+            steps.forEach(s => s.style.display = 'none');
+            document.getElementById(`step-${step}`).style.display = 'block';
+        }
 
-    function saveStep(step, andExit = false) {
-        const formData = new FormData(form);
-        formData.append('step', step);
+        function saveStep(step, andExit = false) {
+            const formData = new FormData(form);
+            formData.append('step', step);
 
-        fetch("{% url 'accounts:profile-completion-ajax' %}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            updateProgressBar(data.completion_percentage);
-            if (andExit) {
-                $('#profile-completion-popup').modal('hide');
-            }
+            fetch("{% url 'accounts:profile-completion-ajax' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    updateProgressBar(data.completion_percentage);
+                    if (andExit) {
+                        $('#profile-completion-popup').modal('hide');
+                    }
+                });
+        }
+
+        function updateProgressBar(percentage) {
+            progressBar.style.width = percentage + '%';
+            progressBar.innerText = percentage + '%';
+            progressBar.setAttribute('aria-valuenow', percentage);
+        }
+
+        document.querySelectorAll('.next-step').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveStep(currentStep);
+                if (currentStep < steps.length) {
+                    currentStep++;
+                    showStep(currentStep);
+                }
+            });
         });
-    }
 
-    function updateProgressBar(percentage) {
-        progressBar.style.width = percentage + '%';
-        progressBar.innerText = percentage + '%';
-        progressBar.setAttribute('aria-valuenow', percentage);
-    }
+        document.querySelectorAll('.prev-step').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (currentStep > 1) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            });
+        });
 
-    document.querySelectorAll('.next-step').forEach(btn => {
-        btn.addEventListener('click', () => {
-            saveStep(currentStep);
+        document.getElementById('save-and-continue').addEventListener('click', () => {
+            localStorage.setItem('hideProfileCompletionModal', 'true');
+            saveStep(currentStep, true);
+        });
+
+        document.getElementById('skip-step').addEventListener('click', () => {
             if (currentStep < steps.length) {
                 currentStep++;
                 showStep(currentStep);
+            } else {
+                localStorage.setItem('hideProfileCompletionModal', 'true');
+                $('#profile-completion-popup').modal('hide');
             }
         });
-    });
 
-    document.querySelectorAll('.prev-step').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (currentStep > 1) {
-                currentStep--;
-                showStep(currentStep);
-            }
-        });
-    });
-
-    document.getElementById('save-and-continue').addEventListener('click', () => {
-        saveStep(currentStep, true);
-    });
-
-    document.getElementById('skip-step').addEventListener('click', () => {
-        if (currentStep < steps.length) {
-            currentStep++;
-            showStep(currentStep);
-        } else {
-            $('#profile-completion-popup').modal('hide');
-        }
-    });
-
-    form.addEventListener('input', () => {
-        const formData = new FormData(form);
-        let completedFields = 0;
-        const totalFields = {{ total_fields }};
+        form.addEventListener('input', () => {
+            const formData = new FormData(form);
+            let completedFields = 0;
+            const totalFields = {{ total_fields }
+        };
 
         // This is a simplified client-side calculation. 
         // The authoritative calculation is done on the server.
@@ -141,7 +147,19 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('profile-completion-popup').querySelector('.modal-content').classList.add('text-bg-dark');
     }
 
-    $('#profile-completion-popup').modal('show');
+    // Only show automatically if the user hasn't dismissed it
+    if (!localStorage.getItem('hideProfileCompletionModal')) {
+        $('#profile-completion-popup').modal('show');
+    }
+
+    // Dismissal handlers to prevent annoying re-prompts
+    document.querySelector('#profile-completion-popup .btn-close').addEventListener('click', () => {
+        localStorage.setItem('hideProfileCompletionModal', 'true');
+    });
+
+    document.querySelector('#profile-completion-popup .btn-secondary[data-dismiss="modal"]').addEventListener('click', () => {
+        localStorage.setItem('hideProfileCompletionModal', 'true');
+    });
 
     function initAutocomplete() {
         const addressInput = document.getElementById('id_address');
