@@ -3,95 +3,189 @@
 
 {% block content %}
 <style>
-.thumbnail {
-  max-width: 200px;
-  max-height: 200px;
-  cursor: pointer;
-}
+  .thumbnail {
+    max-width: 200px;
+    max-height: 200px;
+    cursor: pointer;
+  }
 
-.lightbox {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  padding-top: 100px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.9);
-}
+  .lightbox {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9);
+  }
 
-.lightbox-content {
-  margin: auto;
-  display: block;
-  width: 80%;
-  max-width: 700px;
-}
+  .lightbox-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+  }
 
-.lightbox-content {
-  animation-name: zoom;
-  animation-duration: 0.6s;
-}
+  .lightbox-content {
+    animation-name: zoom;
+    animation-duration: 0.6s;
+  }
 
-@keyframes zoom {
-  from {transform:scale(0)} 
-  to {transform:scale(1)}
-}
+  @keyframes zoom {
+    from {
+      transform: scale(0)
+    }
 
-.close {
-  position: absolute;
-  top: 15px;
-  right: 35px;
-  color: #f1f1f1;
-  font-size: 40px;
-  font-weight: bold;
-  transition: 0.3s;
-}
+    to {
+      transform: scale(1)
+    }
+  }
 
-.close:hover,
-.close:focus {
-  color: #bbb;
-  text-decoration: none;
-  cursor: pointer;
-}
+  .close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+  }
 </style>
 
-  <div class="card">
-    <div class="card-header">
-      <h1 class="card-title">Time Entry Details</h1>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-4">
-          <p><strong>Project:</strong> {{ object.project }}</p>
-          <p><strong>User:</strong> {{ object.user }}</p>
-          <p><strong>Title:</strong> {{ object.title }}</p>
-          <p><strong>Date:</strong> {{ object.date|date:"Y-m-d" }}</p>
-          <p><strong>Start Time:</strong> {{ object.start_time|time:"h:i A" }}</p>
-          <p><strong>End Time:</strong> {{ object.end_time|time:"h:i A" }}</p>
-          <p><strong>Pause Duration:</strong> {{ object.pause_duration|format_duration }}</p>
-          <p><strong>Duration:</strong> {{ object.duration|format_duration }}</p>
+<div class="card">
+  <div class="card-header">
+    <h1 class="card-title">Time Entry Details</h1>
+  </div>
+  <div class="card-body">
+    <div class="row g-4 w-100 m-0">
+      <div class="col-12 col-md-5">
+        <div class="p-4 rounded-4 h-100"
+          style="background-color: rgba(128, 128, 128, 0.05); border: 1px solid rgba(128, 128, 128, 0.1);">
+          <h6 class="text-uppercase text-muted fw-bold mb-3" style="font-size: 0.75rem; letter-spacing: 1px;">Entry
+            Details</h6>
+          <div class="d-flex flex-column gap-3">
+
+            <div class="d-flex flex-column gap-1">
+              <span class="text-muted"><i class="bi bi-briefcase me-2"></i>Project</span>
+              <span class="fw-medium text-break">{{ object.project }}</span>
+            </div>
+
+            <div class="d-flex flex-column gap-1">
+              <span class="text-muted"><i class="bi bi-card-text me-2"></i>Title</span>
+              <span class="fw-medium text-break">{{ object.title }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center gap-3 mt-2">
+              <span class="text-muted text-nowrap"><i class="bi bi-person me-2"></i>User</span>
+              <span class="fw-medium text-end">{{ object.user }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center gap-3">
+              <span class="text-muted text-nowrap"><i class="bi bi-calendar me-2"></i>Date</span>
+              <span class="badge bg-secondary rounded-pill px-3">{{ object.date|date:"F j, Y" }}</span>
+            </div>
+          </div>
+
+          <hr class="my-3 mx-0" style="opacity: 0.1;">
+
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex justify-content-between align-items-center gap-3">
+              <span class="text-muted text-nowrap"><i class="bi bi-clock me-2"></i>Time</span>
+              <span class="fw-medium text-end text-nowrap">
+                <!-- prettier-ignore -->
+                <span class="d-inline-block">{{ object.start_time|time:"h:i A" }}</span>
+                -
+                <!-- prettier-ignore -->
+                <span class="d-inline-block">{{ object.end_time|time:"h:i A" }}</span>
+              </span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center gap-3">
+              <span class="text-muted text-nowrap"><i class="bi bi-pause-circle me-2"></i>Pause</span>
+              <span class="fw-medium text-end text-nowrap">
+                <!-- prettier-ignore -->
+                <span class="d-inline-block">{{ object.pause_duration|format_duration }}</span>
+              </span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center p-2 rounded-3 gap-3"
+              style="background: rgba(var(--primary-color-rgb, 0, 170, 255), 0.1);">
+              <span class="fw-bold text-nowrap" style="color: var(--primary-color);"><i
+                  class="bi bi-stopwatch me-2"></i>Duration</span>
+              <span class="fw-bold fs-5 text-end text-nowrap" style="color: var(--primary-color);">
+                <!-- prettier-ignore -->
+                <span class="d-inline-block">{{ object.actual_duration|format_duration }}</span>
+              </span>
+            </div>
+          </div>
         </div>
-        <div class="col-md-8">
-          <p><strong>Description:</strong></p>
-          <p>{{ object.description|linebreaks }}</p>
-          <p><strong>Notes:</strong></p>
-          <p>{{ object.notes|linebreaks }}</p>
+      </div>
+
+      <div class="col-12 col-md-7">
+        <div class="p-4 rounded-4 h-100 w-100 d-flex flex-column gap-4"
+          style="background-color: rgba(128, 128, 128, 0.05); border: 1px solid rgba(128, 128, 128, 0.1);">
+          {% if object.description or object.notes or object.image %}
+          {% if object.description %}
+          <div class="w-100">
+            <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">
+              Description</h6>
+            <div class="p-3 rounded-3"
+              style="background-color: var(--surface-color); border: 1px solid rgba(128, 128, 128, 0.1);">
+              {{ object.description|linebreaks }}
+            </div>
+          </div>
+          {% endif %}
+
+          {% if object.notes %}
+          <div class="w-100">
+            <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">Notes
+            </h6>
+            <div class="p-3 rounded-3"
+              style="background-color: var(--surface-color); border: 1px solid rgba(128, 128, 128, 0.1);">
+              {{ object.notes|linebreaks }}
+            </div>
+          </div>
+          {% endif %}
+
           {% if object.image %}
-            <p><strong>Image:</strong></p>
-            <img id="myImg" src="{{ object.image.url }}" alt="Time entry image" class="img-fluid thumbnail">
+          <div class="w-100">
+            <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">
+              Attachment</h6>
+            <img id="myImg" src="{{ object.image.url }}" alt="Time entry image"
+              class="img-fluid thumbnail rounded-3 shadow-sm w-100"
+              style="border: 1px solid rgba(128,128,128,0.2); object-fit: contain; max-height: 400px; background-color: var(--surface-color);">
+          </div>
+          {% endif %}
+          {% else %}
+          <div class="d-flex align-items-center justify-content-center h-100 w-100 text-muted"
+            style="min-height: 200px; background-color: transparent;">
+            <div class="text-center">
+              <i class="bi bi-inbox fs-1 mb-2 opacity-50"></i>
+              <p class="mb-0 text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">No additional details
+                provided</p>
+            </div>
+          </div>
           {% endif %}
         </div>
       </div>
     </div>
-    <div class="card-footer">
-      {% if request.user.memberships.first.role == 'admin' or request.user.memberships.first.role == 'owner' %}
-      <a href="{% url 'time_entries:time_entry-update' object.pk %}" class="btn btn-secondary">Edit</a>
-      <a href="{% url 'time_entries:time_entry-delete' object.pk %}" class="btn btn-danger">Delete</a>
-      {% endif %}
-    </div>
   </div>
+  <div class="card-footer d-flex gap-2 justify-content-center border-0 pt-0">
+    {% if request.user.memberships.first.role == 'admin' or request.user.memberships.first.role == 'owner' %}
+    <a href="{% url 'time_entries:time_entry-update' object.pk %}"
+      class="btn btn-outline-secondary btn-premium px-4">Edit</a>
+    <a href="{% url 'time_entries:time_entry-delete' object.pk %}" class="btn btn-danger btn-premium px-4">Delete</a>
+    {% endif %}
+  </div>
+</div>
 
 <div id="myModal" class="lightbox">
   <span class="close">&times;</span>
@@ -99,29 +193,29 @@
 </div>
 
 <script>
-// Get the modal
-var modal = document.getElementById('myModal');
+  // Get the modal
+  var modal = document.getElementById('myModal');
 
-// Get the image and insert it inside the modal - use its "alt" text as a caption
-var img = document.getElementById('myImg');
-var modalImg = document.getElementById("img01");
-if (img) {
-    img.onclick = function(){
-        modal.style.display = "block";
-        modalImg.src = this.src;
+  // Get the image and insert it inside the modal - use its "alt" text as a caption
+  var img = document.getElementById('myImg');
+  var modalImg = document.getElementById("img01");
+  if (img) {
+    img.onclick = function () {
+      modal.style.display = "block";
+      modalImg.src = this.src;
     }
-}
+  }
 
 
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
 
-// When the user clicks on <span> (x), close the modal
-if (span) {
-    span.onclick = function() { 
-        modal.style.display = "none";
+  // When the user clicks on <span> (x), close the modal
+  if (span) {
+    span.onclick = function () {
+      modal.style.display = "none";
     }
-}
+  }
 </script>
 
 {% endblock %}

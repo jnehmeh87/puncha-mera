@@ -22,11 +22,47 @@ class TimeEntryListView(LoginRequiredMixin, ListView):
             organization = membership.organization
             
             if membership.role in ['admin', 'owner']:
-                return TimeEntry.objects.filter(organization=organization)
+                queryset = TimeEntry.objects.filter(organization=organization)
             else:
-                return TimeEntry.objects.filter(user=user, organization=organization)
+                queryset = TimeEntry.objects.filter(user=user, organization=organization)
         except Membership.DoesNotExist:
             return TimeEntry.objects.none()
+
+        from .forms import TimeEntryFilterForm
+        form = TimeEntryFilterForm(self.request.GET or None, user=user)
+        
+        if form.is_valid():
+            org = form.cleaned_data.get('organization')
+            if org:
+                queryset = queryset.filter(organization=org)
+            
+            client = form.cleaned_data.get('client')
+            if client:
+                queryset = queryset.filter(project__contact=client)
+                
+            project = form.cleaned_data.get('project')
+            if project:
+                queryset = queryset.filter(project=project)
+                
+            member = form.cleaned_data.get('member')
+            if member:
+                queryset = queryset.filter(user=member)
+                
+            start_date = form.cleaned_data.get('start_date')
+            if start_date:
+                queryset = queryset.filter(date__gte=start_date)
+                
+            end_date = form.cleaned_data.get('end_date')
+            if end_date:
+                queryset = queryset.filter(date__lte=end_date)
+                
+        return queryset.order_by('-date', '-start_time')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from .forms import TimeEntryFilterForm
+        context['form'] = TimeEntryFilterForm(self.request.GET or None, user=self.request.user)
+        return context
 
 class TimeEntryDetailView(LoginRequiredMixin, DetailView):
     model = TimeEntry

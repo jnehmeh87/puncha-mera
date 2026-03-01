@@ -84,7 +84,8 @@ class ReportDashboardView(ReportBaseView, TemplateView):
 
         hours = int(total_seconds // 3600)
         minutes = int((total_seconds % 3600) // 60)
-        total_hours_formatted = f"{hours}h {minutes}m"
+        seconds = int(total_seconds % 60)
+        total_hours_formatted = f"{hours}h {minutes}m {seconds}s"
 
         context['time_entries'] = queryset
         context['total_hours_formatted'] = total_hours_formatted
