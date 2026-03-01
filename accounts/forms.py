@@ -52,9 +52,30 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         exclude = ['user']
 
+COMMON_LANGUAGES = [
+    ('en', 'English'),
+    ('es', 'Spanish'),
+    ('fr', 'French'),
+    ('de', 'German'),
+    ('it', 'Italian'),
+    ('pt', 'Portuguese'),
+    ('nl', 'Dutch'),
+    ('sv', 'Swedish'),
+    ('no', 'Norwegian'),
+    ('fi', 'Finnish'),
+    ('da', 'Danish'),
+    ('ru', 'Russian'),
+    ('zh', 'Chinese'),
+    ('ja', 'Japanese'),
+    ('ko', 'Korean'),
+    ('ar', 'Arabic'),
+    ('hi', 'Hindi'),
+    ('tr', 'Turkish'),
+]
+
 class SettingsForm(forms.ModelForm):
     currency = forms.ChoiceField(choices=[(currency.alpha_3, currency.name) for currency in pycountry.currencies])
-    language = forms.ChoiceField(choices=[(lang.alpha_3, lang.name) for lang in pycountry.languages])
+    language = forms.ChoiceField(choices=COMMON_LANGUAGES)
     timezone = forms.ChoiceField(choices=[(tz, tz) for tz in pytz.all_timezones])
 
     class Meta:
