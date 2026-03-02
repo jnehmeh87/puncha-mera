@@ -1,18 +1,84 @@
-<div class="row">
-    <div class="col-md-4">
-        {% if user.userprofile.profile_picture %}
-            <img src="{{ user.userprofile.profile_picture.url }}" alt="{{ user.username }}" class="img-fluid rounded-circle">
-        {% else %}
-            <img src="https://via.placeholder.com/300" alt="{{ user.username }}" class="img-fluid rounded-circle">
-        {% endif %}
-    </div>
-    <div class="col-md-8">
-        <h1>{{ user.username }}</h1>
-        <p>{{ user.userprofile.bio }}</p>
-        <p><strong>Country:</strong> {{ user.userprofile.country }}</p>
-        <p><strong>County/Region:</strong> {{ user.userprofile.county_region }}</p>
-        <p><strong>Address:</strong> {{ user.userprofile.address }}</p>
-        <p><strong>Postal Code:</strong> {{ user.userprofile.postal_code }}</p>
-        <button type="button" class="btn btn-primary edit-btn" data-url="{% url 'accounts:profile-edit' %}">Edit Profile</button>
+<div class="card shadow-sm border-0 dashboard-card mb-4">
+    <div class="card-body p-4 p-md-5">
+        <div class="row align-items-center">
+            <div class="col-md-4 text-center mb-4 mb-md-0">
+                <div class="position-relative d-inline-block">
+                    {% if user.userprofile.profile_picture %}
+                    <img src="{{ user.userprofile.profile_picture.url }}" alt="{{ user.username }}"
+                        class="img-fluid rounded-circle shadow-lg"
+                        style="width: 220px; height: 220px; object-fit: cover; border: 4px solid var(--primary-color);">
+                    {% else %}
+                    <div class="rounded-circle shadow-lg d-flex align-items-center justify-content-center bg-secondary bg-opacity-10"
+                        style="width: 220px; height: 220px; border: 4px solid var(--primary-color);">
+                        <i class="bi bi-person text-secondary" style="font-size: 6rem;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-8">
+                <h2 class="display-5 fw-bold bg-gradient-text mb-1">{{ user.username }}</h2>
+                <p class="lead text-muted mb-4">{{ user.userprofile.bio|default:"No bio provided yet." }}</p>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center">
+                            <div
+                                class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-geo-alt fs-4 text-theme-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-semibold"
+                                    style="letter-spacing: 0.5px;">Country</small>
+                                <span class="fw-medium fs-5">{{ user.userprofile.country|default:"-" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center">
+                            <div
+                                class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-map fs-4 text-theme-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-semibold"
+                                    style="letter-spacing: 0.5px;">Region</small>
+                                <span class="fw-medium fs-5">{{ user.userprofile.county_region|default:"-" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="d-flex align-items-center">
+                            <div
+                                class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-house-door fs-4 text-theme-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-semibold"
+                                    style="letter-spacing: 0.5px;">Address</small>
+                                <span class="fw-medium fs-5">{{ user.userprofile.address|default:"-" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center">
+                            <div
+                                class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-mailbox fs-4 text-theme-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block text-uppercase fw-semibold"
+                                    style="letter-spacing: 0.5px;">Postal Code</small>
+                                <span class="fw-medium fs-5">{{ user.userprofile.postal_code|default:"-" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-premium edit-btn px-4"
+                    data-url="{% url 'accounts:profile-edit' %}">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Profile
+                </button>
+            </div>
+        </div>
     </div>
 </div>

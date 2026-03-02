@@ -1,6 +1,79 @@
-<h1>Settings</h1>
-<p><strong>Currency:</strong> {{ user.settings.currency }}</p>
-<p><strong>Timezone:</strong> {{ user.settings.timezone }}</p>
-<p><strong>Language:</strong> {{ user.settings.language }}</p>
-<p><strong>Color Theme:</strong> {{ user.settings.color_theme }}</p>
-<button type="button" class="btn btn-primary edit-btn" data-url="{% url 'accounts:settings-edit' %}">Edit Settings</button>
+<div class="card shadow-sm border-0 dashboard-card mb-4">
+    <div class="card-body p-4 p-md-5">
+        <div class="d-flex align-items-center mb-5">
+            <div
+                class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 d-flex align-items-center justify-content-center">
+                <i class="bi bi-gear-wide-connected fs-1 text-theme-primary"></i>
+            </div>
+            <div>
+                <h2 class="display-6 fw-bold mb-1">Preferences</h2>
+                <p class="text-muted mb-0">Manage your workspace settings and active theme</p>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-sm-6">
+                <div
+                    class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-currency-exchange fs-4 text-theme-primary me-2"></i>
+                        <span class="text-muted text-uppercase fw-semibold"
+                            style="letter-spacing: 0.5px;">Currency</span>
+                    </div>
+                    <span class="fw-bold fs-4">{{ user.settings.currency|default:"-" }}</span>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div
+                    class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-globe fs-4 text-theme-primary me-2"></i>
+                        <span class="text-muted text-uppercase fw-semibold"
+                            style="letter-spacing: 0.5px;">Timezone</span>
+                    </div>
+                    <span class="fw-bold fs-4 text-truncate" title="{{ user.settings.timezone }}">{{
+                        user.settings.timezone|default:"-" }}</span>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div
+                    class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-translate fs-4 text-theme-primary me-2"></i>
+                        <span class="text-muted text-uppercase fw-semibold"
+                            style="letter-spacing: 0.5px;">Language</span>
+                    </div>
+                    <span class="fw-bold fs-4">{{ user.settings.get_language_display|default:user.settings.language
+                        }}</span>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div
+                    class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-palette fs-4 text-theme-primary me-2"></i>
+                        <span class="text-muted text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Color
+                            Theme</span>
+                    </div>
+                    <span class="fw-bold fs-4 text-capitalize">{{ user.settings.color_theme|default:"blue" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-premium edit-btn px-4"
+            data-url="{% url 'accounts:settings-edit' %}">
+            <i class="bi bi-sliders me-2"></i>Edit Settings
+        </button>
+    </div>
+</div>
+
+<style>
+    .hover-lift {
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        background-color: rgba(var(--text-color-rgb), 0.05) !important;
+    }
+</style>
