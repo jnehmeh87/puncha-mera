@@ -264,31 +264,32 @@
             </thead>
             <tbody>
               {% for entry in time_entries %}
-              <td class="text-center align-middle">
-                <input class="form-check-input entry-checkbox" type="checkbox" value="{{ entry.pk }}">
-              </td>
-              <td>{{ entry.date|date:"M d, Y" }}</td>
-              <td>{{ entry.project.name }}</td>
-              <td>{{ entry.user.username }}</td>
-              <td><strong>{{ entry.title }}</strong></td>
-              <td>{{ entry.pause_duration|format_duration }}</td>
-              <td>{{ entry.actual_duration|format_duration }}</td>
-              <td>
-                <div class="d-flex align-items-center justify-content-end gap-2">
-                  <button type="button" class="btn btn-sm btn-link text-info p-0 text-decoration-none view-details"
-                    title="View" data-url="{% url 'time_entries:time_entry-detail' entry.pk %}">
-                    <i class="bi bi-eye fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
-                  </button>
-                  {% with role=request.user.memberships.first.role %}
-                  {% if role == 'admin' or role == 'owner' %}
-                  <a href="{% url 'time_entries:time_entry-update' entry.pk %}"
-                    class="btn btn-sm btn-link text-secondary p-0 text-decoration-none open-form-modal" title="Edit">
-                    <i class="bi bi-pencil fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
-                  </a>
-                  {% endif %}
-                  {% endwith %}
-                </div>
-              </td>
+              <tr class="row-selectable" data-entry-id="{{ entry.pk }}">
+                <td class="text-center align-middle">
+                  <input class="form-check-input entry-checkbox" type="checkbox" value="{{ entry.pk }}">
+                </td>
+                <td>{{ entry.date|date:"M d, Y" }}</td>
+                <td>{{ entry.project.name }}</td>
+                <td>{{ entry.user.username }}</td>
+                <td><strong>{{ entry.title }}</strong></td>
+                <td>{{ entry.pause_duration|format_duration }}</td>
+                <td>{{ entry.actual_duration|format_duration }}</td>
+                <td>
+                  <div class="d-flex align-items-center justify-content-end gap-2">
+                    <button type="button" class="btn btn-sm btn-link text-info p-0 text-decoration-none view-details"
+                      title="View" data-url="{% url 'time_entries:time_entry-detail' entry.pk %}">
+                      <i class="bi bi-eye fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
+                    </button>
+                    {% with role=request.user.memberships.first.role %}
+                    {% if role == 'admin' or role == 'owner' %}
+                    <a href="{% url 'time_entries:time_entry-update' entry.pk %}"
+                      class="btn btn-sm btn-link text-secondary p-0 text-decoration-none open-form-modal" title="Edit">
+                      <i class="bi bi-pencil fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
+                    </a>
+                    {% endif %}
+                    {% endwith %}
+                  </div>
+                </td>
               </tr>
               {% empty %}
               <tr>
@@ -323,6 +324,36 @@
 <div id="myModal" class="lightbox">
   <span class="close-lightbox">&times;</span>
   <img class="lightbox-content" id="img01">
+</div>
+
+<!-- Bulk Delete Confirmation Modal -->
+<div class="modal fade" id="bulkDeleteModal" tabindex="-1" aria-labelledby="bulkDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold text-danger" id="bulkDeleteModalLabel">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> {% trans "Confirm Deletion" %}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-4">
+        <p class="mb-0 fs-5">
+          {% trans "Are you sure you want to delete" %}
+          <strong id="deleteCountDisplay"></strong>
+          {% trans "selected entries?" %}
+        </p>
+        <p class="text-muted small mt-2 mb-0">{% trans "This action cannot be undone." %}</p>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+          {% trans "Cancel" %}
+        </button>
+        <button type="button" class="btn btn-danger rounded-pill px-4" id="confirmBulkDeleteBtn">
+          {% trans "Delete Entries" %}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
@@ -444,14 +475,28 @@
     if (view === 'card') {
       cardView.classList.remove('d-none');
       tableView.classList.add('d-none');
+      localStorage.setItem('preferredTimeEntryView', 'card');
     } else {
       cardView.classList.add('d-none');
       tableView.classList.remove('d-none');
+      localStorage.setItem('preferredTimeEntryView', 'table');
     }
   }
 
   // Auto-submit filter form on input change
   document.addEventListener('DOMContentLoaded', function () {
+    // Restore View Preference
+    const savedView = localStorage.getItem('preferredTimeEntryView') || 'card';
+    if (savedView === 'table') {
+      const tableBtn = document.getElementById('btnradio2');
+      if (tableBtn) { tableBtn.checked = true; }
+      toggleView('table');
+    } else {
+      const cardBtn = document.getElementById('btnradio1');
+      if (cardBtn) { cardBtn.checked = true; }
+      toggleView('card');
+    }
+
     const filterForm = document.getElementById('filterForm');
     if (filterForm) {
       const inputs = filterForm.querySelectorAll('select, input');
@@ -518,44 +563,67 @@
     }
 
     // Bulk Delete logic
+    let currentSelectedIds = [];
+    let bulkDeleteModalInstance = null;
+
     if (bulkDeleteBtn) {
       bulkDeleteBtn.addEventListener('click', function () {
-        const selectedIds = Array.from(document.querySelectorAll('.entry-checkbox:checked')).map(cb => cb.value);
+        currentSelectedIds = Array.from(document.querySelectorAll('.entry-checkbox:checked')).map(cb => cb.value);
 
-        if (selectedIds.length === 0) return;
+        if (currentSelectedIds.length === 0) return;
 
-        if (confirm(`Are you sure you want to delete ${selectedIds.length} selected entries? This action cannot be undone.`)) {
-          fetch('{% url "time_entries:time_entry-bulk-delete" %}', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({ entry_ids: selectedIds })
-          })
-            .then(response => response.json())
-            .then(data => {
-              if (data.status === 'success') {
-                if (typeof showToast === 'function') {
-                  showToast(data.message, 'success');
-                }
-                // Refresh page after short delay to show notification
-                setTimeout(() => window.location.reload(), 1000);
-              } else {
-                if (typeof showToast === 'function') {
-                  showToast('Error: ' + data.message, 'danger');
-                } else {
-                  alert(data.message);
-                }
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-              if (typeof showToast === 'function') {
-                showToast('An unexpected error occurred.', 'danger');
-              }
-            });
+        document.getElementById('deleteCountDisplay').textContent = currentSelectedIds.length;
+        if (!bulkDeleteModalInstance) {
+          bulkDeleteModalInstance = new bootstrap.Modal(document.getElementById('bulkDeleteModal'));
         }
+        bulkDeleteModalInstance.show();
+      });
+    }
+
+    const confirmBulkDeleteBtn = document.getElementById('confirmBulkDeleteBtn');
+    if (confirmBulkDeleteBtn) {
+      confirmBulkDeleteBtn.addEventListener('click', function () {
+        if (currentSelectedIds.length === 0) return;
+
+        // Disable button and show loading state
+        const originalBtnHtml = confirmBulkDeleteBtn.innerHTML;
+        confirmBulkDeleteBtn.disabled = true;
+        confirmBulkDeleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Deleting...';
+
+        fetch('{% url "time_entries:time_entry-bulk-delete" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify({ entry_ids: currentSelectedIds })
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'success') {
+              bulkDeleteModalInstance.hide();
+              if (typeof showToast === 'function') {
+                showToast(data.message, 'success');
+              }
+              setTimeout(() => window.location.reload(), 1000);
+            } else {
+              confirmBulkDeleteBtn.disabled = false;
+              confirmBulkDeleteBtn.innerHTML = originalBtnHtml;
+              if (typeof showToast === 'function') {
+                showToast('Error: ' + data.message, 'danger');
+              } else {
+                alert(data.message);
+              }
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            confirmBulkDeleteBtn.disabled = false;
+            confirmBulkDeleteBtn.innerHTML = originalBtnHtml;
+            if (typeof showToast === 'function') {
+              showToast('An unexpected error occurred.', 'danger');
+            }
+          });
       });
     }
 
