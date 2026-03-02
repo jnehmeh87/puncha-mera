@@ -47,7 +47,7 @@
                                 <td>{{ entry.date|date:"M d, Y" }}</td>
                                 <td>{{ entry.project.name|default:entry.project }}</td>
                                 <td><strong>{{ entry.title }}</strong></td>
-                                <td class="text-muted"><small>{{ entry.description|truncatechars:50 }}</small></td>
+                                <td><small class="opacity-75">{{ entry.description|truncatechars:50 }}</small></td>
                                 <td>{{ entry.duration }}</td>
                             </tr>
                             {% empty %}
