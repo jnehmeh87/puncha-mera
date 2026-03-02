@@ -301,6 +301,16 @@ body {
     transition: background-color 0.2s ease;
 }
 
+/* Dynamic Theme Gradient Text */
+.bg-gradient-text {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    display: inline-block;
+}
+
 /* Modern Inputs */
 .form-control,
 .form-select {
