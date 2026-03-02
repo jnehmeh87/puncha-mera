@@ -260,6 +260,46 @@ class SettingsUpdatePopupView(LoginRequiredMixin, UpdateView):
     def get_object(self):
         return self.request.user.settings
 
+class CurrencyUpdateView(LoginRequiredMixin, UpdateView):
+    model = Settings
+    from .forms import CurrencyForm
+    form_class = CurrencyForm
+    template_name = 'accounts/settings_form.html'
+    success_url = reverse_lazy('accounts:profile-and-settings')
+
+    def get_object(self):
+        return self.request.user.settings
+
+class TimezoneUpdateView(LoginRequiredMixin, UpdateView):
+    model = Settings
+    from .forms import TimezoneForm
+    form_class = TimezoneForm
+    template_name = 'accounts/settings_form.html'
+    success_url = reverse_lazy('accounts:profile-and-settings')
+
+    def get_object(self):
+        return self.request.user.settings
+
+class LanguageUpdateView(LoginRequiredMixin, UpdateView):
+    model = Settings
+    from .forms import LanguageForm
+    form_class = LanguageForm
+    template_name = 'accounts/settings_form.html'
+    success_url = reverse_lazy('accounts:profile-and-settings')
+
+    def get_object(self):
+        return self.request.user.settings
+
+class ColorThemeUpdateView(LoginRequiredMixin, UpdateView):
+    model = Settings
+    from .forms import ColorThemeForm
+    form_class = ColorThemeForm
+    template_name = 'accounts/settings_form.html'
+    success_url = reverse_lazy('accounts:profile-and-settings')
+
+    def get_object(self):
+        return self.request.user.settings
+
 class ProfileCompletionWizardView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/profile_completion_wizard.html'
 

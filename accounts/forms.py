@@ -92,3 +92,51 @@ class SettingsForm(forms.ModelForm):
     class Meta:
         model = Settings
         exclude = ['user']
+
+class CurrencyForm(forms.ModelForm):
+    currency = forms.ChoiceField(choices=[(currency.alpha_3, currency.name) for currency in pycountry.currencies])
+    class Meta:
+        model = Settings
+        fields = ['currency']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout('currency')
+        self.helper.form_tag = False
+
+class TimezoneForm(forms.ModelForm):
+    timezone = forms.ChoiceField(choices=[(tz, tz) for tz in pytz.all_timezones])
+    class Meta:
+        model = Settings
+        fields = ['timezone']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout('timezone')
+        self.helper.form_tag = False
+
+class LanguageForm(forms.ModelForm):
+    language = forms.ChoiceField(choices=COMMON_LANGUAGES)
+    class Meta:
+        model = Settings
+        fields = ['language']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout('language')
+        self.helper.form_tag = False
+
+class ColorThemeForm(forms.ModelForm):
+    color_theme = forms.ChoiceField(choices=COLOR_THEMES)
+    class Meta:
+        model = Settings
+        fields = ['color_theme']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout('color_theme')
+        self.helper.form_tag = False

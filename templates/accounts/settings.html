@@ -15,8 +15,8 @@
         {% with lang=user.settings.get_language_display|default:user.settings.language %}
         <div class="row g-4 mb-5">
             <div class="col-sm-6">
-                <div
-                    class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift">
+                <div class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift cursor-pointer edit-btn"
+                    data-url="{% url 'accounts:settings-currency-edit' %}">
                     <div class="d-flex align-items-center mb-2">
                         <i class="bi bi-currency-exchange fs-4 text-theme-primary me-2"></i>
                         <span class="text-muted text-uppercase fw-semibold"
@@ -26,8 +26,8 @@
                 </div>
             </div>
             <div class="col-sm-6">
-                <div
-                    class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift">
+                <div class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift cursor-pointer edit-btn"
+                    data-url="{% url 'accounts:settings-timezone-edit' %}">
                     <div class="d-flex align-items-center mb-2">
                         <i class="bi bi-globe fs-4 text-theme-primary me-2"></i>
                         <span class="text-muted text-uppercase fw-semibold"
@@ -37,8 +37,8 @@
                 </div>
             </div>
             <div class="col-sm-6">
-                <div
-                    class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift">
+                <div class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift cursor-pointer edit-btn"
+                    data-url="{% url 'accounts:settings-language-edit' %}">
                     <div class="d-flex align-items-center mb-2">
                         <i class="bi bi-translate fs-4 text-theme-primary me-2"></i>
                         <span class="text-muted text-uppercase fw-semibold"
@@ -48,8 +48,8 @@
                 </div>
             </div>
             <div class="col-sm-6">
-                <div
-                    class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift">
+                <div class="p-4 rounded-4 bg-secondary bg-opacity-10 h-100 d-flex flex-column justify-content-center transition-all hover-lift cursor-pointer edit-btn"
+                    data-url="{% url 'accounts:settings-theme-edit' %}">
                     <div class="d-flex align-items-center mb-2">
                         <i class="bi bi-palette fs-4 text-theme-primary me-2"></i>
                         <span class="text-muted text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Color
@@ -61,21 +61,21 @@
         </div>
         {% endwith %}
         {% endwith %}
-
-        <button type="button" class="btn btn-primary btn-premium edit-btn px-4"
-            data-url="{% url 'accounts:settings-edit' %}">
-            <i class="bi bi-sliders me-2"></i>Edit Settings
-        </button>
     </div>
 </div>
 
 <style>
     .hover-lift {
-        transition: transform 0.2s ease, background-color 0.2s ease;
+        transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .hover-lift:hover {
         transform: translateY(-4px);
         background-color: rgba(var(--text-color-rgb), 0.05) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
     }
 </style>

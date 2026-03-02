@@ -1,0 +1,137 @@
+{% load crispy_forms_tags %}
+<div class="modal-header border-bottom-0 pb-0">
+    <h5 class="modal-title h3 fw-bold bg-gradient-text" id="edit-modal-label">Choose Theme</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body pt-4 pb-5 px-4 px-md-5">
+    <form method="post" action="{% url 'accounts:settings-theme-edit' %}">
+        {% csrf_token %}
+
+        <!-- Hidden actual form for Django Backend -->
+        <div class="d-none">
+            {{ form|crispy }}
+        </div>
+
+        <!-- Custom Visual Color Picker -->
+        <div class="color-picker-grid mb-4">
+            <div class="row g-3">
+                <!-- Swatch: Blue -->
+                <div class="col-4 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'blue' %}active{% endif %}"
+                        data-value="blue">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #00aaff 0%, #00ffaa 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Ocean</span>
+                    </div>
+                </div>
+                <!-- Swatch: Green -->
+                <div class="col-4 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'green' %}active{% endif %}"
+                        data-value="green">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #20c997 0%, #28a745 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Forest</span>
+                    </div>
+                </div>
+                <!-- Swatch: Purple -->
+                <div class="col-4 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'purple' %}active{% endif %}"
+                        data-value="purple">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #a881af 0%, #d8b4e2 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Amethyst</span>
+                    </div>
+                </div>
+                <!-- Swatch: Red -->
+                <div class="col-4 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'red' %}active{% endif %}"
+                        data-value="red">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #ff4d4d 0%, #ff9999 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Crimson</span>
+                    </div>
+                </div>
+                <!-- Swatch: Orange -->
+                <div class="col-4 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'orange' %}active{% endif %}"
+                        data-value="orange">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Sunset</span>
+                    </div>
+                </div>
+                <!-- Swatch: Yellow -->
+                <div class="col-4 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'yellow' %}active{% endif %}"
+                        data-value="yellow">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #ffc107 0%, #ffeeaa 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Gold</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-4 border-top">
+            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-premium px-4">Apply Theme</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .theme-swatch {
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+
+    .theme-swatch:hover {
+        background-color: rgba(var(--text-color-rgb), 0.05);
+    }
+
+    .theme-swatch.active {
+        border-color: var(--primary-color);
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+    }
+
+    .swatch-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin: 0 auto;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+
+    .theme-swatch:hover .swatch-circle {
+        transform: scale(1.05);
+    }
+
+    .theme-swatch.active .swatch-circle {
+        transform: scale(1.1);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<script>
+    // Handle Custom Color Swatch Clicks
+    document.querySelectorAll('.theme-swatch').forEach(swatch => {
+        swatch.addEventListener('click', function () {
+            // Remove active class from all
+            document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+
+            // Add active class to clicked
+            this.classList.add('active');
+
+            // Set the hidden django form input to the selected value
+            const selectedColor = this.getAttribute('data-value');
+            const hiddenInput = document.getElementById('id_color_theme');
+            if (hiddenInput) {
+                hiddenInput.value = selectedColor;
+            }
+        });
+    });
+</script>

@@ -21,6 +21,10 @@ from .views import (
     ProfileAndSettingsView,
     ProfileUpdatePopupView,
     SettingsUpdatePopupView,
+    CurrencyUpdateView,
+    TimezoneUpdateView,
+    LanguageUpdateView,
+    ColorThemeUpdateView,
     ProfileCompletionWizardView,
     ProfileCompletionAjaxView
 )
@@ -49,6 +53,10 @@ urlpatterns = [
     path('profile-and-settings/', ProfileAndSettingsView.as_view(), name='profile-and-settings'),
     path('profile/edit/', ProfileUpdatePopupView.as_view(), name='profile-edit'),
     path('settings/edit/', SettingsUpdatePopupView.as_view(), name='settings-edit'),
+    path('settings/currency/edit/', CurrencyUpdateView.as_view(), name='settings-currency-edit'),
+    path('settings/timezone/edit/', TimezoneUpdateView.as_view(), name='settings-timezone-edit'),
+    path('settings/language/edit/', LanguageUpdateView.as_view(), name='settings-language-edit'),
+    path('settings/theme/edit/', ColorThemeUpdateView.as_view(), name='settings-theme-edit'),
     path('profile/completion-wizard/', ProfileCompletionWizardView.as_view(), name='profile-completion-wizard'),
     path('profile/completion-ajax/', ProfileCompletionAjaxView.as_view(), name='profile-completion-ajax'),
 ]
