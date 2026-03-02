@@ -11,6 +11,8 @@
             </div>
         </div>
 
+        {% with tz=user.settings.timezone curr=user.settings.currency c_theme=user.settings.color_theme %}
+        {% with lang=user.settings.get_language_display|default:user.settings.language %}
         <div class="row g-4 mb-5">
             <div class="col-sm-6">
                 <div
@@ -20,7 +22,7 @@
                         <span class="text-muted text-uppercase fw-semibold"
                             style="letter-spacing: 0.5px;">Currency</span>
                     </div>
-                    <span class="fw-bold fs-4">{{ user.settings.currency|default:"-" }}</span>
+                    <span class="fw-bold fs-4">{{ curr|default:"-" }}</span>
                 </div>
             </div>
             <div class="col-sm-6">
@@ -31,8 +33,7 @@
                         <span class="text-muted text-uppercase fw-semibold"
                             style="letter-spacing: 0.5px;">Timezone</span>
                     </div>
-                    <span class="fw-bold fs-4 text-truncate" title="{{ user.settings.timezone }}">{{
-                        user.settings.timezone|default:"-" }}</span>
+                    <span class="fw-bold fs-4 text-truncate" title="{{ tz }}">{{ tz|default:"-" }}</span>
                 </div>
             </div>
             <div class="col-sm-6">
@@ -43,8 +44,7 @@
                         <span class="text-muted text-uppercase fw-semibold"
                             style="letter-spacing: 0.5px;">Language</span>
                     </div>
-                    <span class="fw-bold fs-4">{{ user.settings.get_language_display|default:user.settings.language
-                        }}</span>
+                    <span class="fw-bold fs-4">{{ lang }}</span>
                 </div>
             </div>
             <div class="col-sm-6">
@@ -55,10 +55,12 @@
                         <span class="text-muted text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Color
                             Theme</span>
                     </div>
-                    <span class="fw-bold fs-4 text-capitalize">{{ user.settings.color_theme|default:"blue" }}</span>
+                    <span class="fw-bold fs-4 text-capitalize">{{ c_theme|default:"blue" }}</span>
                 </div>
             </div>
         </div>
+        {% endwith %}
+        {% endwith %}
 
         <button type="button" class="btn btn-primary btn-premium edit-btn px-4"
             data-url="{% url 'accounts:settings-edit' %}">
