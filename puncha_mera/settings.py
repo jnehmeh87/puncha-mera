@@ -107,6 +107,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', # Add WhiteNoise here
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware', # ADDED FOR TRANSLATIONS
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -139,10 +140,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'puncha_mera.wsgi.application'
 
-
-
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -161,17 +158,30 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
+from django.utils.translation import gettext_lazy as _
+
 LANGUAGE_CODE = 'en-us'
+
+LANGUAGES = [
+    ('en', _('English')),
+    ('sv', _('Swedish')),
+    ('es', _('Spanish')),
+    ('fr', _('French')),
+    ('de', _('German')),
+    ('pt', _('Portuguese')),
+]
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
-
 USE_TZ = True
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
 
 
 # Static files (CSS, JavaScript, Images)

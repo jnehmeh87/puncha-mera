@@ -1,6 +1,7 @@
 import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
 
 class CustomUser(AbstractUser):
     pass
@@ -21,7 +22,7 @@ class Settings(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     currency = models.CharField(max_length=3, default='USD')
     timezone = models.CharField(max_length=100, default='UTC')
-    language = models.CharField(max_length=10, default='en')
+    language = models.CharField(max_length=10, choices=settings.LANGUAGES, default='en')
     color_theme = models.CharField(max_length=20, default='blue')
 
     def __str__(self):

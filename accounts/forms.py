@@ -52,38 +52,27 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         exclude = ['user']
 
-COMMON_LANGUAGES = [
-    ('en', 'English'),
-    ('es', 'Spanish'),
-    ('fr', 'French'),
-    ('de', 'German'),
-    ('it', 'Italian'),
-    ('pt', 'Portuguese'),
-    ('nl', 'Dutch'),
-    ('sv', 'Swedish'),
-    ('no', 'Norwegian'),
-    ('fi', 'Finnish'),
-    ('da', 'Danish'),
-    ('ru', 'Russian'),
-    ('zh', 'Chinese'),
-    ('ja', 'Japanese'),
-    ('ko', 'Korean'),
-    ('ar', 'Arabic'),
-    ('hi', 'Hindi'),
-    ('tr', 'Turkish'),
+from django.conf import settings
+
+# Use the globally defined languages with translation hooks from settings.py
+COMMON_LANGUAGES = settings.LANGUAGES
+
+COLOR_THEMES = [
+    ('blue', 'Ocean'),
+    ('green', 'Forest'),
+    ('purple', 'Amethyst'),
+    ('red', 'Crimson'),
+    ('orange', 'Sunset'),
+    ('yellow', 'Gold'),
+    ('pink', 'Blossom'),
+    ('teal', 'Mint'),
+    ('cyan', 'Sky'),
+    ('indigo', 'Galaxy'),
+    ('lime', 'Neon'),
+    ('rose', 'Rose'),
 ]
 
 class SettingsForm(forms.ModelForm):
-    COLOR_THEMES = [
-        ('blue', 'Classic Blue'),
-        ('green', 'Emerald Green'),
-        ('purple', 'Deep Purple'),
-        ('orange', 'Sunset Orange'),
-        ('pink', 'Hot Pink'),
-        ('red', 'Crimson Red'),
-        ('teal', 'Ocean Teal'),
-    ]
-    
     currency = forms.ChoiceField(choices=[(currency.alpha_3, currency.name) for currency in pycountry.currencies])
     language = forms.ChoiceField(choices=COMMON_LANGUAGES)
     timezone = forms.ChoiceField(choices=[(tz, tz) for tz in pytz.all_timezones])

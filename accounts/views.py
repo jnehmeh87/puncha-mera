@@ -260,42 +260,67 @@ class SettingsUpdatePopupView(LoginRequiredMixin, UpdateView):
     def get_object(self):
         return self.request.user.settings
 
-class CurrencyUpdateView(LoginRequiredMixin, UpdateView):
+from django.views import generic
+class CurrencyUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Settings
     from .forms import CurrencyForm
     form_class = CurrencyForm
-    template_name = 'accounts/settings_form.html'
-    success_url = reverse_lazy('accounts:profile-and-settings')
+    template_name = 'accounts/settings_currency_form.html'
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:profile-and-settings') + '?tab=settings'
 
     def get_object(self):
         return self.request.user.settings
 
-class TimezoneUpdateView(LoginRequiredMixin, UpdateView):
+class TimezoneUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Settings
     from .forms import TimezoneForm
     form_class = TimezoneForm
-    template_name = 'accounts/settings_form.html'
-    success_url = reverse_lazy('accounts:profile-and-settings')
+    template_name = 'accounts/settings_timezone_form.html'
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:profile-and-settings') + '?tab=settings'
 
     def get_object(self):
         return self.request.user.settings
 
-class LanguageUpdateView(LoginRequiredMixin, UpdateView):
+from django.utils import translation
+from django.conf import settings as django_settings
+
+class LanguageUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Settings
     from .forms import LanguageForm
     form_class = LanguageForm
-    template_name = 'accounts/settings_form.html'
-    success_url = reverse_lazy('accounts:profile-and-settings')
+    template_name = 'accounts/settings_language_form.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('accounts:profile-and-settings') + '?tab=settings'
 
     def get_object(self):
         return self.request.user.settings
 
-class ColorThemeUpdateView(LoginRequiredMixin, UpdateView):
+    def form_valid(self, form):
+        # Save the settings
+        response = super().form_valid(form)
+        
+        # Activate the chosen language
+        language = form.cleaned_data.get('language')
+        if language:
+            translation.activate(language)
+            self.request.session['_language'] = language
+            self.request.session.modified = True
+            
+        return response
+
+class ColorThemeUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Settings
     from .forms import ColorThemeForm
     form_class = ColorThemeForm
-    template_name = 'accounts/settings_form.html'
-    success_url = reverse_lazy('accounts:profile-and-settings')
+    template_name = 'accounts/settings_theme_form.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('accounts:profile-and-settings') + '?tab=settings'
 
     def get_object(self):
         return self.request.user.settings

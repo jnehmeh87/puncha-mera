@@ -15,8 +15,8 @@
         <!-- Custom Visual Color Picker -->
         <div class="color-picker-grid mb-4">
             <div class="row g-3">
-                <!-- Swatch: Blue -->
-                <div class="col-4 text-center">
+                <!-- Swatch: Ocean -->
+                <div class="col-4 col-md-3 text-center">
                     <div class="theme-swatch {% if form.color_theme.value == 'blue' %}active{% endif %}"
                         data-value="blue">
                         <div class="swatch-circle"
@@ -24,8 +24,26 @@
                         <span class="d-block mt-2 small fw-semibold">Ocean</span>
                     </div>
                 </div>
-                <!-- Swatch: Green -->
-                <div class="col-4 text-center">
+                <!-- Swatch: Sky -->
+                <div class="col-4 col-md-3 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'cyan' %}active{% endif %}"
+                        data-value="cyan">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #15aabf 0%, #3bc9db 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Sky</span>
+                    </div>
+                </div>
+                <!-- Swatch: Mint -->
+                <div class="col-4 col-md-3 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'teal' %}active{% endif %}"
+                        data-value="teal">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #12b886 0%, #38d9a9 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Mint</span>
+                    </div>
+                </div>
+                <!-- Swatch: Forest -->
+                <div class="col-4 col-md-3 text-center">
                     <div class="theme-swatch {% if form.color_theme.value == 'green' %}active{% endif %}"
                         data-value="green">
                         <div class="swatch-circle"
@@ -33,26 +51,26 @@
                         <span class="d-block mt-2 small fw-semibold">Forest</span>
                     </div>
                 </div>
-                <!-- Swatch: Purple -->
-                <div class="col-4 text-center">
-                    <div class="theme-swatch {% if form.color_theme.value == 'purple' %}active{% endif %}"
-                        data-value="purple">
+                <!-- Swatch: Neon -->
+                <div class="col-4 col-md-3 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'lime' %}active{% endif %}"
+                        data-value="lime">
                         <div class="swatch-circle"
-                            style="background: linear-gradient(135deg, #a881af 0%, #d8b4e2 100%);"></div>
-                        <span class="d-block mt-2 small fw-semibold">Amethyst</span>
+                            style="background: linear-gradient(135deg, #82c91e 0%, #94d82d 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Neon</span>
                     </div>
                 </div>
-                <!-- Swatch: Red -->
-                <div class="col-4 text-center">
-                    <div class="theme-swatch {% if form.color_theme.value == 'red' %}active{% endif %}"
-                        data-value="red">
+                <!-- Swatch: Gold -->
+                <div class="col-4 col-md-3 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'yellow' %}active{% endif %}"
+                        data-value="yellow">
                         <div class="swatch-circle"
-                            style="background: linear-gradient(135deg, #ff4d4d 0%, #ff9999 100%);"></div>
-                        <span class="d-block mt-2 small fw-semibold">Crimson</span>
+                            style="background: linear-gradient(135deg, #fab005 0%, #fcc419 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Gold</span>
                     </div>
                 </div>
-                <!-- Swatch: Orange -->
-                <div class="col-4 text-center">
+                <!-- Swatch: Sunset -->
+                <div class="col-4 col-md-3 text-center">
                     <div class="theme-swatch {% if form.color_theme.value == 'orange' %}active{% endif %}"
                         data-value="orange">
                         <div class="swatch-circle"
@@ -60,13 +78,49 @@
                         <span class="d-block mt-2 small fw-semibold">Sunset</span>
                     </div>
                 </div>
-                <!-- Swatch: Yellow -->
-                <div class="col-4 text-center">
-                    <div class="theme-swatch {% if form.color_theme.value == 'yellow' %}active{% endif %}"
-                        data-value="yellow">
+                <!-- Swatch: Crimson -->
+                <div class="col-4 col-md-3 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'red' %}active{% endif %}"
+                        data-value="red">
                         <div class="swatch-circle"
-                            style="background: linear-gradient(135deg, #ffc107 0%, #ffeeaa 100%);"></div>
-                        <span class="d-block mt-2 small fw-semibold">Gold</span>
+                            style="background: linear-gradient(135deg, #ff4d4d 0%, #ff9999 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Crimson</span>
+                    </div>
+                </div>
+                <!-- Swatch: Rose -->
+                <div class="col-4 col-md-3 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'rose' %}active{% endif %}"
+                        data-value="rose">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #f06595 0%, #faa2c1 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Rose</span>
+                    </div>
+                </div>
+                <!-- Swatch: Blossom -->
+                <div class="col-4 col-md-3 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'pink' %}active{% endif %}"
+                        data-value="pink">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #e83e8c 0%, #ff6b6b 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Blossom</span>
+                    </div>
+                </div>
+                <!-- Swatch: Amethyst -->
+                <div class="col-4 col-md-3 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'purple' %}active{% endif %}"
+                        data-value="purple">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #a881af 0%, #d8b4e2 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Amethyst</span>
+                    </div>
+                </div>
+                <!-- Swatch: Galaxy -->
+                <div class="col-4 col-md-3 text-center">
+                    <div class="theme-swatch {% if form.color_theme.value == 'indigo' %}active{% endif %}"
+                        data-value="indigo">
+                        <div class="swatch-circle"
+                            style="background: linear-gradient(135deg, #748ffc 0%, #91a7ff 100%);"></div>
+                        <span class="d-block mt-2 small fw-semibold">Galaxy</span>
                     </div>
                 </div>
             </div>
@@ -132,6 +186,15 @@
             if (hiddenInput) {
                 hiddenInput.value = selectedColor;
             }
+
+            // Live preview update
+            document.documentElement.setAttribute('data-color-theme', selectedColor);
         });
+    });
+
+    // Handle Cancel Button to revert theme if cancel is clicked
+    const initialTheme = document.documentElement.getAttribute('data-color-theme');
+    document.querySelector('.btn-light[data-bs-dismiss="modal"]').addEventListener('click', function () {
+        document.documentElement.setAttribute('data-color-theme', initialTheme);
     });
 </script>

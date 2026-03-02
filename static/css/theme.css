@@ -108,6 +108,61 @@
     --secondary-color: #12b886;
 }
 
+/* Yellow / Gold */
+[data-color-theme="yellow"] {
+    --primary-color: #fab005;
+    --secondary-color: #fcc419;
+}
+
+[data-theme="light"][data-color-theme="yellow"] {
+    --primary-color: #f59f00;
+    --secondary-color: #fab005;
+}
+
+/* Cyan / Sky */
+[data-color-theme="cyan"] {
+    --primary-color: #15aabf;
+    --secondary-color: #3bc9db;
+}
+
+[data-theme="light"][data-color-theme="cyan"] {
+    --primary-color: #0c8599;
+    --secondary-color: #15aabf;
+}
+
+/* Indigo / Galaxy */
+[data-color-theme="indigo"] {
+    --primary-color: #748ffc;
+    --secondary-color: #91a7ff;
+}
+
+[data-theme="light"][data-color-theme="indigo"] {
+    --primary-color: #4c6ef5;
+    --secondary-color: #748ffc;
+}
+
+/* Lime / Neon */
+[data-color-theme="lime"] {
+    --primary-color: #82c91e;
+    --secondary-color: #94d82d;
+}
+
+[data-theme="light"][data-color-theme="lime"] {
+    --primary-color: #66a80f;
+    --secondary-color: #82c91e;
+}
+
+/* Rose / Rose */
+[data-color-theme="rose"] {
+    --primary-color: #f06595;
+    --secondary-color: #faa2c1;
+}
+
+[data-theme="light"][data-color-theme="rose"] {
+    --primary-color: #d81b60;
+    --secondary-color: #f06595;
+}
+
 body {
     font-family: 'Poppins', system-ui, -apple-system, sans-serif;
     background-color: var(--background-color);
@@ -115,6 +170,14 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
+    min-height: 100vh;
+    /* Ambient premium glow effect */
+    background-image: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary-color) 15%, transparent) 0%, transparent 60%);
+    background-attachment: fixed;
+}
+
+[data-theme="light"] body {
+    background-image: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary-color) 8%, transparent) 0%, transparent 70%);
 }
 
 /* Premium 2026 Structural Overrides */
@@ -161,14 +224,14 @@ body {
 .btn-primary {
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
-    box-shadow: 0 4px 14px 0 rgba(var(--primary-color-rgb, 0, 170, 255), 0.39);
+    box-shadow: 0 4px 14px 0 color-mix(in srgb, var(--primary-color) 40%, transparent);
 }
 
 .btn-primary:hover {
     background-color: var(--secondary-color) !important;
     border-color: var(--secondary-color) !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(var(--secondary-color-rgb, 0, 255, 170), 0.4);
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--secondary-color) 40%, transparent);
 }
 
 /* Depth & Glass Cards */
@@ -303,9 +366,9 @@ body {
 
 /* Dynamic Theme Gradient Text */
 .bg-gradient-text {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
-    -webkit-background-clip: text !important;
-    background-clip: text !important;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
     display: inline-block;
@@ -338,7 +401,7 @@ body {
     background-color: var(--input-bg-color);
     color: var(--text-color) !important;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb, 0, 170, 255), 0.15);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary-color) 20%, transparent);
 }
 
 .form-control:disabled,
