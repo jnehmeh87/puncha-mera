@@ -134,41 +134,43 @@
             // Map Django message tags to appropriate UI styling
             switch (type) {
                 case 'success':
-                    bgColor = 'bg-success';
-                    icon = 'bi-check-circle-fill';
-                    textClass = 'text-white';
-                    closeClass = 'btn-close-white';
+                    bgColor = 'bg-success bg-opacity-10 border-success';
+                    icon = 'bi-check-circle-fill text-success';
+                    textClass = 'text-body';
+                    closeClass = '';
                     break;
                 case 'danger':
                 case 'error':
-                    bgColor = 'bg-danger';
-                    icon = 'bi-exclamation-triangle-fill';
-                    textClass = 'text-white';
-                    closeClass = 'btn-close-white';
+                    bgColor = 'bg-danger bg-opacity-10 border-danger';
+                    icon = 'bi-exclamation-triangle-fill text-danger';
+                    textClass = 'text-body';
+                    closeClass = '';
                     break;
                 case 'warning':
-                    bgColor = 'bg-warning';
-                    icon = 'bi-exclamation-triangle-fill';
-                    textClass = 'text-dark';
+                    bgColor = 'bg-warning bg-opacity-10 border-warning';
+                    icon = 'bi-exclamation-triangle-fill text-warning';
+                    textClass = 'text-body';
                     closeClass = '';
                     break;
                 case 'info':
                 default:
-                    bgColor = 'bg-info';
-                    icon = 'bi-info-circle-fill';
-                    textClass = 'text-dark';
+                    bgColor = 'bg-info bg-opacity-10 border-info';
+                    icon = 'bi-info-circle-fill text-info';
+                    textClass = 'text-body';
                     closeClass = '';
                     break;
             }
 
             const toastHtml = `
-                <div class="toast align-items-center ${textClass} ${bgColor} border-0 mb-3 rounded-4 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast align-items-center ${textClass} ${bgColor} border mb-3 rounded-4 shadow-lg overflow-hidden" 
+                     role="alert" aria-live="assertive" aria-atomic="true"
+                     style="backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
                     <div class="d-flex">
-                        <div class="toast-body d-flex align-items-center gap-3 px-4 py-3 fw-medium fs-6">
-                            <i class="bi ${icon} fs-4"></i>
-                            <span>${message}</span>
+                        <div class="toast-body d-flex align-items-center gap-3 px-4 py-3 fw-semibold fs-6">
+                            <i class="bi ${icon} fs-4 drop-shadow-sm"></i>
+                            <span style="letter-spacing: 0.3px;">${message}</span>
                         </div>
-                        <button type="button" class="btn-close ${closeClass} me-3 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        <button type="button" class="btn-close ${closeClass} me-4 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                     </div>
                 </div>
             `;
