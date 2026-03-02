@@ -83,16 +83,14 @@
         <div class="btn-group" role="group" aria-label="View Toggle">
             <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked
                 onclick="toggleView('card')">
-            <label class="btn btn-theme-outline" for="btnradio1">
-                <i class="bi bi-grid"></i>
-                {% trans "Card View" %}
+            <label class="btn btn-theme-outline px-3" for="btnradio1" title="{% trans 'Card View' %}">
+                <i class="bi bi-grid fs-5"></i>
             </label>
 
             <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"
                 onclick="toggleView('table')">
-            <label class="btn btn-theme-outline" for="btnradio2">
-                <i class="bi bi-list"></i>
-                {% trans "Table View" %}
+            <label class="btn btn-theme-outline px-3" for="btnradio2" title="{% trans 'Table View' %}">
+                <i class="bi bi-list fs-5"></i>
             </label>
         </div>
     </div>
