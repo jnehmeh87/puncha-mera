@@ -9,4 +9,5 @@ urlpatterns = [
     path('<int:pk>/', views.TimeEntryDetailView.as_view(), name='time_entry-detail'),
     path('<int:pk>/edit/', views.TimeEntryUpdateView.as_view(), name='time_entry-update'),
     path('<int:pk>/delete/', views.TimeEntryDeleteView.as_view(), name='time_entry-delete'),
+    path('bulk-delete/', views.bulk_delete_entries, name='time_entry-bulk-delete'),
 ]
