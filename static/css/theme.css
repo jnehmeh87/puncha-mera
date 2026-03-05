@@ -13,6 +13,8 @@
     --bs-table-color: var(--text-color);
     --bs-table-bg: var(--surface-color);
     --bs-table-striped-color: var(--text-color);
+
+    --btn-close-filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 [data-theme="light"] {
@@ -28,6 +30,8 @@
     --bs-table-color: #000;
     --bs-table-bg: #fff;
     --bs-table-striped-color: #000;
+
+    --btn-close-filter: none;
 }
 
 /* --- Color Themes (Overrides base primary/secondary colors) --- */
