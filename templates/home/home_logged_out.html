@@ -65,7 +65,7 @@
         height: 400px;
         background: #4f46e5;
         top: 40%;
-        left: 30%;
+        left: 50%;
         opacity: 0.4;
         animation-duration: 25s;
     }
@@ -76,11 +76,11 @@
         }
 
         50% {
-            transform: translate(100px, 50px) scale(1.1);
+            transform: translate(150px, 100px) scale(1.15);
         }
 
         100% {
-            transform: translate(-50px, 100px) scale(0.9);
+            transform: translate(-100px, 150px) scale(0.9);
         }
     }
 
@@ -219,31 +219,39 @@
         color: white;
     }
 
-    /* Quote Card */
-    .quote-card {
-        background: linear-gradient(135deg, rgba(239, 108, 0, 0.1) 0%, rgba(229, 46, 113, 0.1) 100%);
-        border: 1px solid rgba(239, 108, 0, 0.2);
-        border-radius: 2rem;
-        padding: 4rem 2rem;
+    /* Premium Testimonial Card */
+    .testimonial-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 2.5rem;
         position: relative;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         overflow: hidden;
+        transition: all 0.3s ease;
     }
 
-    .quote-icon {
-        font-size: 6rem;
-        color: rgba(255, 255, 255, 0.05);
-        position: absolute;
-        top: -10px;
-        left: 20px;
-        line-height: 1;
-        font-family: serif;
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 </style>
 
-<!-- Background Animations -->
-<div class="glow-orb orb-1"></div>
-<div class="glow-orb orb-2"></div>
-<div class="glow-orb orb-3"></div>
+<!-- Background Animations with Interactive Parallax -->
+<div class="orb-wrapper" data-speed="2.5"
+    style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);">
+    <div class="glow-orb orb-1"></div>
+</div>
+<div class="orb-wrapper" data-speed="-1.5"
+    style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);">
+    <div class="glow-orb orb-2"></div>
+</div>
+<div class="orb-wrapper" data-speed="1.2"
+    style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);">
+    <div class="glow-orb orb-3"></div>
+</div>
 
 <!-- Hero Section -->
 <div class="container position-relative z-1 d-flex flex-column justify-content-center" style="min-height: 90vh;">
@@ -424,41 +432,148 @@
     </div>
 </div>
 
-<!-- Epic Testimonial -->
+<!-- Epic Testimonials -->
 <div class="container py-5 mb-5 position-relative z-1">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="quote-card text-center text-md-start d-flex flex-column flex-md-row align-items-center gap-5">
-                <div class="quote-icon">&ldquo;</div>
-                <div class="flex-grow-1 z-1">
-                    <p class="fs-3 fw-medium mb-4" style="line-height: 1.5; color: #fff;">
+    <div class="row justify-content-center mb-5">
+        <div class="col-12 text-center">
+            <h2 class="section-title">
+                {% blocktranslate %}
+                Loved by Creators
+                {% endblocktranslate %}
+            </h2>
+        </div>
+    </div>
+    <div class="row g-4 justify-content-center">
+        <!-- Testimonial 1 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="testimonial-card h-100 text-center d-flex flex-column align-items-center p-4 p-xl-5">
+                <!-- Profile Block (Top) -->
+                <div class="d-flex flex-column align-items-center gap-3 mb-4">
+                    <div class="rounded-circle bg-white bg-opacity-10 d-flex align-items-center justify-content-center shadow"
+                        style="width: 72px; height: 72px;">
+                        <i class="bi bi-person-fill fs-2 text-white-50"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1 text-white">
+                            {% blocktranslate %}
+                            John Doe
+                            {% endblocktranslate %}
+                        </h4>
+                        <span class="text-white-50 text-uppercase fs-6 fw-semibold" style="letter-spacing: 1px;">
+                            {% blocktranslate %}
+                            Independent Developer
+                            {% endblocktranslate %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Quote Block (Bottom) -->
+                <div class="position-relative mt-2 flex-grow-1 d-flex">
+                    <i class="bi bi-quote position-absolute start-50 top-0 translate-middle-x"
+                        style="font-size: 8rem; color: rgba(255,255,255,0.03); z-index: 0; margin-top: -3rem;"></i>
+                    <p class="fs-5 fw-medium position-relative z-1 mb-0 mt-auto"
+                        style="line-height: 1.7; color: rgba(255,255,255,0.85);">
                         {% blocktranslate %}
-                        Puncha Mera stripped away all the anxiety of managing my freelance business. It is so stunningly
-                        fast and beautiful that logging time actually feels rewarding.
+                        "Puncha Mera stripped away all the anxiety of managing my freelance business. It is so
+                        stunningly
+                        fast and beautiful that logging time actually feels rewarding."
                         {% endblocktranslate %}
                     </p>
-                    <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
-                        <div class="rounded-circle bg-white bg-opacity-10 d-flex align-items-center justify-content-center"
-                            style="width: 50px; height: 50px;">
-                            <i class="bi bi-person-fill fs-3 text-white"></i>
-                        </div>
-                        <div>
-                            <h5 class="fw-bold mb-0 text-white">
-                                {% blocktranslate %}
-                                John Doe
-                                {% endblocktranslate %}
-                            </h5>
-                            <span class="text-white-50">
-                                {% blocktranslate %}
-                                Independent Developer
-                                {% endblocktranslate %}
-                            </span>
-                        </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="testimonial-card h-100 text-center d-flex flex-column align-items-center p-4 p-xl-5">
+                <!-- Profile Block (Top) -->
+                <div class="d-flex flex-column align-items-center gap-3 mb-4">
+                    <div class="rounded-circle bg-white bg-opacity-10 d-flex align-items-center justify-content-center shadow"
+                        style="width: 72px; height: 72px;">
+                        <i class="bi bi-vector-pen fs-2 text-white-50"></i>
                     </div>
+                    <div>
+                        <h4 class="fw-bold mb-1 text-white">
+                            {% blocktranslate %}
+                            Sarah Jenkins
+                            {% endblocktranslate %}
+                        </h4>
+                        <span class="text-white-50 text-uppercase fs-6 fw-semibold" style="letter-spacing: 1px;">
+                            {% blocktranslate %}
+                            Brand Designer
+                            {% endblocktranslate %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Quote Block (Bottom) -->
+                <div class="position-relative mt-2 flex-grow-1 d-flex">
+                    <i class="bi bi-quote position-absolute start-50 top-0 translate-middle-x"
+                        style="font-size: 8rem; color: rgba(255,255,255,0.03); z-index: 0; margin-top: -3rem;"></i>
+                    <p class="fs-5 fw-medium position-relative z-1 mb-0 mt-auto"
+                        style="line-height: 1.7; color: rgba(255,255,255,0.85);">
+                        {% blocktranslate %}
+                        "I've tried every billing tool on the market. Nothing matches this level of aesthetic polish and
+                        pure speed. It makes invoicing my clients an absolute breeze."
+                        {% endblocktranslate %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="testimonial-card h-100 text-center d-flex flex-column align-items-center p-4 p-xl-5">
+                <!-- Profile Block (Top) -->
+                <div class="d-flex flex-column align-items-center gap-3 mb-4">
+                    <div class="rounded-circle bg-white bg-opacity-10 d-flex align-items-center justify-content-center shadow"
+                        style="width: 72px; height: 72px;">
+                        <i class="bi bi-camera fs-2 text-white-50"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1 text-white">
+                            {% blocktranslate %}
+                            Mike Chen
+                            {% endblocktranslate %}
+                        </h4>
+                        <span class="text-white-50 text-uppercase fs-6 fw-semibold" style="letter-spacing: 1px;">
+                            {% blocktranslate %}
+                            Freelance Photographer
+                            {% endblocktranslate %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Quote Block (Bottom) -->
+                <div class="position-relative mt-2 flex-grow-1 d-flex">
+                    <i class="bi bi-quote position-absolute start-50 top-0 translate-middle-x"
+                        style="font-size: 8rem; color: rgba(255,255,255,0.03); z-index: 0; margin-top: -3rem;"></i>
+                    <p class="fs-5 fw-medium position-relative z-1 mb-0 mt-auto"
+                        style="line-height: 1.7; color: rgba(255,255,255,0.85);">
+                        {% blocktranslate %}
+                        "The deep analytics helped me realize which clients are actually driving my revenue. It's not
+                        just a time tracker, it's a co-founder that lives in my browser."
+                        {% endblocktranslate %}
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Subtle Parallax Effect on Background Orbs
+        document.addEventListener("mousemove", function (e) {
+            const x = (e.clientX - window.innerWidth / 2) / 40;
+            const y = (e.clientY - window.innerHeight / 2) / 40;
+
+            document.querySelectorAll('.orb-wrapper').forEach(wrapper => {
+                const speed = parseFloat(wrapper.getAttribute('data-speed'));
+                wrapper.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+    });
+</script>
 
 {% endblock %}
