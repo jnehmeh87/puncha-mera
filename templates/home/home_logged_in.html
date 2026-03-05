@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load profile_tags %}
+{% load i18n %}
 
 {% block content %}
 <div class="container text-center">
@@ -15,18 +16,98 @@
 
     <hr class="my-5">
 
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h2 class="mb-4">Quick Actions</h2>
-            <div class="list-group shadow-sm">
-                <a href="{% url 'projects:project-list' %}" class="list-group-item list-group-item-action">Projects</a>
-                <a href="{% url 'invoices:invoice-list' %}" class="list-group-item list-group-item-action">Invoices</a>
-                <a href="{% url 'time_entries:time_entry-list' %}" class="list-group-item list-group-item-action">Time
-                    Entries</a>
-                <a href="{% url 'accounts:contact-list' %}" class="list-group-item list-group-item-action">Contacts</a>
+    <div class="row justify-content-center mb-2">
+        <div class="col-md-10">
+            <h2 class="h3 fw-bold mb-4 bg-gradient-text text-center text-md-start">{% trans "Quick Actions" %}</h2>
+
+            <div class="row g-4 pt-2">
+                <!-- Projects Card -->
+                <div class="col-12 col-sm-6 col-md-3">
+                    <a href="{% url 'projects:project-list' %}" class="text-decoration-none">
+                        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+                            <div class="card-body p-4 position-relative z-1 d-flex flex-column text-start">
+                                <h5 class="fw-medium text-white-50 mb-4 fs-6">{% trans "Manage client projects" %}</h5>
+                                <h2 class="fw-bolder mb-0 mt-auto text-white">{% trans "Projects" %}</h2>
+                                <i class="bi bi-briefcase-fill card-icon-bg"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Invoices Card -->
+                <div class="col-12 col-sm-6 col-md-3">
+                    <a href="{% url 'invoices:invoice-list' %}" class="text-decoration-none">
+                        <div class="card shadow border-0 h-100 dashboard-card gradient-success">
+                            <div class="card-body p-4 position-relative z-1 d-flex flex-column text-start">
+                                <h5 class="fw-medium text-white-50 mb-4 fs-6">{% trans "Track billing & payments" %}
+                                </h5>
+                                <h2 class="fw-bolder mb-0 mt-auto text-white">{% trans "Invoices" %}</h2>
+                                <i class="bi bi-receipt card-icon-bg"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Time Entries Card -->
+                <div class="col-12 col-sm-6 col-md-3">
+                    <a href="{% url 'time_entries:time_entry-list' %}" class="text-decoration-none">
+                        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+                            <div class="card-body p-4 position-relative z-1 d-flex flex-column text-start">
+                                <h5 class="fw-medium text-white-50 mb-4 fs-6">{% trans "Log hours & pauses" %}</h5>
+                                <h2 class="fw-bolder mb-0 mt-auto text-white">{% trans "Time Entries" %}</h2>
+                                <i class="bi bi-clock-history card-icon-bg"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Contacts Card -->
+                <div class="col-12 col-sm-6 col-md-3">
+                    <a href="{% url 'accounts:contact-list' %}" class="text-decoration-none">
+                        <div class="card shadow border-0 h-100 dashboard-card gradient-success">
+                            <div class="card-body p-4 position-relative z-1 d-flex flex-column text-start">
+                                <h5 class="fw-medium text-white-50 mb-4 fs-6">{% trans "Manage client network" %}</h5>
+                                <h2 class="fw-bolder mb-0 mt-auto text-white">{% trans "Contacts" %}</h2>
+                                <i class="bi bi-person-lines-fill card-icon-bg"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
+
+    <style>
+        .dashboard-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1.25rem !important;
+            overflow: hidden;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .gradient-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, color-mix(in srgb, var(--primary-color) 50%, var(--secondary-color))) !important;
+        }
+
+        .gradient-success {
+            background: linear-gradient(135deg, color-mix(in srgb, var(--secondary-color) 50%, var(--primary-color)) 0%, var(--secondary-color) 100%) !important;
+        }
+
+        .card-icon-bg {
+            position: absolute;
+            right: -15px;
+            bottom: -25px;
+            font-size: 7rem;
+            color: rgba(255, 255, 255, 0.15);
+            transform: rotate(-15deg);
+            z-index: 0;
+            pointer-events: none;
+        }
+    </style>
 
     <hr class="my-5">
 

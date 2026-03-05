@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
-
+{% load i18n %}
+{% load time_filters %}
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6 text-center">
@@ -28,36 +29,104 @@
         <div class="d-flex justify-content-between align-items-center mb-3 mt-5">
             <h2 class="h4 fw-bold mb-0">Latest Time Entries</h2>
         </div>
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0 align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Date</th>
-                                <th>Project</th>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th>Duration</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for entry in time_entries %}
-                            <tr>
-                                <td>{{ entry.date|date:"M d, Y" }}</td>
-                                <td>{{ entry.project.name|default:entry.project }}</td>
-                                <td><strong>{{ entry.title }}</strong></td>
-                                <td><small class="opacity-75">{{ entry.description|truncatechars:50 }}</small></td>
-                                <td>{{ entry.duration }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">No entries found for today.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+        <div id="cardView" class="row">
+            {% for entry in time_entries %}
+            <div class="col-12 mb-3">
+                <div class="card shadow-sm border-0"
+                    style="border-radius: 1rem; transition: transform 0.2s, box-shadow 0.2s;">
+                    <div class="row g-0">
+                        <div class="col-12">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <h5 class="card-title fw-bold mb-0">{{ entry.title }}</h5>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="badge fs-6 rounded-pill px-3 py-2 text-white text-center"
+                                            style="background-color: #6c757d;">
+                                            {{ entry.date|date:"F j, Y" }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <h6 class="card-subtitle mb-3 text-muted">
+                                    <i class="bi bi-briefcase me-1"></i> {{ entry.project.name|default:entry.project }}
+                                    <span class="mx-2">|</span>
+                                    <i class="bi bi-person me-1"></i> {{ entry.user.username }}
+                                </h6>
+
+                                <div class="d-flex gap-5 mt-3">
+                                    <div>
+                                        <small class="text-muted d-block">{% trans "Time" %}</small>
+                                        <span class="fw-semibold fs-5">
+                                            <span>{{ entry.start_time|time:"H:i"|default:"-" }}</span>
+                                            <span>-</span>
+                                            <span>{{ entry.end_time|time:"H:i"|default:"-" }}</span>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">{% trans "Pause" %}</small>
+                                        <span class="fw-semibold fs-5">
+                                            {{ entry.pause_duration|format_duration }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">{% trans "Duration" %}</small>
+                                        <span class="fw-semibold fs-5">
+                                            {% if entry.actual_duration %}
+                                            {{ entry.actual_duration|format_duration }}
+                                            {% else %}
+                                            {{ entry.duration|format_duration }}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {% if entry.description %}
+                                <div class="mt-4 pt-3 border-top">
+                                    <p class="mb-2"><strong class="text-muted">{% trans "Description:" %}</strong>
+                                        {{ entry.description|truncatechars:100 }}
+                                    </p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info border-0 shadow-sm p-4 text-center" style="border-radius: 1rem;">
+                    {% trans "No entries found for today." %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Confirmation Modal -->
+<div class="modal fade" id="cancelTimerModal" tabindex="-1" aria-labelledby="cancelTimerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="cancelTimerModalLabel">
+                    <i class="bi bi-question-circle text-primary me-2"></i> {% trans "Cancel Entry" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="mb-0 fs-5">
+                    {% trans "Are you sure you want to cancel this time entry?" %}
+                </p>
+                <p class="text-muted small mt-2 mb-0">{% trans "Your tracked time will be lost." %}</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+                    {% trans "Go Back" %}
+                </button>
+                <button type="button" class="btn btn-danger rounded-pill px-4" id="confirmCancelTimerBtn">
+                    {% trans "Cancel Entry" %}
+                </button>
             </div>
         </div>
     </div>
@@ -80,16 +149,24 @@
     const pauseDurationInput = document.getElementById('id_pause_duration');
     const cancelBtn = document.getElementById('cancel-btn');
 
+    let cancelModalInstance = null;
+
     cancelBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to cancel?')) {
-            entryForm.style.display = 'none';
-            elapsedTime = 0;
-            totalPausedTime = 0;
-            timerDisplay.textContent = '00:00:00';
-            startBtn.style.display = 'inline-block';
-            pauseBtn.style.display = 'none';
-            stopBtn.style.display = 'none';
+        if (!cancelModalInstance) {
+            cancelModalInstance = new bootstrap.Modal(document.getElementById('cancelTimerModal'));
         }
+        cancelModalInstance.show();
+    });
+
+    document.getElementById('confirmCancelTimerBtn').addEventListener('click', () => {
+        cancelModalInstance.hide();
+        entryForm.style.display = 'none';
+        elapsedTime = 0;
+        totalPausedTime = 0;
+        timerDisplay.textContent = '00:00:00';
+        startBtn.style.display = 'inline-block';
+        pauseBtn.style.display = 'none';
+        stopBtn.style.display = 'none';
     });
 
     function formatTime(ms) {
