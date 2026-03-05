@@ -2,106 +2,324 @@
 
 {% block content %}
 <style>
-  .table-fixed {
-    table-layout: fixed;
-    width: 100%;
+  /* Glassmorphic Panel Variations */
+  .glass-panel {
+    background-color: color-mix(in srgb, var(--surface-color) 80%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   }
-  .table-fixed th, .table-fixed td {
-    width: 25%;
+
+  [data-theme="light"] .glass-panel {
+    background-color: color-mix(in srgb, var(--surface-color) 90%, transparent);
+    border: 1px solid rgba(0, 0, 0, 0.05);
   }
-  .nav-tabs .nav-link.active {
-    border-color: #00aaff;
+
+  /* Custom Tabs Styling */
+  .custom-tab {
+    color: var(--text-color);
+    opacity: 0.6;
+    border-bottom: 2px solid transparent !important;
+    padding-bottom: 0.75rem;
+    transition: all 0.3s ease;
   }
-  .nav-tabs .nav-link:hover {
-    border-color: #00aaff;
+
+  .custom-tab:hover {
+    color: var(--primary-color) !important;
+    opacity: 1;
   }
-  [data-theme="dark"] .nav-tabs .nav-link.active {
-    background-color: #444;
-    color: #fff;
+
+  .custom-tab.active {
+    color: var(--primary-color) !important;
+    opacity: 1;
+    border-bottom-color: var(--primary-color) !important;
   }
-  [data-theme="dark"] .nav-tabs .nav-link:hover {
-    background-color: #444;
-    color: #fff;
+
+  /* Table Restyling for Glass Theme */
+  .custom-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-color);
+    --bs-table-hover-bg: color-mix(in srgb, var(--text-color) 4%, transparent);
+    --bs-table-hover-color: var(--text-color);
+  }
+
+  .custom-table th {
+    font-weight: 600;
+    color: var(--text-secondary-color);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 1rem 1.5rem;
+  }
+
+  .custom-table td {
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  }
+
+  [data-theme="light"] .custom-table td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  }
+
+  /* Animated Orbs */
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: float 20s infinite ease-in-out alternate;
+  }
+
+  .orb-1 {
+    width: 40vw;
+    height: 40vw;
+    background: var(--primary-color);
+    top: -10%;
+    left: -10%;
+    animation-delay: 0s;
+  }
+
+  .orb-2 {
+    width: 35vw;
+    height: 35vw;
+    background: var(--secondary-color);
+    bottom: 10%;
+    right: -5%;
+    animation-delay: -5s;
+    opacity: 0.3;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+      transform: translate(5%, 10%) scale(1.1);
+    }
+  }
+
+  /* Utilities */
+  .avatar-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
 </style>
 
-<div class="card">
-  <div class="card-header">
-    <ul class="nav nav-tabs card-header-tabs" id="contactTabs" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" id="active-tab" data-bs-toggle="tab" href="#active" role="tab" aria-controls="active" aria-selected="true">Active Contacts</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="archived-tab" data-bs-toggle="tab" href="#archived" role="tab" aria-controls="archived" aria-selected="false">Archived Contacts</a>
-      </li>
-    </ul>
+<!-- Animated Background -->
+<div class="orb-wrapper" data-speed="2.5"
+  style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);">
+  <div class="glow-orb orb-1"></div>
+</div>
+<div class="orb-wrapper" data-speed="-1.5"
+  style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);">
+  <div class="glow-orb orb-2"></div>
+</div>
+
+<div class="container py-4 position-relative z-1">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+    <div>
+      <h2 class="fw-bold mb-1"
+        style="background: linear-gradient(135deg, var(--text-color) 0%, var(--text-secondary-color) 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        Contacts</h2>
+      <p class="text-secondary mb-0" style="color: var(--text-secondary-color) !important;">Manage your active and
+        archived contacts.</p>
+    </div>
+    <a href="{% url 'accounts:contact-create' %}" class="btn btn-glow btn-primary-glow px-4 py-2">
+      <i class="bi bi-person-plus me-2"></i>New Contact
+    </a>
   </div>
-  <div class="card-body">
-    <div class="tab-content" id="contactTabsContent">
-      <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
-        <a href="{% url 'accounts:contact-create' %}" class="btn btn-primary mb-3">New Contact</a>
-        <table class="table table-striped table-fixed">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Email</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for contact in active_contacts %}
-              <tr>
-                <td>{{ contact.name }}</td>
-                <td>{{ contact.contact_type }}</td>
-                <td>{{ contact.company_email }}</td>
-                <td>
-                  <a href="{% url 'accounts:contact-detail' contact.pk %}" class="btn btn-sm btn-info">View</a>
-                  <a href="{% url 'accounts:contact-update' contact.pk %}" class="btn btn-sm btn-secondary">Edit</a>
-                  <a href="{% url 'accounts:contact-archive' contact.pk %}" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to archive this contact?')">Archive</a>
-                  <a href="{% url 'accounts:contact-delete' contact.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this contact?')">Delete</a>
-                </td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td colspan="4" class="text-center">No active contacts. <a href="{% url 'accounts:contact-create' %}">Start a new contact</a>.</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="tab-pane fade" id="archived" role="tabpanel" aria-labelledby="archived-tab">
-        <table class="table table-striped table-fixed">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Email</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for contact in archived_contacts %}
-              <tr>
-                <td>{{ contact.name }}</td>
-                <td>{{ contact.contact_type }}</td>
-                <td>{{ contact.company_email }}</td>
-                <td>
-                  <a href="{% url 'accounts:contact-detail' contact.pk %}" class="btn btn-sm btn-info">View</a>
-                  <a href="{% url 'accounts:contact-update' contact.pk %}" class="btn btn-sm btn-secondary">Edit</a>
-                  <a href="{% url 'accounts:contact-unarchive' contact.pk %}" class="btn btn-sm btn-warning">Unarchive</a>
-                  <a href="{% url 'accounts:contact-delete' contact.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this contact?')">Delete</a>
-                </td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td colspan="4" class="text-center">No archived contacts.</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+
+  <div class="glass-panel overflow-hidden">
+    <div class="border-bottom border-light border-opacity-10 bg-transparent pt-4 pb-0 px-4">
+      <ul class="nav nav-tabs border-0 gap-4" id="contactTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link custom-tab border-0 fs-5 fw-medium active" id="active-tab" data-bs-toggle="tab"
+            data-bs-target="#active" type="button" role="tab" aria-controls="active" aria-selected="true">Active
+            Contacts</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link custom-tab border-0 fs-5 fw-medium bg-transparent" id="archived-tab"
+            data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archived"
+            aria-selected="false">Archived Contacts</button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="p-0">
+      <div class="tab-content" id="contactTabsContent">
+
+        <!-- Active Tab -->
+        <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
+          <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0 custom-table w-100">
+              <thead style="background-color: color-mix(in srgb, var(--text-color) 2%, transparent);">
+                <tr>
+                  <th style="width: 30%;">Name</th>
+                  <th style="width: 20%;">Type</th>
+                  <th style="width: 25%;">Email</th>
+                  <th class="text-end" style="width: 25%;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for contact in active_contacts %}
+                <tr style="transition: all 0.2s ease;">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar-circle me-3 text-white"
+                        style="background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 60%, black));">
+                        {{ contact.name|make_list|first|upper }}
+                      </div>
+                      <span class="fs-6 fw-medium">{{ contact.name }}</span>
+                    </div>
+                  </td>
+                  <td class="text-white-50"><span
+                      class="badge bg-secondary bg-opacity-25 text-white-50 px-2 py-1 rounded-pill">{{
+                      contact.contact_type }}</span></td>
+                  <td class="text-white-50">{{ contact.company_email|default:"-" }}</td>
+                  <td class="text-end">
+                    <div class="d-flex justify-content-end gap-2 flex-wrap">
+                      <a href="{% url 'accounts:contact-detail' contact.pk %}"
+                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
+                        style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
+                        <i class="bi bi-eye"></i> View
+                      </a>
+                      <a href="{% url 'accounts:contact-update' contact.pk %}"
+                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
+                        style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
+                        <i class="bi bi-pencil"></i> Edit
+                      </a>
+                      <a href="{% url 'accounts:contact-archive' contact.pk %}"
+                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
+                        style="color: #ffc107; border-color: rgba(255, 193, 7, 0.3); background-color: rgba(255, 193, 7, 0.05);"
+                        onclick="return confirm('Archive {{ contact.name|escapejs }}?')">
+                        <i class="bi bi-archive"></i>
+                      </a>
+                      <a href="{% url 'accounts:contact-delete' contact.pk %}"
+                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
+                        style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);"
+                        onclick="return confirm('Delete {{ contact.name|escapejs }} forever?')">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center py-5">
+                    <div class="mb-3" style="color: var(--text-secondary-color);"><i
+                        class="bi bi-person-lines-fill fs-1 opacity-50"></i></div>
+                    <h5 class="fw-normal">No active contacts</h5>
+                    <p class="mb-4" style="color: var(--text-secondary-color);">Get started by adding your first
+                      contact.</p>
+                    <a href="{% url 'accounts:contact-create' %}"
+                      class="btn btn-glow btn-primary-glow rounded-pill px-4">Start a new contact</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Archived Tab -->
+        <div class="tab-pane fade" id="archived" role="tabpanel" aria-labelledby="archived-tab">
+          <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0 custom-table w-100">
+              <thead style="background-color: color-mix(in srgb, var(--text-color) 2%, transparent);">
+                <tr>
+                  <th style="width: 30%;">Name</th>
+                  <th style="width: 20%;">Type</th>
+                  <th style="width: 25%;">Email</th>
+                  <th class="text-end" style="width: 25%;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for contact in archived_contacts %}
+                <tr style="transition: all 0.2s ease;">
+                  <td>
+                    <div class="d-flex align-items-center opacity-75">
+                      <div class="avatar-circle me-3"
+                        style="background-color: color-mix(in srgb, var(--text-color) 10%, transparent); color: var(--text-secondary-color);">
+                        {{ contact.name|make_list|first|upper }}
+                      </div>
+                      <span class="fs-6 fw-medium text-decoration-line-through"
+                        style="color: var(--text-secondary-color);">{{ contact.name }}</span>
+                    </div>
+                  </td>
+                  <td class="text-white-50"><span
+                      class="badge bg-secondary bg-opacity-10 text-white-50 px-2 py-1 rounded-pill">{{
+                      contact.contact_type }}</span></td>
+                  <td class="text-white-50">{{ contact.company_email|default:"-" }}</td>
+                  <td class="text-end">
+                    <div class="d-flex justify-content-end gap-2 flex-wrap">
+                      <a href="{% url 'accounts:contact-detail' contact.pk %}"
+                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
+                        style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
+                        <i class="bi bi-eye"></i> View
+                      </a>
+                      <a href="{% url 'accounts:contact-update' contact.pk %}"
+                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
+                        style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
+                        <i class="bi bi-pencil"></i> Edit
+                      </a>
+                      <a href="{% url 'accounts:contact-unarchive' contact.pk %}"
+                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
+                        style="color: #198754; border-color: rgba(25, 135, 84, 0.3); background-color: rgba(25, 135, 84, 0.05);">
+                        <i class="bi bi-arrow-counterclockwise"></i> Unarchive
+                      </a>
+                      <a href="{% url 'accounts:contact-delete' contact.pk %}"
+                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
+                        style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);"
+                        onclick="return confirm('Delete {{ contact.name|escapejs }} forever?')">
+                        <i class="bi bi-trash"></i> Delete
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center py-5">
+                    <div class="mb-3" style="color: var(--text-secondary-color);"><i
+                        class="bi bi-archive fs-1 opacity-50"></i></div>
+                    <h5 class="fw-normal" style="color: var(--text-secondary-color);">No archived contacts</h5>
+                    <p class="mb-0" style="color: var(--text-secondary-color);">Contacts you archive will appear here.
+                    </p>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Parallax Effect on Background Orbs
+    document.addEventListener("mousemove", function (e) {
+      const x = (e.clientX - window.innerWidth / 2) / 40;
+      const y = (e.clientY - window.innerHeight / 2) / 40;
+
+      document.querySelectorAll('.orb-wrapper').forEach(wrapper => {
+        const speed = parseFloat(wrapper.getAttribute('data-speed'));
+        wrapper.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+      });
+    });
+  });
+</script>
 {% endblock %}

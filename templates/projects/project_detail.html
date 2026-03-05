@@ -1,76 +1,197 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-  <div class="row">
+<style>
+  /* Glassmorphic Panel Variations */
+  .glass-panel {
+    background-color: color-mix(in srgb, var(--surface-color) 80%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  [data-theme="light"] .glass-panel {
+    background-color: color-mix(in srgb, var(--surface-color) 90%, transparent);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  /* Animated Orbs */
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: float 20s infinite ease-in-out alternate;
+  }
+
+  .orb-1 {
+    width: 40vw;
+    height: 40vw;
+    background: var(--primary-color);
+    top: -10%;
+    left: -10%;
+    animation-delay: 0s;
+  }
+
+  .orb-2 {
+    width: 35vw;
+    height: 35vw;
+    background: var(--secondary-color);
+    bottom: 10%;
+    right: -5%;
+    animation-delay: -5s;
+    opacity: 0.3;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+      transform: translate(5%, 10%) scale(1.1);
+    }
+  }
+
+  /* Member List Items */
+  .member-item {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .member-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  [data-theme="light"] .member-item {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  [data-theme="light"] .member-item:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  /* Utilities */
+  .avatar-circle {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+</style>
+
+<!-- Animated Background -->
+<div class="orb-wrapper" data-speed="2.5"
+  style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);">
+  <div class="glow-orb orb-1"></div>
+</div>
+<div class="orb-wrapper" data-speed="-1.5"
+  style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);">
+  <div class="glow-orb orb-2"></div>
+</div>
+
+<div class="container py-4 position-relative z-1 mb-5">
+  <div class="row g-4">
     <!-- Project Details Card -->
-    <div class="col-md-8 mb-4">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body p-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="card-title h3 mb-0 fw-bold">{{ object.name }} <span
-                class="badge bg-secondary fs-6 align-middle ms-2">{{ object.currency }}</span></h1>
-            <div>
-              <a href="{% url 'projects:project-update' object.pk %}" class="btn btn-outline-secondary btn-sm me-2">
-                <i class="bi bi-pencil"></i> Edit
+    <div class="col-lg-8">
+      <div class="glass-panel h-100 overflow-hidden d-flex flex-column">
+        <div class="p-4 p-md-5 flex-grow-1">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <h1 class="h2 mb-0 fw-bolder d-flex align-items-center flex-wrap gap-2"
+              style="background: linear-gradient(135deg, var(--text-color) 0%, var(--text-secondary-color) 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              {{ object.name }}
+              <span class="badge rounded-pill fw-medium fs-6 ms-1"
+                style="background-color: color-mix(in srgb, var(--text-color) 10%, transparent); color: var(--text-secondary-color); border: 1px solid rgba(255,255,255,0.1); -webkit-text-fill-color: initial;">{{
+                object.currency }}</span>
+            </h1>
+            <div class="d-flex gap-2">
+              <a href="{% url 'projects:project-update' object.pk %}"
+                class="btn btn-outline-glow rounded-pill px-4 py-2"
+                style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
+                <i class="bi bi-pencil me-2"></i> Edit
               </a>
-              <a href="{% url 'projects:project-delete' object.pk %}" class="btn btn-outline-danger btn-sm">
-                <i class="bi bi-trash"></i> Delete
+              <a href="{% url 'projects:project-delete' object.pk %}"
+                class="btn btn-outline-glow rounded-pill px-4 py-2"
+                style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);">
+                <i class="bi bi-trash me-2"></i> Delete
               </a>
             </div>
           </div>
-          <hr>
-          <h5 class="text-muted fw-normal mb-3">Description</h5>
-          <p class="card-text fs-5">{{ object.description }}</p>
+
+          <hr class="mb-4" style="border-color: rgba(255,255,255,0.1);">
+
+          <h5 class="fw-medium mb-3" style="color: var(--text-secondary-color);">Description</h5>
+          <p class="fs-5 lh-base" style="color: var(--text-color);">{{ object.description|linebreaksbr }}</p>
         </div>
       </div>
     </div>
 
     <!-- Team Members Card -->
-    <div class="col-md-4 mb-4">
-      <div class="card shadow-sm border-0 h-100">
-        <div
-          class="card-header border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center bg-transparent">
-          <h2 class="card-title h5 mb-0 fw-bold">Team Members</h2>
-          <span class="badge bg-primary rounded-pill">{{ object.projectmember_set.count }}</span>
+    <div class="col-lg-4">
+      <div class="glass-panel h-100 d-flex flex-column"
+        style="background-color: color-mix(in srgb, var(--surface-color) 60%, transparent);">
+        <div class="p-4 border-bottom border-light border-opacity-10 d-flex justify-content-between align-items-center">
+          <h3 class="h5 mb-0 fw-bold" style="color: var(--text-color);">Team Members</h3>
+          <span class="badge rounded-pill d-flex align-items-center justify-content-center"
+            style="background: var(--primary-color); color: #fff; width: 24px; height: 24px;">{{
+            object.projectmember_set.count }}</span>
         </div>
-        <div class="card-body p-4">
-          <ul class="list-group list-group-flush mb-4">
+
+        <div class="p-4 flex-grow-1 d-flex flex-column">
+          <div class="mb-4 flex-grow-1">
             {% for member in object.projectmember_set.all %}
-            <li
-              class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-3 py-3 border-bottom">
+            <div class="member-item d-flex justify-content-between align-items-center p-3">
               <div class="d-flex align-items-center">
-                <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3"
-                  style="width: 40px; height: 40px;">
+                <div class="avatar-circle me-3 text-white"
+                  style="background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 60%, black));">
                   {{ member.user.username|make_list|first|upper }}
                 </div>
                 <div>
-                  <h6 class="mb-0 fw-semibold">{{ member.user.username }}</h6>
-                  <div class="d-flex align-items-center mt-1">
+                  <h6 class="mb-1 fw-semibold" style="color: var(--text-color);">{{ member.user.username }}</h6>
+                  <div class="d-flex align-items-center">
                     {% if member.can_edit %}
-                    <span class="badge bg-info text-dark me-2">Editor</span>
+                    <span class="badge rounded-pill me-2 fw-medium"
+                      style="background-color: color-mix(in srgb, #0dcaf0 20%, transparent); color: #0dcaf0;">Editor</span>
                     {% else %}
-                    <span class="badge bg-light text-dark me-2">Viewer</span>
+                    <span class="badge rounded-pill me-2 fw-medium"
+                      style="background-color: color-mix(in srgb, var(--text-color) 15%, transparent); color: var(--text-secondary-color);">Viewer</span>
                     {% endif %}
-                    <small class="text-muted fw-medium">{{ member.hourly_rate }} {{ object.currency }}/hr</small>
+                    <small class="fw-medium" style="color: var(--text-secondary-color);">{{ member.hourly_rate }} {{
+                      object.currency }}/hr</small>
                   </div>
                 </div>
               </div>
               <a href="{% url 'projects:project-update-member' pk=member.pk %}"
-                class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="tooltip"
-                title="Edit Member Roles & Rate">
-                <i class="bi bi-pencil"></i>
+                class="btn btn-sm btn-outline-glow rounded-circle d-flex align-items-center justify-content-center ms-3"
+                style="width: 32px; height: 32px; color: var(--text-secondary-color); border-color: rgba(255,255,255,0.1); background-color: rgba(255,255,255,0.02);"
+                data-bs-toggle="tooltip" title="Edit Member Roles & Rate">
+                <i class="bi bi-pencil" style="font-size: 0.8rem;"></i>
               </a>
-            </li>
+            </div>
             {% empty %}
-            <li class="list-group-item bg-transparent px-3 py-3 text-muted text-center border-0">
-              No team members yet.
-            </li>
+            <div class="text-center py-5">
+              <i class="bi bi-people fs-2 mb-3 d-block opacity-25" style="color: var(--text-secondary-color);"></i>
+              <p class="mb-0" style="color: var(--text-secondary-color);">No team members yet.</p>
+            </div>
             {% endfor %}
-          </ul>
+          </div>
 
           <a href="{% url 'projects:project-add-member' project_pk=object.pk %}"
-            class="btn btn-primary w-100 fw-semibold">
+            class="btn btn-glow btn-primary-glow w-100 rounded-pill py-2 fw-semibold mt-auto">
             <i class="bi bi-person-plus me-2"></i> Add Team Member
           </a>
         </div>
@@ -78,4 +199,27 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initialize tooltips
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+      })
+    }
+
+    // Parallax Effect on Background Orbs
+    document.addEventListener("mousemove", function (e) {
+      const x = (e.clientX - window.innerWidth / 2) / 40;
+      const y = (e.clientY - window.innerHeight / 2) / 40;
+
+      document.querySelectorAll('.orb-wrapper').forEach(wrapper => {
+        const speed = parseFloat(wrapper.getAttribute('data-speed'));
+        wrapper.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+      });
+    });
+  });
+</script>
 {% endblock %}
