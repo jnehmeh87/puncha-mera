@@ -1,102 +1,535 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block content %}
-<div class="row align-items-stretch">
-  <div class="col-md-4 mb-4">
-    <div class="card h-100 shadow-sm border-0">
-      <div class="card-header bg-transparent d-flex align-items-center" style="min-height: 85px;">
-        <h2 class="card-title h4 mb-0">Small Business</h2>
-      </div>
-      <div class="card-body d-flex flex-column p-4">
-        <div class="mb-4">
-          <h3 class="display-6 fw-bold mb-0">$10<span class="fs-5 text-muted fw-normal">/mo</span></h3>
-        </div>
+<style>
+  :root {
+    --hero-bg: #050b14;
+    --brand-primary: #EF6c00;
+    --brand-accent: #e52e71;
+    --glass-bg: rgba(255, 255, 255, 0.02);
+    --glass-border: rgba(255, 255, 255, 0.05);
+  }
 
-        <ul class="list-group list-group-flush mb-4 flex-grow-1">
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-person-check text-primary me-2"></i>1 User</li>
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-clock-history text-primary me-2"></i>Timer</li>
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-list-check text-primary me-2"></i>Time Entries</li>
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-graph-up text-primary me-2"></i>Reports</li>
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-calculator text-primary me-2"></i>Income and Tax Calculator</li>
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-pie-chart text-primary me-2"></i>Basic Analytics</li>
+  body {
+    background-color: var(--hero-bg) !important;
+    color: #f8f9fa !important;
+    overflow-x: hidden;
+  }
+
+  html[data-theme] .navbar {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+  }
+
+  html[data-theme] .navbar-brand,
+  html[data-theme] .nav-link {
+    color: white !important;
+  }
+
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.6;
+    z-index: -1;
+    animation: float 20s infinite alternate ease-in-out;
+  }
+
+  .orb-1 {
+    width: 600px;
+    height: 600px;
+    background: var(--brand-primary);
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+  }
+
+  .orb-2 {
+    width: 500px;
+    height: 500px;
+    background: var(--brand-accent);
+    bottom: 10%;
+    right: -100px;
+    animation-delay: -5s;
+  }
+
+  .orb-3 {
+    width: 400px;
+    height: 400px;
+    background: #4f46e5;
+    top: 40%;
+    left: 50%;
+    opacity: 0.4;
+    animation-duration: 25s;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+      transform: translate(150px, 100px) scale(1.15);
+    }
+
+    100% {
+      transform: translate(-100px, 150px) scale(0.9);
+    }
+  }
+
+  .pricing-header {
+    text-align: center;
+    margin-bottom: 5rem;
+    margin-top: 2rem;
+  }
+
+  .pricing-title {
+    font-weight: 900;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+
+  .pricing-subtitle {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 1.25rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .pricing-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 2rem;
+    padding: 3rem 2rem;
+    position: relative;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pricing-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .pricing-card.popular {
+    background: linear-gradient(180deg, rgba(239, 108, 0, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(239, 108, 0, 0.3);
+    transform: scale(1.05);
+    z-index: 2;
+  }
+
+  .pricing-card.popular:hover {
+    transform: scale(1.05) translateY(-10px);
+    border-color: rgba(239, 108, 0, 0.5);
+    box-shadow: 0 20px 40px -10px rgba(239, 108, 0, 0.3);
+  }
+
+  .popular-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--brand-primary) 0%, #db5b00 100%);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 5px 15px rgba(239, 108, 0, 0.4);
+  }
+
+  .plan-name {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .plan-price {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: baseline;
+  }
+
+  .plan-price span {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+    margin-left: 0.25rem;
+  }
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2.5rem 0;
+    flex-grow: 1;
+  }
+
+  .feature-item {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.75rem 0;
+    display: flex;
+    align-items: start;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .feature-item:last-child {
+    border-bottom: none;
+  }
+
+  .feature-icon {
+    color: var(--brand-primary);
+    margin-right: 1rem;
+    font-size: 1.1rem;
+    margin-top: 0.1rem;
+  }
+
+  .btn-glow {
+    border-radius: 50rem;
+    padding: 1rem 2.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .btn-primary-glow {
+    background: linear-gradient(135deg, var(--brand-primary) 0%, #db5b00 100%);
+    color: white !important;
+    border: none;
+    box-shadow: 0 10px 30px -10px var(--brand-primary);
+  }
+
+  .btn-primary-glow:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 20px 40px -10px var(--brand-primary);
+  }
+
+  .btn-outline-glow {
+    background: transparent;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-outline-glow:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-3px);
+  }
+
+  /* FAQ Section */
+  .faq-section {
+    margin-top: 8rem;
+    margin-bottom: 5rem;
+  }
+
+  .faq-title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: white;
+  }
+
+  .accordion-item {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    margin-bottom: 1rem;
+    border-radius: 1rem !important;
+    overflow: hidden;
+  }
+
+  .accordion-button {
+    background: transparent !important;
+    color: white !important;
+    font-weight: 600;
+    padding: 1.5rem;
+    box-shadow: none !important;
+  }
+
+  .accordion-button:not(.collapsed) {
+    color: var(--brand-primary) !important;
+  }
+
+  .accordion-button::after {
+    filter: invert(1);
+  }
+
+  .accordion-body {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    line-height: 1.6;
+  }
+
+  /* Custom Plan CTA */
+  .custom-plan-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 2rem;
+    padding: 4rem;
+    text-align: center;
+    margin-top: 5rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  @media (max-width: 991px) {
+    .pricing-card.popular {
+      transform: none;
+    }
+
+    .pricing-card.popular:hover {
+      transform: translateY(-10px);
+    }
+  }
+</style>
+
+<!-- Animated Background -->
+<div class="orb-wrapper" data-speed="2.5"
+  style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);">
+  <div class="glow-orb orb-1"></div>
+</div>
+<div class="orb-wrapper" data-speed="-1.5"
+  style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);">
+  <div class="glow-orb orb-2"></div>
+</div>
+<div class="orb-wrapper" data-speed="1.2"
+  style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);">
+  <div class="glow-orb orb-3"></div>
+</div>
+
+<div class="container position-relative z-1 py-5">
+
+  <!-- Pricing Header -->
+  <div class="pricing-header">
+    <h1 class="pricing-title">{% trans "Simple, transparent pricing" %}</h1>
+    <p class="pricing-subtitle">{% trans "No surprise fees. No restrictive contracts. Unlock your freelance potential
+      with a plan that fits your ambition." %}</p>
+  </div>
+
+  <!-- Pricing Cards Grid -->
+  <div class="row align-items-center justify-content-center g-4 g-lg-0 mb-5">
+
+    <!-- Tier 1: Small Business -->
+    <div class="col-md-6 col-lg-4 z-1">
+      <div class="pricing-card">
+        <h3 class="plan-name">{% trans "Small Business" %}</h3>
+        <div class="plan-price">$10<span>/mo</span></div>
+
+        <ul class="feature-list">
+          <li class="feature-item">
+            <i class="bi bi-person-check feature-icon"></i>
+            <span>{% trans "1 User" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-clock-history feature-icon"></i>
+            <span>{% trans "Intelligent Timer" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-list-check feature-icon"></i>
+            <span>{% trans "Unlimited Time Entries" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-graph-up feature-icon"></i>
+            <span>{% trans "Standard Reports" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-calculator feature-icon"></i>
+            <span>{% trans "Income & Tax Calculator" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-pie-chart feature-icon"></i>
+            <span>{% trans "Basic Analytics" %}</span>
+          </li>
         </ul>
-        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST" class="mt-auto pt-3 border-top">
+
+        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST">
           {% csrf_token %}
           <input type="hidden" name="price_id" value="{{ small_business_price_id }}">
-          <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">Choose Plan</button>
+          <button type="submit" class="btn btn-glow btn-outline-glow">{% trans "Choose Plan" %}</button>
         </form>
       </div>
     </div>
-  </div>
-  <div class="col-md-4 mb-4">
-    <div class="card h-100 shadow-sm border-0">
-      <div class="card-header bg-transparent d-flex align-items-center" style="min-height: 85px;">
-        <h2 class="card-title h4 mb-0">Company (1-10 Members)</h2>
-      </div>
-      <div class="card-body d-flex flex-column p-4">
-        <div class="mb-4">
-          <h3 class="display-6 fw-bold mb-0">$50<span class="fs-5 text-muted fw-normal">/mo</span></h3>
-        </div>
 
-        <ul class="list-group list-group-flush mb-4 flex-grow-1">
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-people text-primary me-2"></i>Up to 10 Members</li>
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-check2-circle text-primary me-2"></i>All features from Small Business</li>
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-translate text-primary me-2"></i>Translate Report</li>
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-receipt text-primary me-2"></i>Invoicing</li>
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-bar-chart-steps text-primary me-2"></i>Advanced Analytics</li>
+    <!-- Tier 2: Company (1-10) [POPULAR] -->
+    <div class="col-md-6 col-lg-4 z-2">
+      <div class="pricing-card popular">
+        <div class="popular-badge">{% trans "Most Popular" %}</div>
+        <h3 class="plan-name text-primary" style="color: var(--brand-primary) !important;">{% trans "Company" %}</h3>
+        <div class="plan-price">$50<span>/mo</span></div>
+
+        <ul class="feature-list">
+          <li class="feature-item">
+            <i class="bi bi-people feature-icon"></i>
+            <span>{% trans "Up to 10 Members" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-check2-circle feature-icon"></i>
+            <span>{% trans "All features from Small Business" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-translate feature-icon"></i>
+            <span>{% trans "Translate Report functionality" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-receipt feature-icon"></i>
+            <span>{% trans "Advanced Invoicing Suite" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-bar-chart-steps feature-icon"></i>
+            <span>{% trans "Advanced Analytics & Insights" %}</span>
+          </li>
         </ul>
 
-        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST" class="mt-auto pt-3 border-top">
+        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST">
           {% csrf_token %}
           <input type="hidden" name="price_id" value="{{ company_10_price_id }}">
-          <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">Choose Plan</button>
+          <button type="submit" class="btn btn-glow btn-primary-glow">{% trans "Get Started" %}</button>
         </form>
       </div>
     </div>
-  </div>
-  <div class="col-md-4 mb-4">
-    <div class="card h-100 shadow-sm border-0">
-      <div class="card-header bg-transparent d-flex align-items-center" style="min-height: 85px;">
-        <h2 class="card-title h4 mb-0">Company (1-50 Members)</h2>
-      </div>
-      <div class="card-body d-flex flex-column p-4">
-        <div class="mb-4">
-          <h3 class="display-6 fw-bold mb-0">$150<span class="fs-5 text-muted fw-normal">/mo</span></h3>
-        </div>
 
-        <ul class="list-group list-group-flush mb-4 flex-grow-1">
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-building text-primary me-2"></i>Up to 50 Members</li>
-          <li class="list-group-item bg-transparent border-bottom-0 py-2"><i
-              class="bi bi-check2-all text-primary me-2"></i>All features from Company (1-10 Members)</li>
+    <!-- Tier 3: Company (1-50) -->
+    <div class="col-md-6 col-lg-4 z-1">
+      <div class="pricing-card">
+        <h3 class="plan-name">{% trans "Enterprise" %}</h3>
+        <div class="plan-price">$150<span>/mo</span></div>
+
+        <ul class="feature-list">
+          <li class="feature-item">
+            <i class="bi bi-buildings feature-icon"></i>
+            <span>{% trans "Up to 50 Members" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-check2-all feature-icon"></i>
+            <span>{% trans "All features from Company Plan" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-headset feature-icon"></i>
+            <span>{% trans "Priority 24/7 Support" %}</span>
+          </li>
+          <li class="feature-item">
+            <i class="bi bi-shield-check feature-icon"></i>
+            <span>{% trans "Advanced Security & Roles" %}</span>
+          </li>
         </ul>
 
-        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST" class="mt-auto pt-3 border-top">
+        <form action="{% url 'subscriptions:create-checkout-session' %}" method="POST">
           {% csrf_token %}
           <input type="hidden" name="price_id" value="{{ company_50_price_id }}">
-          <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">Choose Plan</button>
+          <button type="submit" class="btn btn-glow btn-outline-glow">{% trans "Choose Plan" %}</button>
         </form>
       </div>
     </div>
+
   </div>
+
+  <!-- Custom Enterprise Plan Banner -->
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="custom-plan-card">
+        <h3 class="fw-bold text-white mb-3">{% trans "Company (50+ Members)" %}</h3>
+        <p class="text-white-50 fs-5 mb-4">{% trans "Need scaling for a massive team? Get a tailored solution mapped to
+          your organizational needs." %}</p>
+        <a href="#" class="btn btn-glow btn-outline-glow d-inline-block w-auto px-5">{% trans "Contact Sales" %}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="faq-section">
+    <h2 class="faq-title">{% trans "Frequently Asked Questions" %}</h2>
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="accordion" id="pricingFAQ">
+          <!-- FAQ 1 -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#faqOne">
+                {% trans "Can I switch plans later?" %}
+              </button>
+            </h2>
+            <div id="faqOne" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+              <div class="accordion-body">
+                {% trans "Absolutely. You can upgrade or downgrade your plan at any time right from your account
+                dashboard. Prorated charges or credits will automatically be applied to your next billing cycle." %}
+              </div>
+            </div>
+          </div>
+          <!-- FAQ 2 -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#faqTwo">
+                {% trans "What payment methods do you accept?" %}
+              </button>
+            </h2>
+            <div id="faqTwo" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+              <div class="accordion-body">
+                {% trans "We accept all major credit cards (Visa, Mastercard, American Express) securely processed via
+                Stripe. For Enterprise plans, we can also accommodate invoice-based payments and wire transfers upon
+                request." %}
+              </div>
+            </div>
+          </div>
+          <!-- FAQ 3 -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#faqThree">
+                {% trans "Do you offer discounts for non-profits?" %}
+              </button>
+            </h2>
+            <div id="faqThree" class="accordion-collapse collapse" data-bs-parent="#pricingFAQ">
+              <div class="accordion-body">
+                {% trans "Yes! We strongly support non-profit organizations and educational institutions. Contact our
+                support team with your 501(c)(3) or equivalent documentation to receive a special discounted rate on our
+                annual plans." %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<div class="row mt-4">
-  <div class="col-md-12 text-center">
-    <h2>Company (50+ Members)</h2>
-    <p>Contact us for a custom plan.</p>
-    <a href="#" class="btn btn-primary">Contact Us</a>
-  </div>
-</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Subtle Parallax Effect on Background Orbs
+    document.addEventListener("mousemove", function (e) {
+      const x = (e.clientX - window.innerWidth / 2) / 40;
+      const y = (e.clientY - window.innerHeight / 2) / 40;
+
+      document.querySelectorAll('.orb-wrapper').forEach(wrapper => {
+        const speed = parseFloat(wrapper.getAttribute('data-speed'));
+        wrapper.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+      });
+    });
+  });
+</script>
 {% endblock %}
