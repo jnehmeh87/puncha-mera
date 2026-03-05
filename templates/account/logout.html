@@ -3,28 +3,177 @@
 {% block head_title %}{% trans "Sign Out" %}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm border-0 rounded-3">
-            <div class="card-body p-4 p-md-5 text-center">
-                <h1 class="h3 mb-4 fw-bold">{% trans "Sign Out" %}</h1>
-                <p class="text-muted mb-4">{% trans 'Are you sure you want to sign out?' %}</p>
+<style>
+    :root {
+        --hero-bg: #050b14;
+        --brand-primary: #EF6c00;
+        --brand-accent: #e52e71;
+    }
 
-                {% url 'account_logout' as action_url %}
-                <form method="post" action="{{ action_url }}">
-                    {% csrf_token %}
-                    {% if redirect_field_value %}
-                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-                    {% endif %}
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-danger btn-lg" type="submit">{% trans 'Sign Out' %}</button>
-                        <a href="{% url 'home:home' %}" class="btn btn-outline-secondary btn-lg">
-                            {% trans 'Cancel' %}
-                        </a>
-                    </div>
-                </form>
-            </div>
+    body {
+        background-color: var(--hero-bg) !important;
+        color: #f8f9fa !important;
+        overflow-x: hidden;
+    }
+
+    html[data-theme] .navbar {
+        background-color: transparent !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        box-shadow: none !important;
+    }
+
+    html[data-theme] .navbar-brand,
+    html[data-theme] .nav-link {
+        color: white !important;
+    }
+
+    .glow-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(140px);
+        opacity: 0.6;
+        z-index: -1;
+        animation: float 20s infinite alternate ease-in-out;
+    }
+
+    .orb-1 {
+        width: 600px;
+        height: 600px;
+        background: var(--brand-primary);
+        top: -100px;
+        left: -100px;
+        animation-delay: 0s;
+    }
+
+    .orb-2 {
+        width: 500px;
+        height: 500px;
+        background: var(--brand-accent);
+        bottom: 10%;
+        right: -100px;
+        animation-delay: -5s;
+    }
+
+    .orb-3 {
+        width: 400px;
+        height: 400px;
+        background: #4f46e5;
+        top: 40%;
+        left: 50%;
+        opacity: 0.4;
+        animation-duration: 25s;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        50% {
+            transform: translate(150px, 100px) scale(1.15);
+        }
+
+        100% {
+            transform: translate(-100px, 150px) scale(0.9);
+        }
+    }
+
+    .auth-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 2.5rem;
+        padding: 4rem 3rem;
+        position: relative;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .auth-title {
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .text-muted {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    .btn-glow {
+        border-radius: 50rem;
+        padding: 1rem 2.5rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+
+    .btn-danger-glow {
+        background: linear-gradient(135deg, var(--brand-accent) 0%, #a80a42 100%);
+        color: white !important;
+        border: none;
+        box-shadow: 0 10px 30px -10px var(--brand-accent);
+    }
+
+    .btn-danger-glow:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 20px 40px -10px var(--brand-accent);
+    }
+</style>
+
+<!-- Animated Background -->
+<div class="orb-wrapper" data-speed="2.5"
+    style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);">
+    <div class="glow-orb orb-1"></div>
+</div>
+<div class="orb-wrapper" data-speed="-1.5"
+    style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);">
+    <div class="glow-orb orb-2"></div>
+</div>
+<div class="orb-wrapper" data-speed="1.2"
+    style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);">
+    <div class="glow-orb orb-3"></div>
+</div>
+
+<div class="row justify-content-center align-items-center" style="min-height: 75vh;">
+    <div class="col-md-8 col-lg-6 col-xl-5">
+        <div class="auth-card text-center">
+            <h1 class="h2 mb-4 auth-title">{% trans "Sign Out" %}</h1>
+            <p class="text-muted mb-5">{% trans 'Are you sure you want to sign out?' %}</p>
+
+            {% url 'account_logout' as action_url %}
+            <form method="post" action="{{ action_url }}">
+                {% csrf_token %}
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+                <div class="d-grid gap-3">
+                    <button class="btn btn-glow btn-danger-glow w-100" type="submit">{% trans 'Sign Out' %}</button>
+                    <a href="{% url 'home:home' %}"
+                        class="btn btn-outline-secondary rounded-pill py-3 text-white border-secondary fw-semibold">
+                        {% trans 'Cancel' %}
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("mousemove", function (e) {
+            const x = (e.clientX - window.innerWidth / 2) / 40;
+            const y = (e.clientY - window.innerHeight / 2) / 40;
+            document.querySelectorAll('.orb-wrapper').forEach(wrapper => {
+                const speed = parseFloat(wrapper.getAttribute('data-speed'));
+                wrapper.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+    });
+</script>
 {% endblock content %}
