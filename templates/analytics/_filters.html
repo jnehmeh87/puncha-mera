@@ -1,0 +1,54 @@
+<div class="card glass-card p-3 mb-4 border-0 shadow-sm"
+    style="background: rgba(var(--surface-color-rgb, 30, 30, 30), 0.5);">
+    <form method="GET" class="row g-3 align-items-end" id="analyticsFilterForm">
+
+        <div class="col-12 col-md-3">
+            <label class="form-label text-white-50 fs-7 fw-semibold text-uppercase tracking-wider mb-2"><i
+                    class="bi bi-calendar-range me-1"></i> Period</label>
+            <select name="period" class="form-select bg-dark border-secondary border-opacity-50 text-white"
+                onchange="document.getElementById('analyticsFilterForm').submit()">
+                {% for p in period_options %}
+                <option value="{{ p.val }}" {% if p.selected %}selected{% endif %}>{{ p.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <label class="form-label text-white-50 fs-7 fw-semibold text-uppercase tracking-wider mb-2"><i
+                    class="bi bi-building me-1"></i> Organization</label>
+            <select name="org" class="form-select bg-dark border-secondary border-opacity-50 text-white"
+                onchange="document.getElementById('analyticsFilterForm').submit()">
+                <option value="">All My Organizations</option>
+                {% for org in valid_orgs %}
+                <option value="{{ org.id }}" {% if org.selected %}selected{% endif %}>{{ org.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <label class="form-label text-white-50 fs-7 fw-semibold text-uppercase tracking-wider mb-2"><i
+                    class="bi bi-person me-1"></i> Member</label>
+            <select name="member" class="form-select bg-dark border-secondary border-opacity-50 text-white"
+                onchange="document.getElementById('analyticsFilterForm').submit()">
+                <option value="">All Members</option>
+                {% for member in members %}
+                <option value="{{ member.id }}" {% if member.selected %}selected{% endif %}>{{ member.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <label class="form-label text-white-50 fs-7 fw-semibold text-uppercase tracking-wider mb-2"><i
+                    class="bi bi-briefcase me-1"></i> Client</label>
+            <select name="contact" class="form-select bg-dark border-secondary border-opacity-50 text-white"
+                onchange="document.getElementById('analyticsFilterForm').submit()">
+                <option value="">All Clients</option>
+                {% for contact in contacts %}
+                <option value="{{ contact.id }}" {% if contact.selected %}selected{% endif %}>{{ contact.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+    </form>
+</div>

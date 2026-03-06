@@ -364,7 +364,7 @@ body {
 }
 
 .list-group {
-    border: 1px solid var(--primary-color);
+    /* Removed border to fix the pink line visual bug */
 }
 
 .nav-tabs .nav-link.active {

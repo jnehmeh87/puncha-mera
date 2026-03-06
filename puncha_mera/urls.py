@@ -27,6 +27,7 @@ urlpatterns = [
     path('invoices/', include('invoices.urls')),
     path('subscriptions/', include('subscriptions.urls')),
     path('reports/', include('reports.urls')),
+    path('analytics/', include('analytics.urls')),
     path('timer/', include('time_stamp.urls')),
     path('time-entries/', include('time_entries.urls')),
     path('', include('home.urls')),

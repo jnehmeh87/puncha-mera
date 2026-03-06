@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Advanced Analytics & Insights | Puncha Mera{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-10">
+        <h1 class="display-4 fw-bolder mb-2 text-white page-title">
+            <i class="bi bi-bar-chart-steps text-info me-2 flex-shrink-0"></i>
+            Advanced Analytics <span class="text-white-50">& Insights</span>
+        </h1>
+        <p class="lead text-white-50 fs-5 mb-0" style="max-width: 700px;">
+            Deep organizational metrics, member efficiency, and predictive project profitability.
+        </p>
+    </div>
+</div>
+
+{% include "analytics/_filters.html" %}
+
+<div class="row g-4 mb-5">
+    <!-- Member Performance Leaderboard -->
+    <div class="col-12 col-xl-6">
+        <div class="card glass-card h-100 p-0 border-0 overflow-hidden">
+            <div
+                class="p-4 border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                <h4 class="text-white mb-0 fw-semibold">
+                    <i class="bi bi-people text-primary me-2"></i> Team Efficiency
+                </h4>
+            </div>
+
+            <div class="list-group list-group-flush bg-transparent">
+                <div
+                    class="list-group-item bg-transparent border-bottom border-secondary border-opacity-25 py-3 d-none d-md-flex align-items-center text-white-50 text-uppercase tracking-wider fs-7 fw-semibold">
+                    <div class="col-6">Member</div>
+                    <div class="col-3 text-end">Hours Logged</div>
+                    <div class="col-3 text-end">Revenue Gen.</div>
+                </div>
+
+                {% for member in member_stats %}
+                <div
+                    class="list-group-item bg-transparent border-bottom border-secondary border-opacity-10 py-3 d-flex flex-column flex-md-row align-items-md-center group transition-all">
+                    <!-- Mobile Labels -->
+                    <div class="d-md-none mb-2 text-white-50 text-uppercase fs-7 fw-semibold tracking-wider">Member
+                    </div>
+
+                    <div class="col-12 col-md-6 d-flex align-items-center mb-3 mb-md-0">
+                        <div class="avatar-circle me-3 flex-shrink-0 shadow-sm"
+                            style="width: 40px; height: 40px; font-size: 1rem;">
+                            {{ member.name.0|upper }}
+                        </div>
+                        <span class="fs-5 fw-medium text-white">{{ member.name }}</span>
+                    </div>
+
+                    <div class="col-12 col-md-3 text-md-end mb-2 mb-md-0">
+                        <div
+                            class="d-md-none text-white-50 text-uppercase fs-7 fw-semibold tracking-wider d-inline-block w-50">
+                            Hours Logged</div>
+                        <span class="fs-5 text-white-50" style="font-feature-settings: 'tnum';">
+                            {{ member.hours }}<span class="fs-7 ms-1">h</span>
+                        </span>
+                    </div>
+
+                    <div class="col-12 col-md-3 text-md-end">
+                        <div
+                            class="d-md-none text-white-50 text-uppercase fs-7 fw-semibold tracking-wider d-inline-block w-50">
+                            Revenue Gen.</div>
+                        <span class="fs-5 fw-bold text-success" style="font-feature-settings: 'tnum';">
+                            {{ user_currency }} {{ member.revenue|floatformat:2 }}
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-5 text-center">
+                    <div
+                        class="rounded-circle bg-white bg-opacity-10 d-inline-flex align-items-center justify-content-center p-4 mb-3">
+                        <i class="bi bi-inbox fs-1 text-white-50"></i>
+                    </div>
+                    <h5 class="text-white">No Team Data Found</h5>
+                    <p class="text-white-50 mb-0">Adjust filters or track more time.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Most Profitable Projects Board -->
+    <div class="col-12 col-xl-6">
+        <div class="card glass-card h-100 p-0 border-0 overflow-hidden">
+            <div
+                class="p-4 border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                <h4 class="text-white mb-0 fw-semibold">
+                    <i class="bi bi-briefcase text-info me-2"></i> Top Profitable Projects
+                </h4>
+            </div>
+
+            <div class="list-group list-group-flush bg-transparent">
+                <div
+                    class="list-group-item bg-transparent border-bottom border-secondary border-opacity-25 py-3 d-none d-md-flex align-items-center text-white-50 text-uppercase tracking-wider fs-7 fw-semibold">
+                    <div class="col-5">Project</div>
+                    <div class="col-4 text-end">Total Pipeline</div>
+                    <div class="col-3 text-end">Effective/hr</div>
+                </div>
+
+                {% for p in project_stats %}
+                <div
+                    class="list-group-item bg-transparent border-bottom border-secondary border-opacity-10 py-3 d-flex flex-column flex-md-row align-items-md-center group transition-all">
+                    <div class="d-md-none mb-2 text-white-50 text-uppercase fs-7 fw-semibold tracking-wider">Project
+                    </div>
+
+                    <div class="col-12 col-md-5 d-flex align-items-center mb-3 mb-md-0">
+                        <div class="rounded-3 bg-white bg-opacity-10 p-2 me-3 flex-shrink-0">
+                            <i class="bi bi-folder-fill text-white-50 fs-5"></i>
+                        </div>
+                        <span class="fs-5 fw-medium text-white text-truncate">{{ p.name }}</span>
+                    </div>
+
+                    <div class="col-12 col-md-4 text-md-end mb-2 mb-md-0">
+                        <div
+                            class="d-md-none text-white-50 text-uppercase fs-7 fw-semibold tracking-wider d-inline-block w-50">
+                            Total Pipeline</div>
+                        <span class="fs-5 text-white" style="font-feature-settings: 'tnum';">
+                            {{ p.currency }} {{ p.revenue|floatformat:2 }}
+                            <small class="d-block text-white-50 fs-7 fw-normal">{{ p.hours }}hrs tracked</small>
+                        </span>
+                    </div>
+
+                    <div class="col-12 col-md-3 text-md-end">
+                        <div
+                            class="d-md-none text-white-50 text-uppercase fs-7 fw-semibold tracking-wider d-inline-block w-50">
+                            Effective/hr</div>
+                        <span
+                            class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 fs-6 py-2 px-3 fw-bold font-monospace">
+                            {{ p.currency }} {{ p.effective_rate|floatformat:2 }}
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-5 text-center">
+                    <div
+                        class="rounded-circle bg-white bg-opacity-10 d-inline-flex align-items-center justify-content-center p-4 mb-3">
+                        <i class="bi bi-journal-x fs-1 text-white-50"></i>
+                    </div>
+                    <h5 class="text-white">No Project Data</h5>
+                    <p class="text-white-50 mb-0">Adjust filters or log billable time.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Charts Section -->
+<div class="row g-4 mb-5">
+
+    <!-- Burn Rate Line Chart -->
+    <div class="col-12 col-xl-6">
+        <div class="card glass-card h-100 p-4 border-0">
+            <h4 class="text-white mb-4 fw-semibold">Daily Revenue Burn Rate</h4>
+            <div style="height: 350px; width: 100%;" class="d-flex align-items-center justify-content-center">
+                <canvas id="burnChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Distribution Donut Chart -->
+    <div class="col-12 col-xl-6">
+        <div class="card glass-card h-100 p-4 border-0">
+            <h4 class="text-white mb-4 fw-semibold">Revenue Distribution by Client</h4>
+            <div style="height: 350px; width: 100%;" class="d-flex align-items-center justify-content-center">
+                <canvas id="clientDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Data Islands for Chart.js -->
+{{ client_labels|json_script:"clientLabels" }}
+{{ client_revenue_data|json_script:"clientData" }}
+{{ burn_labels|json_script:"burnLabels" }}
+{{ burn_data|json_script:"burnData" }}
+
+<!-- prettier-ignore-start -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Chart.defaults.color = 'rgba(255, 255, 255, 0.6)';
+        Chart.defaults.font.family = "'Inter', 'Poppins', sans-serif";
+
+        const palette = [
+            '#EF6c00', // Primary Orange
+            '#0dcaf0', // Info Blue
+            '#e52e71', // Accent Pink
+            '#198754', // Success Green
+            '#6f42c1', // Indigo
+            '#ffc107', // Warning Yellow
+            '#d63384'  // Pink
+        ];
+
+        // 1. Client Distribution Donut Chart
+        const clientLabels = JSON.parse(document.getElementById('clientLabels').textContent);
+        const clientData = JSON.parse(document.getElementById('clientData').textContent);
+
+        if (clientLabels.length > 0 && clientData.some(val => val > 0)) {
+            const donutCtx = document.getElementById('clientDistributionChart').getContext('2d');
+            new Chart(donutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: clientLabels,
+                    datasets: [{
+                        data: clientData,
+                        backgroundColor: palette,
+                        borderWidth: 0,
+                        hoverOffset: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#fff',
+                                font: { size: 13, family: "'Inter', sans-serif" },
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            titleFont: { size: 15 },
+                            padding: 16,
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            displayColors: true,
+                            boxPadding: 4,
+                            callbacks: {
+                                label: function (context) { return ' {{ user_currency|escapejs }} ' + context.parsed.toFixed(2); }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            const donutCtx = document.getElementById('clientDistributionChart');
+            donutCtx.parentNode.innerHTML = '<div class="text-center text-white-50"><i class="bi bi-pie-chart display-1 d-block mb-3 opacity-25"></i>No client revenue data to filter.</div>';
+        }
+
+        // 2. Burn Rate Line Chart
+        const burnLabels = JSON.parse(document.getElementById('burnLabels').textContent);
+        const burnData = JSON.parse(document.getElementById('burnData').textContent);
+
+        if (burnLabels.length > 0) {
+            const burnCtx = document.getElementById('burnChart').getContext('2d');
+
+            // Let's use the Info blue color (cyan) for this chart to differentiate from Basic Analytics
+            let gradientBurn = burnCtx.createLinearGradient(0, 0, 0, 400);
+            gradientBurn.addColorStop(0, 'rgba(13, 202, 240, 0.4)'); // Info Blue
+            gradientBurn.addColorStop(1, 'rgba(13, 202, 240, 0.0)');
+
+            new Chart(burnCtx, {
+                type: 'line',
+                data: {
+                    labels: burnLabels,
+                    datasets: [{
+                        label: 'Daily Rev ($)',
+                        data: burnData,
+                        borderColor: '#0dcaf0',
+                        backgroundColor: gradientBurn,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#0f172a',
+                        pointBorderColor: '#0dcaf0',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            padding: 12,
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            displayColors: false,
+                            callbacks: {
+                                label: function (context) { return '{{ user_currency|escapejs }} ' + context.parsed.y.toFixed(2); }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { callback: function (value) { return '{{ user_currency|escapejs }} ' + value; } }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        } else {
+            const burnCtx = document.getElementById('burnChart');
+            burnCtx.parentNode.innerHTML = '<div class="text-center text-white-50"><i class="bi bi-graph-up display-1 d-block mb-3 opacity-25"></i>No daily burn data found.</div>';
+        }
+    });
+</script>
+<!-- prettier-ignore-end -->
+{% endblock %}

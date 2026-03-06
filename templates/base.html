@@ -49,6 +49,17 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'reports:dashboard' %}">Reports</a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Analytics
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="analyticsDropdown">
+                            <li><a class="dropdown-item" href="{% url 'analytics:basic' %}">Basic Analytics</a></li>
+                            <li><a class="dropdown-item" href="{% url 'analytics:advanced' %}">Advanced Insights</a>
+                            </li>
+                        </ul>
+                    </li>
                     {% endif %}
                 </ul>
                 <div class="d-flex align-items-center">
