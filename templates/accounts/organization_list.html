@@ -144,14 +144,14 @@
     <div class="border-bottom border-light border-opacity-10 bg-transparent pt-4 pb-0 px-4">
       <ul class="nav nav-tabs border-0 gap-4" id="organizationTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link custom-tab border-0 fs-5 fw-medium active" id="active-tab" data-bs-toggle="tab"
+          <button class="nav-link custom-tab fs-5 fw-medium active" id="active-tab" data-bs-toggle="tab"
             data-bs-target="#active" type="button" role="tab" aria-controls="active" aria-selected="true">Active
             Organizations</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link custom-tab border-0 fs-5 fw-medium bg-transparent" id="archived-tab"
-            data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archived"
-            aria-selected="false">Archived Organizations</button>
+          <button class="nav-link custom-tab fs-5 fw-medium bg-transparent" id="archived-tab" data-bs-toggle="tab"
+            data-bs-target="#archived" type="button" role="tab" aria-controls="archived" aria-selected="false">Archived
+            Organizations</button>
         </li>
       </ul>
     </div>
@@ -161,111 +161,101 @@
 
         <!-- Active Tab -->
         <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
-          <div class="table-responsive">
-            <table class="table table-hover table-borderless align-middle mb-0 custom-table w-100">
-              <thead style="background-color: color-mix(in srgb, var(--text-color) 2%, transparent);">
-                <tr>
-                  <th style="width: 70%;">Name</th>
-                  <th class="text-end" style="width: 30%;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for org in active_organizations %}
-                <tr style="transition: all 0.2s ease;">
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <div class="avatar-circle me-3 text-white"
-                        style="background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 60%, black));">
-                        {{ org.name|make_list|first|upper }}
-                      </div>
-                      <span class="fs-6 fw-medium">{{ org.name }}</span>
+          <div class="row g-4 p-4">
+            {% for org in active_organizations %}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="card h-100 bg-transparent border-light border-opacity-10 position-relative"
+                style="transition: all 0.3s ease;">
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex align-items-center mb-4">
+                    <div class="avatar-circle me-3 text-white shadow-sm"
+                      style="background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 60%, black));">
+                      {{ org.name|make_list|first|upper }}
                     </div>
-                  </td>
-                  <td class="text-end">
-                    <div class="d-flex justify-content-end gap-2">
-                      <a href="{% url 'accounts:organization-detail' org.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
-                        <i class="bi bi-eye me-1"></i> View
-                      </a>
-                      <a href="{% url 'accounts:organization-archive' org.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #ffc107; border-color: rgba(255, 193, 7, 0.3); background-color: rgba(255, 193, 7, 0.05);"
-                        onclick="return confirm('Are you sure you want to archive {{ org.name|escapejs }}?')">
-                        <i class="bi bi-archive me-1"></i> Archive
-                      </a>
+                    <div>
+                      <h5 class="card-title fw-bold mb-0 text-white">{{ org.name }}</h5>
+                      <span class="badge rounded-pill fw-medium fs-6 mt-2 px-3"
+                        style="background-color: color-mix(in srgb, var(--primary-color) 15%, transparent); color: var(--primary-color); border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent);">Active</span>
                     </div>
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="2" class="text-center py-5">
-                    <div class="mb-3" style="color: var(--text-secondary-color);"><i
-                        class="bi bi-building fs-1 opacity-50"></i></div>
-                    <h5 class="fw-normal">No active organizations</h5>
-                    <p class="mb-4" style="color: var(--text-secondary-color);">Get started by creating your first
-                      organization.</p>
-                    <a href="{% url 'accounts:organization-create' %}"
-                      class="btn btn-glow btn-primary-glow rounded-pill px-4">Start a new organization</a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                  </div>
+                  <div class="mt-auto pt-4 border-top border-light border-opacity-10 d-flex justify-content-end gap-2">
+                    <a href="{% url 'accounts:organization-detail' org.pk %}" data-bs-toggle="tooltip" title="View"
+                      class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
+                      <i class="bi bi-eye "></i>
+                    </a>
+                    <a href="{% url 'accounts:organization-archive' org.pk %}" data-bs-toggle="tooltip" title="Archive"
+                      class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #ffc107; border-color: rgba(255, 193, 7, 0.3); background-color: rgba(255, 193, 7, 0.05);"
+                      onclick="return confirm('Are you sure you want to archive {{ org.name|escapejs }}?')">
+                      <i class="bi bi-archive "></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="text-center py-5 glass-panel rounded-4 border-dashed border-light border-opacity-25 border-1">
+                <div class="mb-3" style="color: var(--text-secondary-color);"><i
+                    class="bi bi-building fs-1 opacity-50"></i></div>
+                <h5 class="fw-normal text-white">No active organizations</h5>
+                <p class="mb-4" style="color: var(--text-secondary-color);">Get started by creating your first
+                  organization.</p>
+                <a href="{% url 'accounts:organization-create' %}"
+                  class="btn btn-glow btn-primary-glow rounded-pill px-4">Start a new organization</a>
+              </div>
+            </div>
+            {% endfor %}
           </div>
         </div>
 
         <!-- Archived Tab -->
         <div class="tab-pane fade" id="archived" role="tabpanel" aria-labelledby="archived-tab">
-          <div class="table-responsive">
-            <table class="table table-hover table-borderless align-middle mb-0 custom-table w-100">
-              <thead style="background-color: color-mix(in srgb, var(--text-color) 2%, transparent);">
-                <tr>
-                  <th style="width: 70%;">Name</th>
-                  <th class="text-end" style="width: 30%;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for org in archived_organizations %}
-                <tr style="transition: all 0.2s ease;">
-                  <td>
-                    <div class="d-flex align-items-center opacity-75">
-                      <div class="avatar-circle me-3"
-                        style="background-color: color-mix(in srgb, var(--text-color) 10%, transparent); color: var(--text-secondary-color);">
-                        {{ org.name|make_list|first|upper }}
-                      </div>
-                      <span class="fs-6 fw-medium text-decoration-line-through"
-                        style="color: var(--text-secondary-color);">{{ org.name }}</span>
+          <div class="row g-4 p-4">
+            {% for org in archived_organizations %}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="card h-100 bg-transparent border-light border-opacity-10 position-relative opacity-75"
+                style="transition: all 0.3s ease;">
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex align-items-center mb-4">
+                    <div class="avatar-circle me-3 shadow-sm"
+                      style="background-color: color-mix(in srgb, var(--text-color) 10%, transparent); color: var(--text-secondary-color);">
+                      {{ org.name|make_list|first|upper }}
                     </div>
-                  </td>
-                  <td class="text-end">
-                    <div class="d-flex justify-content-end gap-2">
-                      <a href="{% url 'accounts:organization-detail' org.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
-                        <i class="bi bi-eye me-1"></i> View
-                      </a>
-                      <a href="{% url 'accounts:organization-unarchive' org.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #198754; border-color: rgba(25, 135, 84, 0.3); background-color: rgba(25, 135, 84, 0.05);">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Unarchive
-                      </a>
+                    <div>
+                      <h5 class="card-title fw-bold mb-0 text-decoration-line-through text-secondary">{{ org.name }}
+                      </h5>
+                      <span class="badge rounded-pill fw-medium fs-6 mt-2 px-3"
+                        style="background-color: rgba(255,255,255,0.05); color: var(--text-secondary-color); border: 1px solid rgba(255,255,255,0.1);">Archived</span>
                     </div>
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="2" class="text-center py-5">
-                    <div class="mb-3" style="color: var(--text-secondary-color);"><i
-                        class="bi bi-archive fs-1 opacity-50"></i></div>
-                    <h5 class="fw-normal" style="color: var(--text-secondary-color);">No archived organizations</h5>
-                    <p class="mb-0" style="color: var(--text-secondary-color);">Organizations you archive will appear
-                      here.</p>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                  </div>
+                  <div class="mt-auto pt-4 border-top border-light border-opacity-10 d-flex justify-content-end gap-2">
+                    <a href="{% url 'accounts:organization-detail' org.pk %}" data-bs-toggle="tooltip" title="View"
+                      class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
+                      <i class="bi bi-eye "></i>
+                    </a>
+                    <a href="{% url 'accounts:organization-unarchive' org.pk %}" data-bs-toggle="tooltip"
+                      title="Unarchive" class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #198754; border-color: rgba(25, 135, 84, 0.3); background-color: rgba(25, 135, 84, 0.05);">
+                      <i class="bi bi-arrow-counterclockwise "></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="text-center py-5 glass-panel rounded-4 border-dashed border-light border-opacity-25 border-1">
+                <div class="mb-3" style="color: var(--text-secondary-color);"><i
+                    class="bi bi-archive fs-1 opacity-50"></i></div>
+                <h5 class="fw-normal" style="color: var(--text-secondary-color);">No archived organizations</h5>
+                <p class="mb-0" style="color: var(--text-secondary-color);">Organizations you archive will appear here.
+                </p>
+              </div>
+            </div>
+            {% endfor %}
           </div>
         </div>
 

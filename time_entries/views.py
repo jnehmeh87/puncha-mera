@@ -23,16 +23,22 @@ class TimeEntryListView(LoginRequiredMixin, ListView):
         if not user.is_authenticated:
             return TimeEntry.objects.none()
 
-        try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            
-            if membership.role in ['admin', 'owner']:
-                queryset = TimeEntry.objects.filter(organization=organization)
-            else:
-                queryset = TimeEntry.objects.filter(user=user, organization=organization)
-        except Membership.DoesNotExist:
+        memberships = Membership.objects.filter(user=user)
+        if not memberships.exists():
             return TimeEntry.objects.none()
+            
+        # Get all relevant entries across their organizations
+        accessible_org_ids = [m.organization.id for m in memberships]
+        org_roles = {m.organization.id: m.role for m in memberships}
+        
+        # Build query for the organizations
+        queryset = TimeEntry.objects.filter(organization_id__in=accessible_org_ids)
+        
+        # Filter entries down to self if not an admin/owner for that org
+        # For simplicity since this is generic to all orgs, if they are admin/owner in ANY
+        # we still restrict to user=user for orgs they are mere 'members' of
+        if not any(role in ['admin', 'owner'] for role in org_roles.values()):
+            queryset = queryset.filter(user=user)
 
         from .forms import TimeEntryFilterForm
         form = TimeEntryFilterForm(self.request.GET or None, user=user)
@@ -80,16 +86,18 @@ class TimeEntryDetailView(LoginRequiredMixin, DetailView):
         if not user.is_authenticated:
             return TimeEntry.objects.none()
 
-        try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            
-            if membership.role in ['admin', 'owner']:
-                return TimeEntry.objects.filter(organization=organization)
-            else:
-                return TimeEntry.objects.filter(user=user, organization=organization)
-        except Membership.DoesNotExist:
+        memberships = Membership.objects.filter(user=user)
+        if not memberships.exists():
             return TimeEntry.objects.none()
+            
+        accessible_org_ids = [m.organization.id for m in memberships]
+        org_roles = {m.organization.id: m.role for m in memberships}
+        
+        queryset = TimeEntry.objects.filter(organization_id__in=accessible_org_ids)
+        if not any(role in ['admin', 'owner'] for role in org_roles.values()):
+            queryset = queryset.filter(user=user)
+            
+        return queryset
 
 class TimeEntryCreateView(LoginRequiredMixin, CreateView):
     model = TimeEntry
@@ -115,16 +123,18 @@ class TimeEntryUpdateView(LoginRequiredMixin, UpdateView):
         if not user.is_authenticated:
             return TimeEntry.objects.none()
 
-        try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            
-            if membership.role in ['admin', 'owner']:
-                return TimeEntry.objects.filter(organization=organization)
-            else:
-                return TimeEntry.objects.filter(user=user, organization=organization)
-        except Membership.DoesNotExist:
+        memberships = Membership.objects.filter(user=user)
+        if not memberships.exists():
             return TimeEntry.objects.none()
+            
+        accessible_org_ids = [m.organization.id for m in memberships]
+        org_roles = {m.organization.id: m.role for m in memberships}
+        
+        queryset = TimeEntry.objects.filter(organization_id__in=accessible_org_ids)
+        if not any(role in ['admin', 'owner'] for role in org_roles.values()):
+            queryset = queryset.filter(user=user)
+            
+        return queryset
 
 class TimeEntryDeleteView(LoginRequiredMixin, DeleteView):
     model = TimeEntry
@@ -137,16 +147,18 @@ class TimeEntryDeleteView(LoginRequiredMixin, DeleteView):
         if not user.is_authenticated:
             return TimeEntry.objects.none()
 
-        try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            
-            if membership.role in ['admin', 'owner']:
-                return TimeEntry.objects.filter(organization=organization)
-            else:
-                return TimeEntry.objects.filter(user=user, organization=organization)
-        except Membership.DoesNotExist:
+        memberships = Membership.objects.filter(user=user)
+        if not memberships.exists():
             return TimeEntry.objects.none()
+            
+        accessible_org_ids = [m.organization.id for m in memberships]
+        org_roles = {m.organization.id: m.role for m in memberships}
+        
+        queryset = TimeEntry.objects.filter(organization_id__in=accessible_org_ids)
+        if not any(role in ['admin', 'owner'] for role in org_roles.values()):
+            queryset = queryset.filter(user=user)
+            
+        return queryset
 
 @require_POST
 def bulk_delete_entries(request):
@@ -161,26 +173,25 @@ def bulk_delete_entries(request):
         if not user.is_authenticated:
             return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
 
-        try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            
-            # Admins/Owners can delete any entry in org, regular users only their own
-            if membership.role in ['admin', 'owner']:
-                entries_to_delete = TimeEntry.objects.filter(id__in=entry_ids, organization=organization)
-            else:
-                entries_to_delete = TimeEntry.objects.filter(id__in=entry_ids, user=user, organization=organization)
-                
-            count = entries_to_delete.count()
-            entries_to_delete.delete()
-            
-            return JsonResponse({
-                'status': 'success', 
-                'message': f'Successfully deleted {count} entries'
-            })
-            
-        except Membership.DoesNotExist:
+        memberships = Membership.objects.filter(user=user)
+        if not memberships.exists():
             return JsonResponse({'status': 'error', 'message': 'User has no organization'}, status=403)
+            
+        accessible_org_ids = [m.organization.id for m in memberships]
+        org_roles = {m.organization.id: m.role for m in memberships}
+        
+        if any(role in ['admin', 'owner'] for role in org_roles.values()):
+            entries_to_delete = TimeEntry.objects.filter(id__in=entry_ids, organization_id__in=accessible_org_ids)
+        else:
+            entries_to_delete = TimeEntry.objects.filter(id__in=entry_ids, user=user, organization_id__in=accessible_org_ids)
+            
+        count = entries_to_delete.count()
+        entries_to_delete.delete()
+        
+        return JsonResponse({
+            'status': 'success', 
+            'message': f'Successfully deleted {count} entries'
+        })
             
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid request data'}, status=400)

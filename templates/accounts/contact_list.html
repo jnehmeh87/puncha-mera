@@ -161,145 +161,136 @@
 
         <!-- Active Tab -->
         <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
-          <div class="table-responsive">
-            <table class="table table-hover table-borderless align-middle mb-0 custom-table w-100">
-              <thead style="background-color: color-mix(in srgb, var(--text-color) 2%, transparent);">
-                <tr>
-                  <th style="width: 30%;">Name</th>
-                  <th style="width: 20%;">Type</th>
-                  <th style="width: 25%;">Email</th>
-                  <th class="text-end" style="width: 25%;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for contact in active_contacts %}
-                <tr style="transition: all 0.2s ease;">
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <div class="avatar-circle me-3 text-white"
-                        style="background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 60%, black));">
-                        {{ contact.name|make_list|first|upper }}
-                      </div>
-                      <span class="fs-6 fw-medium">{{ contact.name }}</span>
+          <div class="row g-4 p-4">
+            {% for contact in active_contacts %}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="card h-100 bg-transparent border-light border-opacity-10 position-relative"
+                style="transition: all 0.3s ease;">
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex align-items-center mb-4">
+                    <div class="avatar-circle me-3 text-white shadow-sm"
+                      style="background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 60%, black));">
+                      {{ contact.name|make_list|first|upper }}
                     </div>
-                  </td>
-                  <td class="text-white-50"><span
-                      class="badge bg-secondary bg-opacity-25 text-white-50 px-2 py-1 rounded-pill">{{
-                      contact.contact_type }}</span></td>
-                  <td class="text-white-50">{{ contact.company_email|default:"-" }}</td>
-                  <td class="text-end">
-                    <div class="d-flex justify-content-end gap-2 flex-wrap">
-                      <a href="{% url 'accounts:contact-detail' contact.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
-                        <i class="bi bi-eye"></i> View
-                      </a>
-                      <a href="{% url 'accounts:contact-update' contact.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
-                        <i class="bi bi-pencil"></i> Edit
-                      </a>
-                      <a href="{% url 'accounts:contact-archive' contact.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #ffc107; border-color: rgba(255, 193, 7, 0.3); background-color: rgba(255, 193, 7, 0.05);"
-                        onclick="return confirm('Archive {{ contact.name|escapejs }}?')">
-                        <i class="bi bi-archive"></i>
-                      </a>
-                      <a href="{% url 'accounts:contact-delete' contact.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);"
-                        onclick="return confirm('Delete {{ contact.name|escapejs }} forever?')">
-                        <i class="bi bi-trash"></i>
-                      </a>
+                    <div>
+                      <h5 class="card-title fw-bold mb-0 text-white">{{ contact.name }}</h5>
+                      <span class="badge rounded-pill fw-medium fs-6 mt-2 px-3"
+                        style="background-color: color-mix(in srgb, var(--primary-color) 15%, transparent); color: var(--primary-color); border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent);">Active</span>
                     </div>
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="4" class="text-center py-5">
-                    <div class="mb-3" style="color: var(--text-secondary-color);"><i
-                        class="bi bi-person-lines-fill fs-1 opacity-50"></i></div>
-                    <h5 class="fw-normal">No active contacts</h5>
-                    <p class="mb-4" style="color: var(--text-secondary-color);">Get started by adding your first
-                      contact.</p>
-                    <a href="{% url 'accounts:contact-create' %}"
-                      class="btn btn-glow btn-primary-glow rounded-pill px-4">Start a new contact</a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                  </div>
+                  <div class="mb-2 d-flex align-items-center text-white-50">
+                    <i class="bi bi-tag me-2"></i> {{ contact.contact_type }}
+                  </div>
+                  <div class="mb-4 d-flex align-items-center text-white-50 flex-wrap" style="word-break: break-all;">
+                    <i class="bi bi-envelope me-2"></i> {{ contact.company_email|default:"No Email" }}
+                  </div>
+                  <div
+                    class="mt-auto pt-4 border-top border-light border-opacity-10 d-flex justify-content-end gap-2 flex-nowrap">
+                    <a href="{% url 'accounts:contact-detail' contact.pk %}" data-bs-toggle="tooltip" title="View"
+                      class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="{% url 'accounts:contact-update' contact.pk %}" data-bs-toggle="tooltip" title="Edit"
+                      class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{% url 'accounts:contact-archive' contact.pk %}" data-bs-toggle="tooltip" title="Archive"
+                      class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #ffc107; border-color: rgba(255, 193, 7, 0.3); background-color: rgba(255, 193, 7, 0.05);"
+                      onclick="return confirm('Archive {{ contact.name|escapejs }}?')">
+                      <i class="bi bi-archive"></i>
+                    </a>
+                    <a href="{% url 'accounts:contact-delete' contact.pk %}" data-bs-toggle="tooltip" title="Delete"
+                      class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);"
+                      onclick="return confirm('Delete {{ contact.name|escapejs }} forever?')">
+                      <i class="bi bi-trash"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="text-center py-5 glass-panel rounded-4 border-dashed border-light border-opacity-25 border-1">
+                <div class="mb-3" style="color: var(--text-secondary-color);"><i
+                    class="bi bi-person-lines-fill fs-1 opacity-50"></i></div>
+                <h5 class="fw-normal text-white">No active contacts</h5>
+                <p class="mb-4" style="color: var(--text-secondary-color);">Get started by adding your first contact.
+                </p>
+                <a href="{% url 'accounts:contact-create' %}"
+                  class="btn btn-glow btn-primary-glow rounded-pill px-4">Start a new contact</a>
+              </div>
+            </div>
+            {% endfor %}
           </div>
         </div>
 
         <!-- Archived Tab -->
         <div class="tab-pane fade" id="archived" role="tabpanel" aria-labelledby="archived-tab">
-          <div class="table-responsive">
-            <table class="table table-hover table-borderless align-middle mb-0 custom-table w-100">
-              <thead style="background-color: color-mix(in srgb, var(--text-color) 2%, transparent);">
-                <tr>
-                  <th style="width: 30%;">Name</th>
-                  <th style="width: 20%;">Type</th>
-                  <th style="width: 25%;">Email</th>
-                  <th class="text-end" style="width: 25%;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for contact in archived_contacts %}
-                <tr style="transition: all 0.2s ease;">
-                  <td>
-                    <div class="d-flex align-items-center opacity-75">
-                      <div class="avatar-circle me-3"
-                        style="background-color: color-mix(in srgb, var(--text-color) 10%, transparent); color: var(--text-secondary-color);">
-                        {{ contact.name|make_list|first|upper }}
-                      </div>
-                      <span class="fs-6 fw-medium text-decoration-line-through"
-                        style="color: var(--text-secondary-color);">{{ contact.name }}</span>
+          <div class="row g-4 p-4">
+            {% for contact in archived_contacts %}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="card h-100 bg-transparent border-light border-opacity-10 position-relative opacity-75"
+                style="transition: all 0.3s ease;">
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex align-items-center mb-4">
+                    <div class="avatar-circle me-3 shadow-sm"
+                      style="background-color: color-mix(in srgb, var(--text-color) 10%, transparent); color: var(--text-secondary-color);">
+                      {{ contact.name|make_list|first|upper }}
                     </div>
-                  </td>
-                  <td class="text-white-50"><span
-                      class="badge bg-secondary bg-opacity-10 text-white-50 px-2 py-1 rounded-pill">{{
-                      contact.contact_type }}</span></td>
-                  <td class="text-white-50">{{ contact.company_email|default:"-" }}</td>
-                  <td class="text-end">
-                    <div class="d-flex justify-content-end gap-2 flex-wrap">
-                      <a href="{% url 'accounts:contact-detail' contact.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
-                        <i class="bi bi-eye"></i> View
-                      </a>
-                      <a href="{% url 'accounts:contact-update' contact.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
-                        <i class="bi bi-pencil"></i> Edit
-                      </a>
-                      <a href="{% url 'accounts:contact-unarchive' contact.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #198754; border-color: rgba(25, 135, 84, 0.3); background-color: rgba(25, 135, 84, 0.05);">
-                        <i class="bi bi-arrow-counterclockwise"></i> Unarchive
-                      </a>
-                      <a href="{% url 'accounts:contact-delete' contact.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3"
-                        style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);"
-                        onclick="return confirm('Delete {{ contact.name|escapejs }} forever?')">
-                        <i class="bi bi-trash"></i> Delete
-                      </a>
+                    <div>
+                      <h5 class="card-title fw-bold mb-0 text-decoration-line-through text-secondary">{{ contact.name }}
+                      </h5>
+                      <span class="badge rounded-pill fw-medium fs-6 mt-2 px-3"
+                        style="background-color: rgba(255,255,255,0.05); color: var(--text-secondary-color); border: 1px solid rgba(255,255,255,0.1);">Archived</span>
                     </div>
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="4" class="text-center py-5">
-                    <div class="mb-3" style="color: var(--text-secondary-color);"><i
-                        class="bi bi-archive fs-1 opacity-50"></i></div>
-                    <h5 class="fw-normal" style="color: var(--text-secondary-color);">No archived contacts</h5>
-                    <p class="mb-0" style="color: var(--text-secondary-color);">Contacts you archive will appear here.
-                    </p>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                  </div>
+                  <div class="mb-2 d-flex align-items-center text-white-50">
+                    <i class="bi bi-tag me-2"></i> {{ contact.contact_type }}
+                  </div>
+                  <div class="mb-4 d-flex align-items-center text-white-50 flex-wrap" style="word-break: break-all;">
+                    <i class="bi bi-envelope me-2"></i> {{ contact.company_email|default:"No Email" }}
+                  </div>
+                  <div
+                    class="mt-auto pt-4 border-top border-light border-opacity-10 d-flex justify-content-end gap-2 flex-nowrap">
+                    <a href="{% url 'accounts:contact-detail' contact.pk %}" data-bs-toggle="tooltip" title="View"
+                      class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="{% url 'accounts:contact-update' contact.pk %}" data-bs-toggle="tooltip" title="Edit"
+                      class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{% url 'accounts:contact-unarchive' contact.pk %}" data-bs-toggle="tooltip"
+                      title="Unarchive" class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #198754; border-color: rgba(25, 135, 84, 0.3); background-color: rgba(25, 135, 84, 0.05);">
+                      <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                    <a href="{% url 'accounts:contact-delete' contact.pk %}" data-bs-toggle="tooltip" title="Delete"
+                      class="btn btn-sm btn-outline-glow btn-icon"
+                      style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);"
+                      onclick="return confirm('Delete {{ contact.name|escapejs }} forever?')">
+                      <i class="bi bi-trash"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="text-center py-5 glass-panel rounded-4 border-dashed border-light border-opacity-25 border-1">
+                <div class="mb-3" style="color: var(--text-secondary-color);"><i
+                    class="bi bi-archive fs-1 opacity-50"></i></div>
+                <h5 class="fw-normal" style="color: var(--text-secondary-color);">No archived contacts</h5>
+                <p class="mb-0" style="color: var(--text-secondary-color);">Contacts you archive will appear here.</p>
+              </div>
+            </div>
+            {% endfor %}
           </div>
         </div>
 

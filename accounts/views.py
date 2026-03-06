@@ -163,12 +163,11 @@ class ContactListView(LoginRequiredMixin, OrganizationPermissionMixin, ListView)
 
     def get_queryset(self):
         user = self.request.user
-        try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            return Contact.objects.filter(organization=organization, deleted=False)
-        except Membership.DoesNotExist:
+        memberships = Membership.objects.filter(user=user)
+        if not memberships.exists():
             return Contact.objects.none()
+        organizaciones = [m.organization for m in memberships]
+        return Contact.objects.filter(organization__in=organizaciones, deleted=False)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -189,11 +188,10 @@ class ContactCreateView(OrganizationPermissionMixin, CreateView):
 
     def form_valid(self, form):
         user = self.request.user
-        try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            form.instance.organization = organization
-        except Membership.DoesNotExist:
+        membership = Membership.objects.filter(user=user).first()
+        if membership:
+            form.instance.organization = membership.organization
+        else:
             form.add_error(None, "You are not a member of any organization. Please create or join an organization first.")
             return super().form_invalid(form)
         return super().form_valid(form)

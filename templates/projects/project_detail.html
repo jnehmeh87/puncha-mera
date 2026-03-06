@@ -90,7 +90,27 @@
     justify-content: center;
     font-weight: 700;
     font-size: 1.2rem;
+
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Badges and Details */
+  .badge-currency {
+    background-color: color-mix(in srgb, var(--text-color) 10%, transparent);
+    color: var(--text-secondary-color);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-text-fill-color: initial;
+  }
+
+  .badge-count {
+    background: var(--primary-color);
+    color: #fff;
+    width: 24px;
+    height: 24px;
+  }
+
+  .rate-text {
+    color: var(--text-secondary-color);
   }
 </style>
 
@@ -114,21 +134,17 @@
             <h1 class="h2 mb-0 fw-bolder d-flex align-items-center flex-wrap gap-2"
               style="background: linear-gradient(135deg, var(--text-color) 0%, var(--text-secondary-color) 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
               {{ object.name }}
-              <span class="badge rounded-pill fw-medium fs-6 ms-1"
-                style="background-color: color-mix(in srgb, var(--text-color) 10%, transparent); color: var(--text-secondary-color); border: 1px solid rgba(255,255,255,0.1); -webkit-text-fill-color: initial;">{{
-                object.currency }}</span>
+              <span class="badge rounded-pill fw-medium fs-6 ms-1 badge-currency">{{ object.currency }}</span>
             </h1>
             <div class="d-flex gap-2">
               <a href="{% url 'projects:project-update' object.pk %}"
-                class="btn btn-outline-glow rounded-pill px-4 py-2"
+                data-bs-toggle="tooltip" title="Edit" class="btn btn-outline-glow btn-icon-lg"
                 style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
-                <i class="bi bi-pencil me-2"></i> Edit
-              </a>
+                <i class="bi bi-pencil "></i></a>
               <a href="{% url 'projects:project-delete' object.pk %}"
-                class="btn btn-outline-glow rounded-pill px-4 py-2"
+                data-bs-toggle="tooltip" title="Delete" class="btn btn-outline-glow btn-icon-lg"
                 style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);">
-                <i class="bi bi-trash me-2"></i> Delete
-              </a>
+                <i class="bi bi-trash "></i></a>
             </div>
           </div>
 
@@ -146,9 +162,7 @@
         style="background-color: color-mix(in srgb, var(--surface-color) 60%, transparent);">
         <div class="p-4 border-bottom border-light border-opacity-10 d-flex justify-content-between align-items-center">
           <h3 class="h5 mb-0 fw-bold" style="color: var(--text-color);">Team Members</h3>
-          <span class="badge rounded-pill d-flex align-items-center justify-content-center"
-            style="background: var(--primary-color); color: #fff; width: 24px; height: 24px;">{{
-            object.projectmember_set.count }}</span>
+          <span class="badge rounded-pill d-flex align-items-center justify-content-center badge-count">{{ object.projectmember_set.count }}</span>
         </div>
 
         <div class="p-4 flex-grow-1 d-flex flex-column">
@@ -170,8 +184,7 @@
                     <span class="badge rounded-pill me-2 fw-medium"
                       style="background-color: color-mix(in srgb, var(--text-color) 15%, transparent); color: var(--text-secondary-color);">Viewer</span>
                     {% endif %}
-                    <small class="fw-medium" style="color: var(--text-secondary-color);">{{ member.hourly_rate }} {{
-                      object.currency }}/hr</small>
+                    <small class="fw-medium rate-text">{{ member.hourly_rate }} {{ object.currency }}/hr</small>
                   </div>
                 </div>
               </div>

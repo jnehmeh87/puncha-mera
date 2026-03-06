@@ -23,10 +23,7 @@ class OrganizationPermissionMixin(AccessMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
 
-        try:
-            membership = Membership.objects.get(user=request.user)
-            # Further checks can be added here if needed
-        except Membership.DoesNotExist:
+        if not Membership.objects.filter(user=request.user).exists():
             return self.handle_no_permission()
 
         return super().dispatch(request, *args, **kwargs)

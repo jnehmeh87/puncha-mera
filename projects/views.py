@@ -17,12 +17,11 @@ class ProjectListView(LoginRequiredMixin, ListView):
         if not user.is_authenticated:
             return Project.objects.none()
 
-        try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            return Project.objects.filter(organization=organization, deleted=False)
-        except Membership.DoesNotExist:
+        memberships = Membership.objects.filter(user=user)
+        if not memberships.exists():
             return Project.objects.none()
+        organizaciones = [m.organization for m in memberships]
+        return Project.objects.filter(organization__in=organizaciones, deleted=False)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -39,14 +38,13 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         user = self.request.user
-        try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            form.instance.organization = organization
+        membership = Membership.objects.filter(user=user).first()
+        if membership:
+            form.instance.organization = membership.organization
             response = super().form_valid(form)
             ProjectMember.objects.create(project=self.object, user=user, can_view=True, can_edit=True, can_delete=True)
             return response
-        except Membership.DoesNotExist:
+        else:
             return super().form_invalid(form)
 
 class ProjectDetailView(LoginRequiredMixin, ProjectMemberPermissionMixin, DetailView):
@@ -99,12 +97,12 @@ class ProjectUpdateMemberView(LoginRequiredMixin, UpdateView):
         if not user.is_authenticated:
             return ProjectMember.objects.none()
 
-        try:
-            membership = Membership.objects.get(user=user)
-            organization = membership.organization
-            return ProjectMember.objects.filter(project__organization=organization)
-        except Membership.DoesNotExist:
+        memberships = Membership.objects.filter(user=user)
+        if not memberships.exists():
             return ProjectMember.objects.none()
+        
+        organizaciones = [m.organization for m in memberships]
+        return ProjectMember.objects.filter(project__organization__in=organizaciones)
 
     def get_success_url(self):
         return reverse_lazy('projects:project-detail', kwargs={'pk': self.object.project.pk})

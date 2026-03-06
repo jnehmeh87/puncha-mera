@@ -238,6 +238,74 @@ body {
     box-shadow: 0 6px 20px color-mix(in srgb, var(--secondary-color) 40%, transparent);
 }
 
+/* Glow Buttons */
+.btn-glow {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-primary-glow {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #fff !important;
+    font-weight: 600;
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--primary-color) 40%, transparent);
+}
+
+.btn-primary-glow:hover {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--secondary-color) 50%, transparent);
+}
+
+.btn-outline-glow {
+    background-color: transparent;
+    border-width: 1px;
+    border-style: solid;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-outline-glow:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* Icon Buttons */
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+    flex-shrink: 0;
+}
+
+.btn-icon i {
+    font-size: 1.1rem;
+    margin: 0 !important;
+}
+
+.btn-icon-lg {
+    width: 44px;
+    height: 44px;
+    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+    flex-shrink: 0;
+}
+
+.btn-icon-lg i {
+    font-size: 1.3rem;
+    margin: 0 !important;
+}
+
 /* Depth & Glass Cards */
 .card {
     background-color: var(--surface-color);

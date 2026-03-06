@@ -144,14 +144,14 @@
     <div class="border-bottom border-light border-opacity-10 bg-transparent pt-4 pb-0 px-4">
       <ul class="nav nav-tabs border-0 gap-4" id="projectTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link custom-tab border-0 fs-5 fw-medium active" id="active-tab" data-bs-toggle="tab"
+          <button class="nav-link custom-tab fs-5 fw-medium active" id="active-tab" data-bs-toggle="tab"
             data-bs-target="#active" type="button" role="tab" aria-controls="active" aria-selected="true">Active
             Projects</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link custom-tab border-0 fs-5 fw-medium bg-transparent" id="archived-tab"
-            data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archived"
-            aria-selected="false">Archived Projects</button>
+          <button class="nav-link custom-tab fs-5 fw-medium bg-transparent" id="archived-tab" data-bs-toggle="tab"
+            data-bs-target="#archived" type="button" role="tab" aria-controls="archived" aria-selected="false">Archived
+            Projects</button>
         </li>
       </ul>
     </div>
@@ -161,137 +161,142 @@
 
         <!-- Active Tab -->
         <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
-          <div class="table-responsive">
-            <table class="table table-hover table-borderless align-middle mb-0 custom-table w-100">
-              <thead style="background-color: color-mix(in srgb, var(--text-color) 2%, transparent);">
-                <tr>
-                  <th style="width: 40%;">Name</th>
-                  <th style="width: 30%;">Contact</th>
-                  <th class="text-end" style="width: 30%;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for project in active_projects %}
-                <tr style="transition: all 0.2s ease;">
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <div class="avatar-circle me-3 text-white"
-                        style="background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 60%, black));">
-                        {{ project.name|make_list|first|upper }}
-                      </div>
-                      <span class="fs-6 fw-medium">{{ project.name }}</span>
+          <div class="row g-4 p-4">
+            {% for project in active_projects %}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="card h-100 bg-transparent border-light border-opacity-10 position-relative"
+                style="transition: all 0.3s ease;">
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex align-items-center mb-4">
+                    <div class="avatar-circle me-3 text-white shadow-sm"
+                      style="background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 60%, black));">
+                      {{ project.name|make_list|first|upper }}
                     </div>
-                  </td>
-                  <td class="text-white-50">{{ project.contact }}</td>
-                  <td class="text-end">
-                    <div class="d-flex justify-content-end gap-2 flex-wrap">
-                      <a href="{% url 'projects:project-detail' project.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3" title="View"
-                        style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
-                        <i class="bi bi-eye"></i>
-                      </a>
-                      <a href="{% url 'projects:project-update' project.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3" title="Edit"
-                        style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
-                        <i class="bi bi-pencil"></i>
-                      </a>
-                      <a href="{% url 'projects:project-archive' project.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3" title="Archive"
-                        style="color: #ffc107; border-color: rgba(255, 193, 7, 0.3); background-color: rgba(255, 193, 7, 0.05);"
-                        onclick="return confirm('Archive {{ project.name|escapejs }}?')">
-                        <i class="bi bi-archive"></i>
-                      </a>
-                      <a href="{% url 'projects:project-delete' project.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3" title="Delete"
-                        style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);"
-                        onclick="return confirm('Delete {{ project.name|escapejs }} forever?')">
-                        <i class="bi bi-trash"></i>
-                      </a>
+                    <div>
+                      <h5 class="card-title fw-bold mb-0 text-white">{{ project.name }}</h5>
+                      <span class="badge rounded-pill fw-medium fs-6 mt-2 px-3"
+                        style="background-color: color-mix(in srgb, var(--primary-color) 15%, transparent); color: var(--primary-color); border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent);">Active</span>
                     </div>
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="3" class="text-center py-5">
-                    <div class="mb-3" style="color: var(--text-secondary-color);"><i
-                        class="bi bi-kanban fs-1 opacity-50"></i></div>
-                    <h5 class="fw-normal">No active projects</h5>
-                    <p class="mb-4" style="color: var(--text-secondary-color);">Get started by bringing a new project to
-                      life.</p>
-                    <a href="{% url 'projects:project-create' %}"
-                      class="btn btn-glow btn-primary-glow rounded-pill px-4">Start a new project</a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                  </div>
+                  {% if project.contact %}
+                  <div class="mb-4 d-flex align-items-center text-white-50">
+                    <i class="bi bi-person me-2"></i> {{ project.contact }}
+                  </div>
+                  {% else %}
+                  <div class="mb-4 d-flex align-items-center text-white-50 opacity-50">
+                    <i class="bi bi-person me-2"></i> No Contact
+                  </div>
+                  {% endif %}
+                  <div
+                    class="mt-auto pt-4 border-top border-light border-opacity-10 d-flex justify-content-end gap-2 flex-nowrap">
+                    <a href="{% url 'projects:project-detail' project.pk %}" data-bs-toggle="tooltip" title="View"
+                      class="btn btn-sm btn-outline-glow btn-icon" title="View"
+                      style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="{% url 'projects:project-update' project.pk %}" data-bs-toggle="tooltip" title="Edit"
+                      class="btn btn-sm btn-outline-glow btn-icon" title="Edit"
+                      style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{% url 'projects:project-archive' project.pk %}" data-bs-toggle="tooltip" title="Archive"
+                      class="btn btn-sm btn-outline-glow btn-icon" title="Archive"
+                      style="color: #ffc107; border-color: rgba(255, 193, 7, 0.3); background-color: rgba(255, 193, 7, 0.05);"
+                      onclick="return confirm('Archive {{ project.name|escapejs }}?')">
+                      <i class="bi bi-archive"></i>
+                    </a>
+                    <a href="{% url 'projects:project-delete' project.pk %}" data-bs-toggle="tooltip" title="Delete"
+                      class="btn btn-sm btn-outline-glow btn-icon" title="Delete"
+                      style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);"
+                      onclick="return confirm('Delete {{ project.name|escapejs }} forever?')">
+                      <i class="bi bi-trash"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="text-center py-5 glass-panel rounded-4 border-dashed border-light border-opacity-25 border-1">
+                <div class="mb-3" style="color: var(--text-secondary-color);"><i
+                    class="bi bi-kanban fs-1 opacity-50"></i></div>
+                <h5 class="fw-normal text-white">No active projects</h5>
+                <p class="mb-4" style="color: var(--text-secondary-color);">Get started by bringing a new project to
+                  life.</p>
+                <a href="{% url 'projects:project-create' %}"
+                  class="btn btn-glow btn-primary-glow rounded-pill px-4">Start a new project</a>
+              </div>
+            </div>
+            {% endfor %}
           </div>
         </div>
 
         <!-- Archived Tab -->
         <div class="tab-pane fade" id="archived" role="tabpanel" aria-labelledby="archived-tab">
-          <div class="table-responsive">
-            <table class="table table-hover table-borderless align-middle mb-0 custom-table w-100">
-              <thead style="background-color: color-mix(in srgb, var(--text-color) 2%, transparent);">
-                <tr>
-                  <th style="width: 40%;">Name</th>
-                  <th style="width: 30%;">Contact</th>
-                  <th class="text-end" style="width: 30%;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for project in archived_projects %}
-                <tr style="transition: all 0.2s ease;">
-                  <td>
-                    <div class="d-flex align-items-center opacity-75">
-                      <div class="avatar-circle me-3"
-                        style="background-color: color-mix(in srgb, var(--text-color) 10%, transparent); color: var(--text-secondary-color);">
-                        {{ project.name|make_list|first|upper }}
-                      </div>
-                      <span class="fs-6 fw-medium text-decoration-line-through"
-                        style="color: var(--text-secondary-color);">{{ project.name }}</span>
+          <div class="row g-4 p-4">
+            {% for project in archived_projects %}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="card h-100 bg-transparent border-light border-opacity-10 position-relative opacity-75"
+                style="transition: all 0.3s ease;">
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex align-items-center mb-4">
+                    <div class="avatar-circle me-3 shadow-sm"
+                      style="background-color: color-mix(in srgb, var(--text-color) 10%, transparent); color: var(--text-secondary-color);">
+                      {{ project.name|make_list|first|upper }}
                     </div>
-                  </td>
-                  <td class="text-white-50">{{ project.contact }}</td>
-                  <td class="text-end">
-                    <div class="d-flex justify-content-end gap-2 flex-wrap">
-                      <a href="{% url 'projects:project-detail' project.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3" title="View"
-                        style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
-                        <i class="bi bi-eye"></i>
-                      </a>
-                      <a href="{% url 'projects:project-update' project.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3" title="Edit"
-                        style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
-                        <i class="bi bi-pencil"></i>
-                      </a>
-                      <a href="{% url 'projects:project-unarchive' project.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3" title="Unarchive"
-                        style="color: #198754; border-color: rgba(25, 135, 84, 0.3); background-color: rgba(25, 135, 84, 0.05);">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                      </a>
-                      <a href="{% url 'projects:project-delete' project.pk %}"
-                        class="btn btn-sm btn-outline-glow rounded-pill px-3" title="Delete"
-                        style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);"
-                        onclick="return confirm('Delete {{ project.name|escapejs }} forever?')">
-                        <i class="bi bi-trash"></i>
-                      </a>
+                    <div>
+                      <h5 class="card-title fw-bold mb-0 text-decoration-line-through text-secondary">{{ project.name }}
+                      </h5>
+                      <span class="badge rounded-pill fw-medium fs-6 mt-2 px-3"
+                        style="background-color: rgba(255,255,255,0.05); color: var(--text-secondary-color); border: 1px solid rgba(255,255,255,0.1);">Archived</span>
                     </div>
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="3" class="text-center py-5">
-                    <div class="mb-3" style="color: var(--text-secondary-color);"><i
-                        class="bi bi-archive fs-1 opacity-50"></i></div>
-                    <h5 class="fw-normal" style="color: var(--text-secondary-color);">No archived projects</h5>
-                    <p class="mb-0" style="color: var(--text-secondary-color);">Projects you archive will appear here.
-                    </p>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                  </div>
+                  {% if project.contact %}
+                  <div class="mb-4 d-flex align-items-center text-white-50">
+                    <i class="bi bi-person me-2"></i> {{ project.contact }}
+                  </div>
+                  {% else %}
+                  <div class="mb-4 d-flex align-items-center text-white-50 opacity-50">
+                    <i class="bi bi-person me-2"></i> No Contact
+                  </div>
+                  {% endif %}
+                  <div
+                    class="mt-auto pt-4 border-top border-light border-opacity-10 d-flex justify-content-end gap-2 flex-nowrap">
+                    <a href="{% url 'projects:project-detail' project.pk %}" data-bs-toggle="tooltip" title="View"
+                      class="btn btn-sm btn-outline-glow btn-icon" title="View"
+                      style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="{% url 'projects:project-update' project.pk %}" data-bs-toggle="tooltip" title="Edit"
+                      class="btn btn-sm btn-outline-glow btn-icon" title="Edit"
+                      style="color: #adb5bd; border-color: rgba(173, 181, 189, 0.3); background-color: rgba(173, 181, 189, 0.05);">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{% url 'projects:project-unarchive' project.pk %}" data-bs-toggle="tooltip"
+                      title="Unarchive" class="btn btn-sm btn-outline-glow btn-icon" title="Unarchive"
+                      style="color: #198754; border-color: rgba(25, 135, 84, 0.3); background-color: rgba(25, 135, 84, 0.05);">
+                      <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                    <a href="{% url 'projects:project-delete' project.pk %}" data-bs-toggle="tooltip" title="Delete"
+                      class="btn btn-sm btn-outline-glow btn-icon" title="Delete"
+                      style="color: #dc3545; border-color: rgba(220, 53, 69, 0.3); background-color: rgba(220, 53, 69, 0.05);"
+                      onclick="return confirm('Delete {{ project.name|escapejs }} forever?')">
+                      <i class="bi bi-trash"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="text-center py-5 glass-panel rounded-4 border-dashed border-light border-opacity-25 border-1">
+                <div class="mb-3" style="color: var(--text-secondary-color);"><i
+                    class="bi bi-archive fs-1 opacity-50"></i></div>
+                <h5 class="fw-normal" style="color: var(--text-secondary-color);">No archived projects</h5>
+                <p class="mb-0" style="color: var(--text-secondary-color);">Projects you archive will appear here.</p>
+              </div>
+            </div>
+            {% endfor %}
           </div>
         </div>
 

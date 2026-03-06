@@ -90,7 +90,21 @@
     justify-content: center;
     font-weight: 700;
     font-size: 1.2rem;
+
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Badges */
+  .badge-count {
+    background: var(--primary-color);
+    color: #fff;
+    width: 24px;
+    height: 24px;
+  }
+
+  .badge-role {
+    background-color: color-mix(in srgb, var(--text-color) 15%, transparent);
+    color: var(--text-secondary-color);
   }
 </style>
 
@@ -128,14 +142,12 @@
           </div>
 
           <div class="d-flex flex-wrap gap-3 mt-5">
-            <a href="{% url 'accounts:organization-list' %}" class="btn btn-outline-glow rounded-pill px-4 py-2"
+            <a href="{% url 'accounts:organization-list' %}" data-bs-toggle="tooltip" title="Back to List" class="btn btn-outline-glow btn-icon-lg"
               style="color: var(--text-color); border-color: rgba(255,255,255,0.1); background-color: rgba(255,255,255,0.02);">
-              <i class="bi bi-arrow-left me-2"></i> Back to List
-            </a>
-            <a href="{% url 'accounts:invitation-list' object.pk %}" class="btn btn-outline-glow rounded-pill px-4 py-2"
+              <i class="bi bi-arrow-left "></i></a>
+            <a href="{% url 'accounts:invitation-list' object.pk %}" data-bs-toggle="tooltip" title="Pending Invitations" class="btn btn-outline-glow btn-icon-lg"
               style="color: #0dcaf0; border-color: rgba(13, 202, 240, 0.3); background-color: rgba(13, 202, 240, 0.05);">
-              <i class="bi bi-envelope-open me-2"></i> Pending Invitations
-            </a>
+              <i class="bi bi-envelope-open "></i></a>
           </div>
         </div>
       </div>
@@ -147,9 +159,7 @@
         style="background-color: color-mix(in srgb, var(--surface-color) 60%, transparent);">
         <div class="p-4 border-bottom border-light border-opacity-10 d-flex justify-content-between align-items-center">
           <h3 class="h5 mb-0 fw-bold" style="color: var(--text-color);">Organization Members</h3>
-          <span class="badge rounded-pill d-flex align-items-center justify-content-center"
-            style="background: var(--primary-color); color: #fff; width: 24px; height: 24px;">{{ object.members.count
-            }}</span>
+          <span class="badge rounded-pill d-flex align-items-center justify-content-center badge-count">{{ object.members.count }}</span>
         </div>
 
         <div class="p-4 flex-grow-1 d-flex flex-column">
@@ -163,9 +173,7 @@
                 </div>
                 <div>
                   <h6 class="mb-1 fw-semibold" style="color: var(--text-color);">{{ member.user.username }}</h6>
-                  <span class="badge rounded-pill fw-medium"
-                    style="background-color: color-mix(in srgb, var(--text-color) 15%, transparent); color: var(--text-secondary-color);">{{
-                    member.role }}</span>
+                  <span class="badge rounded-pill fw-medium badge-role">{{ member.role }}</span>
                 </div>
               </div>
             </div>
