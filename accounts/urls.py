@@ -26,7 +26,8 @@ from .views import (
     LanguageUpdateView,
     ColorThemeUpdateView,
     ProfileCompletionWizardView,
-    ProfileCompletionAjaxView
+    ProfileCompletionAjaxView,
+    QuickCurrencyUpdateView
 )
 
 app_name = 'accounts'
@@ -54,6 +55,7 @@ urlpatterns = [
     path('profile/edit/', ProfileUpdatePopupView.as_view(), name='profile-edit'),
     path('settings/edit/', SettingsUpdatePopupView.as_view(), name='settings-edit'),
     path('settings/currency/edit/', CurrencyUpdateView.as_view(), name='settings-currency-edit'),
+    path('settings/quick-currency/', QuickCurrencyUpdateView.as_view(), name='quick-currency-update'),
     path('settings/timezone/edit/', TimezoneUpdateView.as_view(), name='settings-timezone-edit'),
     path('settings/language/edit/', LanguageUpdateView.as_view(), name='settings-language-edit'),
     path('settings/theme/edit/', ColorThemeUpdateView.as_view(), name='settings-theme-edit'),

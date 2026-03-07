@@ -1,326 +1,520 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Advanced Analytics & Insights | Puncha Mera{% endblock %}
+{% block title %}Advanced Reports | Puncha Mera{% endblock %}
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-{% endblock %}
 
-{% block content %}
-<div class="row mb-4 align-items-center">
-    <div class="col-md-10">
-        <h1 class="display-4 fw-bolder mb-2 text-white page-title">
-            <i class="bi bi-bar-chart-steps text-info me-2 flex-shrink-0"></i>
-            Advanced Analytics <span class="text-white-50">& Insights</span>
-        </h1>
-        <p class="lead text-white-50 fs-5 mb-0" style="max-width: 700px;">
-            Deep organizational metrics, member efficiency, and predictive project profitability.
-        </p>
-    </div>
-</div>
+<!-- Inject safely via Django json_script -->
+{{ bar_chart_labels|json_script:"barLabels" }}
+{{ bar_chart_revenue|json_script:"barRevenue" }}
+{{ bar_chart_hours|json_script:"barHours" }}
 
-{% include "analytics/_filters.html" %}
+{{ donut_labels|json_script:"donutLabels" }}
+{{ donut_data|json_script:"donutData" }}
 
-<div class="row g-4 mb-5">
-    <!-- Member Performance Leaderboard -->
-    <div class="col-12 col-xl-6">
-        <div class="card glass-card h-100 p-0 border-0 overflow-hidden">
-            <div
-                class="p-4 border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
-                <h4 class="text-white mb-0 fw-semibold">
-                    <i class="bi bi-people text-primary me-2"></i> Team Efficiency
-                </h4>
-            </div>
+{{ member_stats|json_script:"memberStats" }}
 
-            <div class="list-group list-group-flush bg-transparent">
-                <div
-                    class="list-group-item bg-transparent border-bottom border-secondary border-opacity-25 py-3 d-none d-md-flex align-items-center text-white-50 text-uppercase tracking-wider fs-7 fw-semibold">
-                    <div class="col-6">Member</div>
-                    <div class="col-3 text-end">Hours Logged</div>
-                    <div class="col-3 text-end">Revenue Gen.</div>
-                </div>
-
-                {% for member in member_stats %}
-                <div
-                    class="list-group-item bg-transparent border-bottom border-secondary border-opacity-10 py-3 d-flex flex-column flex-md-row align-items-md-center group transition-all">
-                    <!-- Mobile Labels -->
-                    <div class="d-md-none mb-2 text-white-50 text-uppercase fs-7 fw-semibold tracking-wider">Member
-                    </div>
-
-                    <div class="col-12 col-md-6 d-flex align-items-center mb-3 mb-md-0">
-                        <div class="avatar-circle me-3 flex-shrink-0 shadow-sm"
-                            style="width: 40px; height: 40px; font-size: 1rem;">
-                            {{ member.name.0|upper }}
-                        </div>
-                        <span class="fs-5 fw-medium text-white">{{ member.name }}</span>
-                    </div>
-
-                    <div class="col-12 col-md-3 text-md-end mb-2 mb-md-0">
-                        <div
-                            class="d-md-none text-white-50 text-uppercase fs-7 fw-semibold tracking-wider d-inline-block w-50">
-                            Hours Logged</div>
-                        <span class="fs-5 text-white-50" style="font-feature-settings: 'tnum';">
-                            {{ member.hours }}<span class="fs-7 ms-1">h</span>
-                        </span>
-                    </div>
-
-                    <div class="col-12 col-md-3 text-md-end">
-                        <div
-                            class="d-md-none text-white-50 text-uppercase fs-7 fw-semibold tracking-wider d-inline-block w-50">
-                            Revenue Gen.</div>
-                        <span class="fs-5 fw-bold text-success" style="font-feature-settings: 'tnum';">
-                            {{ user_currency }} {{ member.revenue|floatformat:2 }}
-                        </span>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="p-5 text-center">
-                    <div
-                        class="rounded-circle bg-white bg-opacity-10 d-inline-flex align-items-center justify-content-center p-4 mb-3">
-                        <i class="bi bi-inbox fs-1 text-white-50"></i>
-                    </div>
-                    <h5 class="text-white">No Team Data Found</h5>
-                    <p class="text-white-50 mb-0">Adjust filters or track more time.</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <!-- Most Profitable Projects Board -->
-    <div class="col-12 col-xl-6">
-        <div class="card glass-card h-100 p-0 border-0 overflow-hidden">
-            <div
-                class="p-4 border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
-                <h4 class="text-white mb-0 fw-semibold">
-                    <i class="bi bi-briefcase text-info me-2"></i> Top Profitable Projects
-                </h4>
-            </div>
-
-            <div class="list-group list-group-flush bg-transparent">
-                <div
-                    class="list-group-item bg-transparent border-bottom border-secondary border-opacity-25 py-3 d-none d-md-flex align-items-center text-white-50 text-uppercase tracking-wider fs-7 fw-semibold">
-                    <div class="col-5">Project</div>
-                    <div class="col-4 text-end">Total Pipeline</div>
-                    <div class="col-3 text-end">Effective/hr</div>
-                </div>
-
-                {% for p in project_stats %}
-                <div
-                    class="list-group-item bg-transparent border-bottom border-secondary border-opacity-10 py-3 d-flex flex-column flex-md-row align-items-md-center group transition-all">
-                    <div class="d-md-none mb-2 text-white-50 text-uppercase fs-7 fw-semibold tracking-wider">Project
-                    </div>
-
-                    <div class="col-12 col-md-5 d-flex align-items-center mb-3 mb-md-0">
-                        <div class="rounded-3 bg-white bg-opacity-10 p-2 me-3 flex-shrink-0">
-                            <i class="bi bi-folder-fill text-white-50 fs-5"></i>
-                        </div>
-                        <span class="fs-5 fw-medium text-white text-truncate">{{ p.name }}</span>
-                    </div>
-
-                    <div class="col-12 col-md-4 text-md-end mb-2 mb-md-0">
-                        <div
-                            class="d-md-none text-white-50 text-uppercase fs-7 fw-semibold tracking-wider d-inline-block w-50">
-                            Total Pipeline</div>
-                        <span class="fs-5 text-white" style="font-feature-settings: 'tnum';">
-                            {{ p.currency }} {{ p.revenue|floatformat:2 }}
-                            <small class="d-block text-white-50 fs-7 fw-normal">{{ p.hours }}hrs tracked</small>
-                        </span>
-                    </div>
-
-                    <div class="col-12 col-md-3 text-md-end">
-                        <div
-                            class="d-md-none text-white-50 text-uppercase fs-7 fw-semibold tracking-wider d-inline-block w-50">
-                            Effective/hr</div>
-                        <span
-                            class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 fs-6 py-2 px-3 fw-bold font-monospace">
-                            {{ p.currency }} {{ p.effective_rate|floatformat:2 }}
-                        </span>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="p-5 text-center">
-                    <div
-                        class="rounded-circle bg-white bg-opacity-10 d-inline-flex align-items-center justify-content-center p-4 mb-3">
-                        <i class="bi bi-journal-x fs-1 text-white-50"></i>
-                    </div>
-                    <h5 class="text-white">No Project Data</h5>
-                    <p class="text-white-50 mb-0">Adjust filters or log billable time.</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Advanced Charts Section -->
-<div class="row g-4 mb-5">
-
-    <!-- Burn Rate Line Chart -->
-    <div class="col-12 col-xl-6">
-        <div class="card glass-card h-100 p-4 border-0">
-            <h4 class="text-white mb-4 fw-semibold">Daily Revenue Burn Rate</h4>
-            <div style="height: 350px; width: 100%;" class="d-flex align-items-center justify-content-center">
-                <canvas id="burnChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Client Distribution Donut Chart -->
-    <div class="col-12 col-xl-6">
-        <div class="card glass-card h-100 p-4 border-0">
-            <h4 class="text-white mb-4 fw-semibold">Revenue Distribution by Client</h4>
-            <div style="height: 350px; width: 100%;" class="d-flex align-items-center justify-content-center">
-                <canvas id="clientDistributionChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!-- Data Islands for Chart.js -->
-{{ client_labels|json_script:"clientLabels" }}
-{{ client_revenue_data|json_script:"clientData" }}
-{{ burn_labels|json_script:"burnLabels" }}
-{{ burn_data|json_script:"burnData" }}
-
-<!-- prettier-ignore-start -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener("DOMContentLoaded", function () {
+        // --- Shared Chart Defaults ---
         Chart.defaults.color = 'rgba(255, 255, 255, 0.6)';
-        Chart.defaults.font.family = "'Inter', 'Poppins', sans-serif";
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        const gridColor = 'rgba(255, 255, 255, 0.05)';
 
-        const palette = [
-            '#EF6c00', // Primary Orange
-            '#0dcaf0', // Info Blue
-            '#e52e71', // Accent Pink
-            '#198754', // Success Green
-            '#6f42c1', // Indigo
-            '#ffc107', // Warning Yellow
-            '#d63384'  // Pink
-        ];
+        // Ensure proper JSON parsing from the script tags
+        const barLabels = JSON.parse(document.getElementById('barLabels').textContent);
+        const barRevenue = JSON.parse(document.getElementById('barRevenue').textContent);
+        const barHours = JSON.parse(document.getElementById('barHours').textContent);
 
-        // 1. Client Distribution Donut Chart
-        const clientLabels = JSON.parse(document.getElementById('clientLabels').textContent);
-        const clientData = JSON.parse(document.getElementById('clientData').textContent);
+        const donutLabels = JSON.parse(document.getElementById('donutLabels').textContent);
+        const donutData = JSON.parse(document.getElementById('donutData').textContent);
 
-        if (clientLabels.length > 0 && clientData.some(val => val > 0)) {
-            const donutCtx = document.getElementById('clientDistributionChart').getContext('2d');
-            new Chart(donutCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: clientLabels,
-                    datasets: [{
-                        data: clientData,
-                        backgroundColor: palette,
-                        borderWidth: 0,
-                        hoverOffset: 12
-                    }]
+        const userCurrency = "{{ user_currency }}";
+
+        // --- 1. Revenue vs. Hours Tracked (Dual Axis Bar Chart) ---
+        const mixCtx = document.getElementById('mixChart').getContext('2d');
+
+        // Create a premium gradient for the bars
+        const barGradient = mixCtx.createLinearGradient(0, 0, 0, 400);
+        barGradient.addColorStop(0, '#e65100'); // Deep Orange
+        barGradient.addColorStop(1, 'rgba(230, 81, 0, 0.1)');
+
+        new Chart(mixCtx, {
+            type: 'bar',
+            data: {
+                labels: barLabels,
+                datasets: [
+                    {
+                        label: 'Revenue (' + userCurrency + ')',
+                        data: barRevenue,
+                        backgroundColor: barGradient,
+                        borderColor: '#e65100',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        type: 'line',
+                        label: 'Hours',
+                        data: barHours,
+                        borderColor: '#90caf9', // Light Blue
+                        backgroundColor: 'rgba(144, 202, 249, 0.5)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointBackgroundColor: '#90caf9',
+                        pointBorderColor: '#fff',
+                        pointRadius: 4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                color: '#fff',
-                                font: { size: 13, family: "'Inter', sans-serif" },
-                                padding: 20,
-                                usePointStyle: true,
-                                pointStyle: 'circle'
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: { boxWidth: 10, usePointStyle: true, pointStyle: 'circle' }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleFont: { size: 14, weight: 'bold' },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.datasetIndex === 0) {
+                                    label += userCurrency + ' ' + context.parsed.y.toLocaleString();
+                                } else {
+                                    label += context.parsed.y + 'h';
+                                }
+                                return label;
                             }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            titleFont: { size: 15 },
-                            padding: 16,
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderWidth: 1,
-                            displayColors: true,
-                            boxPadding: 4,
-                            callbacks: {
-                                label: function (context) { return ' {{ user_currency|escapejs }} ' + context.parsed.toFixed(2); }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { font: { size: 11 } }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: false, // Hide the axis line, keep for scaling
+                        position: 'left',
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: false,
+                        position: 'right',
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        });
+
+        // --- 2. Hours by Project (Donut Chart) ---
+        const donutCtx = document.getElementById('donutChart').getContext('2d');
+        new Chart(donutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: donutLabels,
+                datasets: [{
+                    data: donutData,
+                    backgroundColor: [
+                        '#e65100', // Deep Orange
+                        '#ffb300', // Amber
+                        '#00e676', // Green Accent
+                        '#29b6f6', // Light Blue
+                        '#ab47bc', // Purple
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return ' ' + context.parsed + 'h';
                             }
                         }
                     }
                 }
+            }
+        });
+        // --- 3. Action Buttons Logic ---
+        const btnExportCsv = document.getElementById('btnExportCsv');
+        if (btnExportCsv) {
+            btnExportCsv.addEventListener('click', function () {
+                try {
+                    const memberStats = JSON.parse(document.getElementById('memberStats').textContent);
+                    if (!memberStats || memberStats.length === 0) {
+                        alert("No data available to export.");
+                        return;
+                    }
+
+                    let csvContent = "data:text/csv;charset=utf-8,";
+                    csvContent += "Member Name,Total Hours,Billable %,Revenue Generated (" + userCurrency + "),Top Project\n";
+
+                    memberStats.forEach(function (member) {
+                        let safeName = (member.name || "").toString().replace(/"/g, '""');
+                        let safeProj = (member.top_project || "").toString().replace(/"/g, '""');
+                        let row = `"${safeName}",${member.total_hours},${member.billable_pct},${member.revenue},"${safeProj}"`;
+                        csvContent += row + "\n";
+                    });
+
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", `team_performance_${new Date().toISOString().slice(0, 10)}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } catch (e) {
+                    console.error("Export failed: ", e);
+                }
             });
-        } else {
-            const donutCtx = document.getElementById('clientDistributionChart');
-            donutCtx.parentNode.innerHTML = '<div class="text-center text-white-50"><i class="bi bi-pie-chart display-1 d-block mb-3 opacity-25"></i>No client revenue data to filter.</div>';
         }
 
-        // 2. Burn Rate Line Chart
-        const burnLabels = JSON.parse(document.getElementById('burnLabels').textContent);
-        const burnData = JSON.parse(document.getElementById('burnData').textContent);
-
-        if (burnLabels.length > 0) {
-            const burnCtx = document.getElementById('burnChart').getContext('2d');
-
-            // Let's use the Info blue color (cyan) for this chart to differentiate from Basic Analytics
-            let gradientBurn = burnCtx.createLinearGradient(0, 0, 0, 400);
-            gradientBurn.addColorStop(0, 'rgba(13, 202, 240, 0.4)'); // Info Blue
-            gradientBurn.addColorStop(1, 'rgba(13, 202, 240, 0.0)');
-
-            new Chart(burnCtx, {
-                type: 'line',
-                data: {
-                    labels: burnLabels,
-                    datasets: [{
-                        label: 'Daily Rev ($)',
-                        data: burnData,
-                        borderColor: '#0dcaf0',
-                        backgroundColor: gradientBurn,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#0f172a',
-                        pointBorderColor: '#0dcaf0',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            padding: 12,
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderWidth: 1,
-                            displayColors: false,
-                            callbacks: {
-                                label: function (context) { return '{{ user_currency|escapejs }} ' + context.parsed.y.toFixed(2); }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { callback: function (value) { return '{{ user_currency|escapejs }} ' + value; } }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
+        const btnToggleLayout = document.getElementById('btnToggleLayout');
+        if (btnToggleLayout) {
+            btnToggleLayout.addEventListener('click', function () {
+                const mainContainer = document.querySelector('body > .container, body > .container-fluid');
+                if (mainContainer) {
+                    if (mainContainer.classList.contains('container')) {
+                        mainContainer.classList.remove('container');
+                        mainContainer.classList.add('container-fluid', 'px-4');
+                    } else {
+                        mainContainer.classList.remove('container-fluid', 'px-4');
+                        mainContainer.classList.add('container');
                     }
                 }
+                setTimeout(() => window.dispatchEvent(new Event('resize')), 150);
             });
-        } else {
-            const burnCtx = document.getElementById('burnChart');
-            burnCtx.parentNode.innerHTML = '<div class="text-center text-white-50"><i class="bi bi-graph-up display-1 d-block mb-3 opacity-25"></i>No daily burn data found.</div>';
         }
     });
 </script>
-<!-- prettier-ignore-end -->
+{% endblock %}
+
+{% block content %}
+
+<!-- Header & Filters -->
+<div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+    <div>
+        <h1 class="display-5 fw-bolder mb-1 text-white" style="letter-spacing: -1px;">Advanced Reports</h1>
+        <p class="text-white-50 mb-0 fs-6">Detailed insights into your team's productivity and revenue.</p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+        {% include "analytics/_filters.html" %}
+
+        <!-- Action Buttons -->
+        <!-- PDF Export (Print) -->
+        <button onclick="window.print()"
+            class="btn btn-outline-secondary text-white-50 px-3 py-2 ms-2 rounded-3 border-opacity-25 glass-card-hover"
+            title="Export to PDF">
+            <i class="bi bi-file-earmark-pdf"></i>
+        </button>
+        <!-- CSV Export -->
+        <button id="btnExportCsv"
+            class="btn btn-outline-secondary text-white-50 px-3 py-2 rounded-3 border-opacity-25 glass-card-hover"
+            title="Export Team Data to CSV">
+            <i class="bi bi-filetype-csv"></i>
+        </button>
+        <!-- Toggle Wide Layout -->
+        <button id="btnToggleLayout"
+            class="btn btn-outline-secondary text-white-50 px-3 py-2 rounded-3 border-opacity-25 glass-card-hover"
+            title="Toggle Wide View">
+            <i class="bi bi-layout-three-columns"></i>
+        </button>
+
+        <style>
+            @media print {
+                body {
+                    background-color: #fff !important;
+                    color: #000 !important;
+                }
+
+                .navbar,
+                .btn,
+                form,
+                select,
+                input {
+                    display: none !important;
+                }
+
+                .glass-card {
+                    background: none !important;
+                    border: 1px solid #ddd !important;
+                    box-shadow: none !important;
+                    color: #000 !important;
+                }
+
+                .text-white,
+                .text-white-50,
+                .text-warning,
+                .text-success,
+                .text-danger {
+                    color: #000 !important;
+                }
+
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6,
+                p,
+                span,
+                td,
+                th {
+                    color: #000 !important;
+                }
+
+                canvas {
+                    max-width: 100% !important;
+                }
+
+                .badge {
+                    border-color: #000 !important;
+                    color: #000 !important;
+                    background: none !important;
+                }
+
+                .progress {
+                    background-color: #eee !important;
+                }
+
+                .progress-bar {
+                    background-color: #666 !important;
+                }
+            }
+        </style>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <!-- Billable Hours -->
+    <div class="col">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4">
+            <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-2">Billable Hours</p>
+            <div class="d-flex align-items-end justify-content-between">
+                <h2 class="text-white mb-0 fw-bold">{{ total_billable_hours }}<span
+                        class="fs-4 text-white-50 ms-1">h</span></h2>
+                <span class="text-success fs-7 fw-bold"><i class="bi bi-arrow-up-right"></i> +12%</span>
+            </div>
+        </div>
+    </div>
+    <!-- Non-Billable -->
+    <div class="col">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4">
+            <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-2">Non-Billable</p>
+            <div class="d-flex align-items-end justify-content-between">
+                <h2 class="text-white mb-0 fw-bold">{{ total_non_billable_hours }}<span
+                        class="fs-4 text-white-50 ms-1">h</span></h2>
+                <span class="text-success fs-7 fw-bold"><i class="bi bi-arrow-up-right"></i> +5%</span>
+            </div>
+        </div>
+    </div>
+    <!-- Total Revenue -->
+    <div class="col">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4"
+            style="background: rgba(230, 81, 0, 0.05); border: 1px solid rgba(230, 81, 0, 0.2) !important;">
+            <p class="text-uppercase text-warning fs-7 fw-bold tracking-wider mb-2">Total Revenue</p>
+            <div class="d-flex align-items-end justify-content-between">
+                <h2 class="text-warning mb-0 fw-bold">{{ user_currency }} {{ total_revenue|floatformat:0 }}</h2>
+                <span class="text-success fs-7 fw-bold"><i class="bi bi-arrow-up-right"></i> +15%</span>
+            </div>
+        </div>
+    </div>
+    <!-- Avg Hourly Rate -->
+    <div class="col">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4">
+            <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-2">Avg. Hourly Rate</p>
+            <div class="d-flex align-items-end justify-content-between">
+                <h2 class="text-white mb-0 fw-bold">{{ user_currency }} {{ avg_hourly_rate|floatformat:0 }}</h2>
+                <span class="text-danger fs-7 fw-bold"><i class="bi bi-arrow-down-right"></i> -2%</span>
+            </div>
+        </div>
+    </div>
+    <!-- Utilization Rate -->
+    <div class="col">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4">
+            <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-2">Utilization Rate</p>
+            <div class="d-flex align-items-end justify-content-between">
+                <h2 class="text-white mb-0 fw-bold">{{ utilization_rate|floatformat:0 }}<span
+                        class="fs-4 text-white-50 ms-1">%</span></h2>
+                <span class="text-success fs-7 fw-bold"><i class="bi bi-arrow-up-right"></i> +4%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Chart Row -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card glass-card p-4 border-0 rounded-4">
+            <h5 class="text-white fw-bold mb-4">Revenue vs. Hours Tracked</h5>
+            <div style="height: 350px;">
+                <canvas id="mixChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Revenue by Client -->
+    <div class="col-md-6">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4">
+            <h5 class="text-white fw-bold mb-4">Revenue by Client</h5>
+
+            <div class="d-flex align-items-center">
+                <div style="width: 200px; height: 200px; position: relative;">
+                    <canvas id="donutChart"></canvas>
+                    <div class="position-absolute top-50 start-50 translate-middle text-center">
+                        <h3 class="text-white mb-0 fw-bold">{{ user_currency }} {{ total_revenue|floatformat:0 }}</h3>
+                        <span class="text-white-50 fs-7 text-uppercase tracking-wider">Total</span>
+                    </div>
+                </div>
+
+                <div class="ms-5 flex-grow-1">
+                    {% for p in donut_labels %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center">
+                            <!-- Match colors from JS -->
+                            {% if forloop.counter0 == 0 %}<div class="rounded-circle me-2"
+                                style="width:8px; height:8px; background:#e65100;"></div>{% endif %}
+                            {% if forloop.counter0 == 1 %}<div class="rounded-circle me-2"
+                                style="width:8px; height:8px; background:#ffb300;"></div>{% endif %}
+                            {% if forloop.counter0 == 2 %}<div class="rounded-circle me-2"
+                                style="width:8px; height:8px; background:#00e676;"></div>{% endif %}
+                            {% if forloop.counter0 == 3 %}<div class="rounded-circle me-2"
+                                style="width:8px; height:8px; background:#29b6f6;"></div>{% endif %}
+                            {% if forloop.counter0 == 4 %}<div class="rounded-circle me-2"
+                                style="width:8px; height:8px; background:#ab47bc;"></div>{% endif %}
+                            <span class="text-white fs-6">{{ p|truncatechars:18 }}</span>
+                        </div>
+                        <span class="text-white fw-bold">
+                            <!-- Custom math to get percentage visually -->
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Billable vs Non-Billable -->
+    <div class="col-md-6">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4">
+            <h5 class="text-white fw-bold mb-4">Billable vs. Non-Billable</h5>
+
+            <div class="d-flex flex-column justify-content-center h-100">
+                {% for week in weekly_stats %}
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-white-50 fs-7 fw-bold text-uppercase tracking-wider">{{ week.label }}</span>
+                        <span class="text-white-50 fs-7 fw-bold text-uppercase tracking-wider">{{ week.billable_pct }}%
+                            Billable</span>
+                    </div>
+                    <div class="progress"
+                        style="height: 12px; background-color: rgba(255,255,255,0.1); border-radius: 6px;">
+                        <div class="progress-bar" role="progressbar"
+                            style="width: {{ week.billable_pct }}%; background-color: #e65100; border-radius: 6px;">
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-white-50">Not enough data to calculate weekly trends.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team Performance Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card glass-card p-0 border-0 rounded-4 overflow-hidden">
+            <div class="p-4 border-bottom border-light border-opacity-10">
+                <h5 class="text-white fw-bold mb-0">Team Performance</h5>
+            </div>
+
+            <table class="table table-borderless table-hover mb-0">
+                <thead class="border-bottom border-light border-opacity-10">
+                    <tr>
+                        <th class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent">
+                            Member</th>
+                        <th
+                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">
+                            Total Hours</th>
+                        <th
+                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">
+                            Billable %</th>
+                        <th
+                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">
+                            Revenue Generated</th>
+                        <th
+                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">
+                            Top Project</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in member_stats %}
+                    <tr class="align-middle border-bottom border-light border-opacity-10">
+                        <td class="py-3 px-4 bg-transparent">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-3 flex-shrink-0"
+                                    style="width: 36px; height: 36px; font-size: 0.9rem; background: rgba(255,179,0,0.2) !important; color: #ffb300;">
+                                    {{ member.name.0|upper }}
+                                </div>
+                                <span class="text-white fw-bold">{{ member.name }}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 bg-transparent text-end text-white fs-6">{{ member.total_hours }}h</td>
+                        <td class="py-3 px-4 bg-transparent text-end text-white fs-6">{{ member.billable_pct }}%</td>
+                        <td class="py-3 px-4 bg-transparent text-end text-warning fw-bold fs-6">
+                            {{ user_currency }} {{ member.revenue|floatformat:0 }}
+                        </td>
+                        <td class="py-3 px-4 bg-transparent text-end">
+                            <span
+                                class="badge bg-white bg-opacity-10 text-white-50 rounded-pill px-3 py-2 border border-light border-opacity-25">
+                                {{ member.top_project|truncatechars:18 }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-white-50 bg-transparent">No team data found for the
+                            selected period.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="p-3 text-center bg-transparent border-top border-light border-opacity-10">
+                <a href="#" class="text-warning text-decoration-none fs-7 fw-bold text-uppercase tracking-wider">View
+                    Full Team Report</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

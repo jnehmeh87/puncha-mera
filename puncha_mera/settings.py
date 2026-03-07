@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     'income_calculator',
     'invoices',
     'analytics',
+    'core',
     'schedule',
     'retail',
     'pmail',

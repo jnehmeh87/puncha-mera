@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from allauth.account.views import SignupView
-from .forms import InvitationForm, OrganizationForm, UserProfileForm, SettingsForm, CustomUserForm, ContactForm
+from .forms import InvitationForm, OrganizationForm, UserProfileForm, SettingsForm, CustomUserForm, ContactForm, TOP_CURRENCIES
 from projects.forms import ProjectForm
 from .models import Invitation, Organization, CustomUser, Membership, Contact, UserProfile, Settings
 from .mixins import OrganizationPermissionMixin, AdminOwnerRequiredMixin
@@ -450,3 +450,17 @@ class GettingStartedWizardView(LoginRequiredMixin, TemplateView):
         context['contact_form'] = ContactForm()
         context['project_form'] = ProjectForm()
         return context
+
+class QuickCurrencyUpdateView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        currency = request.POST.get('currency')
+        valid_currencies = [code for code, name in TOP_CURRENCIES]
+        if currency in valid_currencies:
+            request.user.settings.currency = currency
+            request.user.settings.save()
+            messages.success(request, f'Currency updated to {currency}.')
+        else:
+            messages.error(request, 'Invalid currency selection.')
+        
+        # Redirect back to where they came from
+        return redirect(request.META.get('HTTP_REFERER', 'home:home'))

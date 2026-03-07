@@ -64,6 +64,35 @@
                 </ul>
                 <div class="d-flex align-items-center">
                     {% if user.is_authenticated %}
+
+                    <!-- Quick Currency Selector -->
+                    <form action="{% url 'accounts:quick-currency-update' %}" method="post" class="d-inline me-3 mb-0"
+                        id="globalCurrencyForm">
+                        {% csrf_token %}
+                        <select name="currency"
+                            class="form-select border-0 bg-transparent text-theme-primary fw-bold shadow-none"
+                            onchange="this.form.submit()" style="cursor: pointer;">
+                            {% with c=user.settings.currency %}
+                            <option class="text-dark hover-theme" value="USD" {% if 'USD' in c %}selected{% endif %}>USD
+                            </option>
+                            <option class="text-dark hover-theme" value="EUR" {% if 'EUR' in c %}selected{% endif %}>EUR
+                            </option>
+                            <option class="text-dark hover-theme" value="GBP" {% if 'GBP' in c %}selected{% endif %}>GBP
+                            </option>
+                            <option class="text-dark hover-theme" value="CAD" {% if 'CAD' in c %}selected{% endif %}>CAD
+                            </option>
+                            <option class="text-dark hover-theme" value="AUD" {% if 'AUD' in c %}selected{% endif %}>AUD
+                            </option>
+                            <option class="text-dark hover-theme" value="JPY" {% if 'JPY' in c %}selected{% endif %}>JPY
+                            </option>
+                            <option class="text-dark hover-theme" value="CHF" {% if 'CHF' in c %}selected{% endif %}>CHF
+                            </option>
+                            <option class="text-dark hover-theme" value="SEK" {% if 'SEK' in c %}selected{% endif %}>SEK
+                            </option>
+                            {% endwith %}
+                        </select>
+                    </form>
+
                     <ul class="navbar-nav">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-theme-primary" href="#" id="navbarDropdown"

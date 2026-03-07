@@ -71,9 +71,26 @@ COLOR_THEMES = [
     ('lime', 'Neon'),
     ('rose', 'Rose'),
 ]
+TOP_CURRENCIES = [
+    ('USD', 'USD - US Dollar'),
+    ('EUR', 'EUR - Euro'),
+    ('GBP', 'GBP - British Pound'),
+    ('JPY', 'JPY - Japanese Yen'),
+    ('CAD', 'CAD - Canadian Dollar'),
+    ('AUD', 'AUD - Australian Dollar'),
+    ('CHF', 'CHF - Swiss Franc'),
+    ('CNY', 'CNY - Chinese Yuan'),
+    ('SEK', 'SEK - Swedish Krona'),
+    ('NZD', 'NZD - New Zealand Dollar'),
+    ('INR', 'INR - Indian Rupee'),
+    ('BRL', 'BRL - Brazilian Real'),
+    ('ZAR', 'ZAR - South African Rand'),
+    ('MXN', 'MXN - Mexican Peso'),
+    ('SGD', 'SGD - Singapore Dollar'),
+]
 
 class SettingsForm(forms.ModelForm):
-    currency = forms.ChoiceField(choices=[(currency.alpha_3, currency.name) for currency in pycountry.currencies])
+    currency = forms.ChoiceField(choices=TOP_CURRENCIES)
     language = forms.ChoiceField(choices=COMMON_LANGUAGES)
     timezone = forms.ChoiceField(choices=[(tz, tz) for tz in pytz.all_timezones])
     color_theme = forms.ChoiceField(choices=COLOR_THEMES)
@@ -81,9 +98,8 @@ class SettingsForm(forms.ModelForm):
     class Meta:
         model = Settings
         exclude = ['user']
-
 class CurrencyForm(forms.ModelForm):
-    currency = forms.ChoiceField(choices=[(currency.alpha_3, currency.name) for currency in pycountry.currencies])
+    currency = forms.ChoiceField(choices=TOP_CURRENCIES)
     class Meta:
         model = Settings
         fields = ['currency']
