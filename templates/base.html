@@ -71,7 +71,8 @@
                         {% csrf_token %}
                         <select name="currency"
                             class="form-select border-0 bg-transparent text-theme-primary fw-bold shadow-none"
-                            onchange="this.form.submit()" style="cursor: pointer;">
+                            onchange="this.form.submit()"
+                            style="cursor: pointer; padding-right: 2.25rem !important; background-position: right 0.5rem center;">
                             {% with c=user.settings.currency %}
                             <option class="text-dark hover-theme" value="USD" {% if 'USD' in c %}selected{% endif %}>USD
                             </option>

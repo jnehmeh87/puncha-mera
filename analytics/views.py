@@ -91,9 +91,19 @@ class BasicAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analytics
         members_query = Membership.objects.filter(organization__in=valid_orgs).select_related('user')
         contacts = Project.objects.filter(organization__in=valid_orgs).values('contact__id', 'contact__name').distinct()
         
+        user_currency = self.request.user.settings.currency if hasattr(self.request.user, 'settings') else 'USD'
+
+        # Currency Prefetching Optimization
+        unique_dates = list({e.date for e in time_entries})
+        unique_currencies = {p.currency for p in projects if hasattr(p, 'currency')}
+        CurrencyConverter.prefetch_rates(unique_dates, unique_currencies, user_currency)
+
         total_seconds = sum([e.actual_duration.total_seconds() for e in time_entries if e.actual_duration])
         total_hours = round(total_seconds / 3600, 1)
-        total_revenue = sum([e.earnings for e in time_entries])
+        total_revenue = sum([
+            CurrencyConverter.convert(float(e.earnings), e.date, getattr(e.project, 'currency', 'USD'), user_currency) 
+            for e in time_entries
+        ])
         
         # Chart logic based on period length
         days_to_plot = 7 if period == '7d' else 30
@@ -106,7 +116,11 @@ class BasicAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analytics
         
         for day in date_range:
             day_entries = time_entries.filter(date=day)
-            chart_revenue_data.append(float(sum([e.earnings for e in day_entries])))
+            daily_revenue = sum([
+                CurrencyConverter.convert(float(e.earnings), e.date, getattr(e.project, 'currency', 'USD'), user_currency) 
+                for e in day_entries
+            ])
+            chart_revenue_data.append(float(daily_revenue))
             chart_hours_data.append(round(sum([e.actual_duration.total_seconds() for e in day_entries if e.actual_duration]) / 3600, 1))
             
         # Prepare Period Options
