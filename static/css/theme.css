@@ -329,14 +329,35 @@ body {
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
-/* Premium Themed Metric Cards */
-.card-metric {
-    background: color-mix(in srgb, var(--primary-color) 90%, transparent) !important;
-    border: 1px solid color-mix(in srgb, var(--secondary-color) 40%, transparent) !important;
-    box-shadow: 0 8px 32px color-mix(in srgb, var(--primary-color) 20%, transparent);
-    position: relative;
+/* Premium Themed Metric Cards (Ported from Reports) */
+.dashboard-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 1.25rem !important;
     overflow: hidden;
-    color: #ffffff !important;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, color-mix(in srgb, var(--primary-color) 50%, var(--secondary-color))) !important;
+}
+
+.gradient-success {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--secondary-color) 50%, var(--primary-color)) 0%, var(--secondary-color) 100%) !important;
+}
+
+.card-icon-bg {
+    position: absolute;
+    right: -10px;
+    bottom: -20px;
+    font-size: 7rem;
+    color: rgba(255, 255, 255, 0.15);
+    transform: rotate(-15deg);
+    z-index: 0;
+    pointer-events: none;
 }
 
 .card-metric .text-white-50,

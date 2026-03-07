@@ -339,96 +339,106 @@
 <div class="row g-3 mb-4">
     <!-- Billable Hours -->
     <div class="col-12 col-md">
-        <div class="card card-metric h-100 p-4 rounded-4 group d-flex flex-column justify-content-between kpi-container"
-            style="background-color: {{ theme_hex }} !important;">
-            <i class="bi bi-clock-fill metric-icon-bg"></i>
-            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
-                <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-0 text-truncate me-2">Billable
-                    Hours</p>
-                <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i> +12%</span>
-            </div>
-            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
-                <h2 class="text-white mb-0 fw-bold kpi-value-text me-1" style="font-feature-settings: 'tnum';"
-                    title="{{ total_billable_hours }}">
-                    {{ total_billable_hours }}
-                </h2>
-                <span class="text-white-50 fw-normal kpi-unit-text">h</span>
+        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+            <div class="card-body p-4 position-relative z-1">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title fw-medium text-white-50 mb-0 text-uppercase tracking-wide text-truncate me-2">
+                        Billable Hours</h5>
+                    <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i>
+                        +12%</span>
+                </div>
+                <div class="d-flex align-items-baseline" style="min-width: 0;">
+                    <h2 class="display-6 fw-bold mb-0 text-white kpi-value-text me-2"
+                        style="font-feature-settings: 'tnum';" title="{{ total_billable_hours }}">
+                        {{ total_billable_hours }}
+                    </h2>
+                    <span class="text-white-50 fw-normal kpi-unit-text">h</span>
+                </div>
+                <i class="bi bi-clock-fill card-icon-bg"></i>
             </div>
         </div>
     </div>
     <!-- Non-Billable -->
     <div class="col-12 col-md">
-        <div class="card card-metric h-100 p-4 rounded-4 group d-flex flex-column justify-content-between kpi-container"
-            style="background-color: {{ theme_hex }} !important;">
-            <i class="bi bi-pause-circle metric-icon-bg"></i>
-            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
-                <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-0 text-truncate me-2">Non-Billable
-                </p>
-                <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i> +5%</span>
-            </div>
-            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
-                <h2 class="text-white mb-0 fw-bold kpi-value-text me-1" style="font-feature-settings: 'tnum';"
-                    title="{{ total_non_billable_hours }}">
-                    {{ total_non_billable_hours }}
-                </h2>
-                <span class="text-white-50 fw-normal kpi-unit-text">h</span>
+        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+            <div class="card-body p-4 position-relative z-1">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title fw-medium text-white-50 mb-0 text-uppercase tracking-wide text-truncate me-2">
+                        Non-Billable</h5>
+                    <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i>
+                        +5%</span>
+                </div>
+                <div class="d-flex align-items-baseline" style="min-width: 0;">
+                    <h2 class="display-6 fw-bold mb-0 text-white kpi-value-text me-2"
+                        style="font-feature-settings: 'tnum';" title="{{ total_non_billable_hours }}">
+                        {{ total_non_billable_hours }}
+                    </h2>
+                    <span class="text-white-50 fw-normal kpi-unit-text">h</span>
+                </div>
+                <i class="bi bi-pause-circle card-icon-bg"></i>
             </div>
         </div>
     </div>
     <!-- Total Revenue -->
     <div class="col-12 col-md">
-        <div class="card card-metric h-100 p-4 rounded-4 group d-flex flex-column justify-content-between kpi-container"
-            style="background-color: {{ theme_hex }} !important;">
-            <i class="bi {{ currency_icon }} metric-icon-bg"></i>
-            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
-                <p class="text-uppercase text-warning fs-7 fw-bold tracking-wider mb-0 text-truncate me-2">Total Revenue
-                </p>
-                <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i> +15%</span>
-            </div>
-            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
-                <span class="text-warning fw-bold me-1 kpi-unit-text">{{ user_currency }}</span>
-                <h2 class="text-warning mb-0 fw-bold kpi-value-text" style="font-feature-settings: 'tnum';"
-                    title="{{ total_revenue|floatformat:0 }}">
-                    {{ total_revenue|floatformat:0 }}
-                </h2>
+        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+            <div class="card-body p-4 position-relative z-1">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title fw-medium text-warning mb-0 text-uppercase tracking-wide text-truncate me-2">
+                        Total Revenue</h5>
+                    <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i>
+                        +15%</span>
+                </div>
+                <div class="d-flex align-items-baseline" style="min-width: 0;">
+                    <span class="text-warning fw-bold me-2 kpi-unit-text">{{ user_currency }}</span>
+                    <h2 class="display-6 fw-bold mb-0 text-warning kpi-value-text"
+                        style="font-feature-settings: 'tnum';" title="{{ total_revenue|floatformat:0 }}">
+                        {{ total_revenue|floatformat:0 }}
+                    </h2>
+                </div>
+                <i class="bi {{ currency_icon }} card-icon-bg"></i>
             </div>
         </div>
     </div>
     <!-- Avg Hourly Rate -->
     <div class="col-12 col-md">
-        <div class="card card-metric h-100 p-4 rounded-4 group d-flex flex-column justify-content-between kpi-container"
-            style="background-color: {{ theme_hex }} !important;">
-            <i class="bi bi-graph-up metric-icon-bg"></i>
-            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
-                <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-0 text-truncate me-2">Avg. Hourly
-                    Rate</p>
-                <span class="text-danger fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-down-right"></i> -2%</span>
-            </div>
-            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
-                <span class="text-white fw-bold me-1 kpi-unit-text">{{ user_currency }}</span>
-                <h2 class="text-white mb-0 fw-bold kpi-value-text" style="font-feature-settings: 'tnum';"
-                    title="{{ avg_hourly_rate|floatformat:0 }}">
-                    {{ avg_hourly_rate|floatformat:0 }}
-                </h2>
+        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+            <div class="card-body p-4 position-relative z-1">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title fw-medium text-white-50 mb-0 text-uppercase tracking-wide text-truncate me-2">
+                        Avg. Hourly Rate</h5>
+                    <span class="text-danger fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-down-right"></i>
+                        -2%</span>
+                </div>
+                <div class="d-flex align-items-baseline" style="min-width: 0;">
+                    <span class="text-white-50 fw-bold me-2 kpi-unit-text">{{ user_currency }}</span>
+                    <h2 class="display-6 fw-bold mb-0 text-white kpi-value-text" style="font-feature-settings: 'tnum';"
+                        title="{{ avg_hourly_rate|floatformat:0 }}">
+                        {{ avg_hourly_rate|floatformat:0 }}
+                    </h2>
+                </div>
+                <i class="bi bi-graph-up card-icon-bg"></i>
             </div>
         </div>
     </div>
     <!-- Utilization Rate -->
     <div class="col-12 col-md">
-        <div class="card card-metric h-100 p-4 rounded-4 group d-flex flex-column justify-content-between kpi-container"
-            style="background-color: {{ theme_hex }} !important;">
-            <i class="bi bi-pie-chart metric-icon-bg"></i>
-            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
-                <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-0 text-truncate me-2">Utilization
-                    Rate</p>
-                <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i> +4%</span>
-            </div>
-            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
-                <h2 class="text-white mb-0 fw-bold kpi-value-text me-1" style="font-feature-settings: 'tnum';"
-                    title="{{ utilization_rate|floatformat:0 }}">
-                    {{ utilization_rate|floatformat:0 }}
-                </h2>
-                <span class="text-white-50 fw-normal kpi-unit-text">%</span>
+        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+            <div class="card-body p-4 position-relative z-1">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title fw-medium text-white-50 mb-0 text-uppercase tracking-wide text-truncate me-2">
+                        Utilization Rate</h5>
+                    <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i>
+                        +4%</span>
+                </div>
+                <div class="d-flex align-items-baseline" style="min-width: 0;">
+                    <h2 class="display-6 fw-bold mb-0 text-white kpi-value-text me-2"
+                        style="font-feature-settings: 'tnum';" title="{{ utilization_rate|floatformat:0 }}">
+                        {{ utilization_rate|floatformat:0 }}
+                    </h2>
+                    <span class="text-white-50 fw-normal kpi-unit-text">%</span>
+                </div>
+                <i class="bi bi-pie-chart card-icon-bg"></i>
             </div>
         </div>
     </div>

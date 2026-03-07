@@ -41,54 +41,50 @@
 <!-- Key Performance Indicators -->
 <div class="row g-4 mb-5">
     <div class="col-12 col-md-4">
-        <div class="card card-metric h-100 p-4 rounded-4 group d-flex flex-column justify-content-between kpi-container"
-            style="background-color: {{ theme_hex }} !important;">
-            <i class="bi {{ currency_icon }} metric-icon-bg"></i>
-            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
-                <h6 class="text-uppercase text-white-50 fw-semibold tracking-wide mb-0 text-truncate me-2">Total Revenue
-                </h6>
-            </div>
-            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
-                <span class="text-white-50 fw-bold me-1 kpi-unit-text">{{ user_currency }}</span>
-                <h2 class="text-white mb-0 fw-bold kpi-value-text" style="font-feature-settings: 'tnum';"
-                    title="{{ total_revenue|floatformat:2 }}">
-                    {{ total_revenue|floatformat:2 }}
-                </h2>
+        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+            <div class="card-body p-4 position-relative z-1">
+                <h5 class="card-title fw-medium text-white-50 mb-3 text-uppercase tracking-wide">Total Revenue</h5>
+                <div class="d-flex align-items-baseline" style="min-width: 0;">
+                    <span class="text-white-50 fw-bold me-2 kpi-unit-text">{{ user_currency }}</span>
+                    <h2 class="display-6 fw-bold mb-0 text-white kpi-value-text" style="font-feature-settings: 'tnum';"
+                        title="{{ total_revenue|floatformat:2 }}">
+                        {{ total_revenue|floatformat:2 }}
+                    </h2>
+                </div>
+                <i class="bi {{ currency_icon }} card-icon-bg"></i>
             </div>
         </div>
     </div>
 
     <div class="col-12 col-md-4">
-        <div class="card card-metric h-100 p-4 rounded-4 group d-flex flex-column justify-content-between kpi-container"
-            style="background-color: {{ theme_hex }} !important;">
-            <i class="bi bi-clock-history metric-icon-bg"></i>
-            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
-                <h6 class="text-uppercase text-white-50 fw-semibold tracking-wide mb-0 text-truncate me-2">Total
-                    Validated Hours</h6>
-            </div>
-            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
-                <h2 class="text-white mb-0 fw-bold kpi-value-text me-1" style="font-feature-settings: 'tnum';"
-                    title="{{ total_hours }}">
-                    {{ total_hours }}
-                </h2>
-                <span class="text-white-50 fw-normal kpi-unit-text">hrs</span>
+        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+            <div class="card-body p-4 position-relative z-1">
+                <h5 class="card-title fw-medium text-white-50 mb-3 text-uppercase tracking-wide">Total Validated Hours
+                </h5>
+                <div class="d-flex align-items-baseline" style="min-width: 0;">
+                    <h2 class="display-6 fw-bold mb-0 text-white kpi-value-text me-2"
+                        style="font-feature-settings: 'tnum';" title="{{ total_hours }}">
+                        {{ total_hours }}
+                    </h2>
+                    <span class="text-white-50 fw-normal kpi-unit-text">hrs</span>
+                </div>
+                <i class="bi bi-clock-history card-icon-bg"></i>
             </div>
         </div>
     </div>
 
     <div class="col-12 col-md-4">
-        <div class="card card-metric h-100 p-4 rounded-4 group d-flex flex-column justify-content-between kpi-container"
-            style="background-color: {{ theme_hex }} !important;">
-            <i class="bi bi-folder-check metric-icon-bg"></i>
-            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
-                <h6 class="text-uppercase text-white-50 fw-semibold tracking-wide mb-0 text-truncate me-2">Active
-                    Projects Filtered</h6>
-            </div>
-            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
-                <h2 class="text-white mb-0 fw-bold kpi-value-text" style="font-feature-settings: 'tnum';"
-                    title="{{ active_projects_count }}">
-                    {{ active_projects_count }}
-                </h2>
+        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+            <div class="card-body p-4 position-relative z-1">
+                <h5 class="card-title fw-medium text-white-50 mb-3 text-uppercase tracking-wide">Active Projects
+                    Filtered</h5>
+                <div class="d-flex align-items-baseline" style="min-width: 0;">
+                    <h2 class="display-6 fw-bold mb-0 text-white kpi-value-text" style="font-feature-settings: 'tnum';"
+                        title="{{ active_projects_count }}">
+                        {{ active_projects_count }}
+                    </h2>
+                </div>
+                <i class="bi bi-folder-check card-icon-bg"></i>
             </div>
         </div>
     </div>
