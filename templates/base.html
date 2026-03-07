@@ -15,6 +15,26 @@
 </head>
 
 <body>
+    <!-- Global Animated Glassmorphic Depth Orbs -->
+    <div class="orb-wrapper" data-speed="2.5"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-10; pointer-events:none; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);">
+        <div class="glow-orb orb-1"
+            style="width: 800px; height: 800px; background: var(--primary-color); position: absolute; top: -100px; left: -100px; border-radius: 50%; filter: blur(140px); opacity: 0.12; animation: float 25s infinite alternate ease-in-out;">
+        </div>
+    </div>
+    <div class="orb-wrapper" data-speed="-1.5"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-10; pointer-events:none; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);">
+        <div class="glow-orb orb-2"
+            style="width: 600px; height: 600px; background: var(--secondary-color); position: absolute; bottom: 0; right: -50px; border-radius: 50%; filter: blur(140px); opacity: 0.15; animation: float 20s infinite alternate-reverse ease-in-out;">
+        </div>
+    </div>
+    <div class="orb-wrapper" data-speed="1.2"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-10; pointer-events:none; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);">
+        <div class="glow-orb orb-3"
+            style="width: 500px; height: 500px; background: color-mix(in srgb, var(--primary-color) 50%, var(--secondary-color)); position: absolute; top: 30%; left: 40%; border-radius: 50%; filter: blur(160px); opacity: 0.08; animation: float 30s infinite alternate ease-in-out;">
+        </div>
+    </div>
+
     <nav class="navbar navbar-expand-lg sticky-top glass-nav">
         <div class="container-fluid">
             <a class="navbar-brand fw-bolder bg-gradient-text" href="{% url 'time_stamp:timer' %}">Puncha Mera</a>
@@ -236,6 +256,40 @@
         });
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Only mount parallax if unmounted to avoid stacking handlers
+            if (!window.glassmorphismMounted) {
+                window.glassmorphismMounted = true;
+                const wrappers = document.querySelectorAll('.orb-wrapper');
+                // Hardware accelerated CSS keyframes
+                if (!document.getElementById('orb-keyframes')) {
+                    const style = document.createElement('style');
+                    style.id = 'orb-keyframes';
+                    style.innerHTML = `
+                        @keyframes float {
+                            0% { transform: translate(0, 0) scale(1); }
+                            50% { transform: translate(100px, 80px) scale(1.1); }
+                            100% { transform: translate(-80px, 120px) scale(0.95); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                document.addEventListener("mousemove", function (e) {
+                    if (wrappers.length > 0) {
+                        const x = (e.clientX - window.innerWidth / 2) / 50;
+                        const y = (e.clientY - window.innerHeight / 2) / 50;
+                        wrappers.forEach(wrapper => {
+                            const speed = parseFloat(wrapper.getAttribute('data-speed'));
+                            if (!isNaN(speed)) {
+                                wrapper.style.transform = `translate3d(${x * speed}px, ${y * speed}px, 0)`;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 

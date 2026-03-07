@@ -308,7 +308,9 @@ body {
 
 /* Depth & Glass Cards */
 .card {
-    background-color: var(--surface-color);
+    background-color: color-mix(in srgb, var(--surface-color) 60%, transparent);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 1.5rem;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
@@ -317,6 +319,7 @@ body {
 }
 
 [data-theme="light"] .card {
+    background-color: color-mix(in srgb, var(--surface-color) 75%, transparent);
     border: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
 }
@@ -324,6 +327,49 @@ body {
 .card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Premium Themed Metric Cards */
+.card-metric {
+    background: color-mix(in srgb, var(--primary-color) 90%, transparent) !important;
+    border: 1px solid color-mix(in srgb, var(--secondary-color) 40%, transparent) !important;
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--primary-color) 20%, transparent);
+    position: relative;
+    overflow: hidden;
+    color: #ffffff !important;
+}
+
+.card-metric .text-white-50,
+.card-metric .text-muted,
+.card-metric .text-success,
+.card-metric .text-danger,
+.card-metric .text-warning,
+.card-metric .text-info,
+.card-metric .text-primary {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.card-metric h1,
+.card-metric h2,
+.card-metric h3,
+.card-metric h4,
+.card-metric h5,
+.card-metric h6,
+.card-metric p,
+.card-metric span {
+    color: #ffffff !important;
+}
+
+.card-metric .metric-icon-bg {
+    position: absolute;
+    right: -10%;
+    top: -20%;
+    font-size: 10rem;
+    color: #ffffff;
+    opacity: 0.1;
+    transform: rotate(-15deg);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .card-header {
