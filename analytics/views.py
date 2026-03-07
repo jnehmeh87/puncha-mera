@@ -92,6 +92,9 @@ class BasicAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analytics
         contacts = Project.objects.filter(organization__in=valid_orgs).values('contact__id', 'contact__name').distinct()
         
         user_currency = self.request.user.settings.currency if hasattr(self.request.user, 'settings') else 'USD'
+        theme_str = self.request.user.settings.color_theme if hasattr(self.request.user, 'settings') else 'orange'
+        color_map = {'blue': '#2563eb', 'green': '#16a34a', 'purple': '#9333ea', 'red': '#dc2626', 'orange': '#ea580c', 'yellow': '#ca8a04', 'pink': '#db2777', 'teal': '#0d9488', 'cyan': '#0891b2', 'indigo': '#4f46e5', 'lime': '#65a30d', 'rose': '#e11d48'}
+        theme_hex = color_map.get(theme_str, '#ea580c')
 
         # Currency Prefetching Optimization
         unique_dates = list({e.date for e in time_entries})
@@ -132,7 +135,6 @@ class BasicAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analytics
             {'val': 'all', 'label': 'All Time', 'selected': period == 'all'}
         ]
         
-        # Prepare valid_orgs for template
         org_id_get = self.request.GET.get('org', '')
         org_list = [{'id': o.id, 'name': o.name, 'selected': str(o.id) == org_id_get} for o in valid_orgs]
         
@@ -152,6 +154,10 @@ class BasicAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analytics
         contact_list = [{'id': c['contact__id'], 'name': c['contact__name'], 'selected': str(c['contact__id']) == contact_id_get} for c in contacts if c.get('contact__id')]
 
         user_currency = self.request.user.settings.currency if hasattr(self.request.user, 'settings') else 'USD'
+        currency_icon = {
+            'USD': 'bi-currency-dollar', 'EUR': 'bi-currency-euro', 'GBP': 'bi-currency-pound',
+            'JPY': 'bi-currency-yen', 'CAD': 'bi-currency-dollar', 'AUD': 'bi-currency-dollar'
+        }.get(user_currency, 'bi-cash-coin')
 
         context.update({
             'total_hours': total_hours,
@@ -166,6 +172,8 @@ class BasicAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analytics
             'contacts': contact_list,
             'current_period': period,
             'user_currency': user_currency,
+            'theme_hex': theme_hex,
+            'currency_icon': currency_icon,
         })
         return context
 
@@ -177,6 +185,9 @@ class AdvancedAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analyt
         time_entries, projects, valid_orgs, period, start_date = self.get_filtered_querysets()
         
         user_currency = self.request.user.settings.currency if hasattr(self.request.user, 'settings') else 'USD'
+        theme_str = self.request.user.settings.color_theme if hasattr(self.request.user, 'settings') else 'orange'
+        color_map = {'blue': '#2563eb', 'green': '#16a34a', 'purple': '#9333ea', 'red': '#dc2626', 'orange': '#ea580c', 'yellow': '#ca8a04', 'pink': '#db2777', 'teal': '#0d9488', 'cyan': '#0891b2', 'indigo': '#4f46e5', 'lime': '#65a30d', 'rose': '#e11d48'}
+        theme_hex = color_map.get(theme_str, '#ea580c')
         
         # 0. Currency Prefetching Optimization
         # Gather all distinct dates and currencies in the current context
@@ -315,6 +326,11 @@ class AdvancedAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analyt
         contact_id_get = self.request.GET.get('contact', '')
         contact_list = [{'id': c['contact__id'], 'name': c['contact__name'], 'selected': str(c['contact__id']) == contact_id_get} for c in contacts if c.get('contact__id')]
 
+        currency_icon = {
+            'USD': 'bi-currency-dollar', 'EUR': 'bi-currency-euro', 'GBP': 'bi-currency-pound',
+            'JPY': 'bi-currency-yen', 'CAD': 'bi-currency-dollar', 'AUD': 'bi-currency-dollar'
+        }.get(user_currency, 'bi-cash-coin')
+
         context.update({
             # KPIs
             'total_billable_hours': round(total_billable_hours, 1),
@@ -323,6 +339,8 @@ class AdvancedAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analyt
             'avg_hourly_rate': round(avg_hourly_rate, 2),
             'utilization_rate': round(utilization_rate, 1),
             'user_currency': user_currency,
+            'theme_hex': theme_hex,
+            'currency_icon': currency_icon,
             
             # Chart Data
             'bar_chart_labels': bar_chart_labels,

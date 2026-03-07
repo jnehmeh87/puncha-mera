@@ -33,90 +33,101 @@
 
         const userCurrency = "{{ user_currency }}";
 
-        // --- 1. Revenue vs. Hours Tracked (Dual Axis Bar Chart) ---
-        const mixCtx = document.getElementById('mixChart').getContext('2d');
+        // --- 1. Revenue Trend (Line Chart) ---
+        const revCtx = document.getElementById('revenueChart').getContext('2d');
+        const revGradient = revCtx.createLinearGradient(0, 0, 0, 400);
+        revGradient.addColorStop(0, '{{ theme_hex }}');
+        revGradient.addColorStop(1, 'transparent');
 
-        // Create a premium gradient for the bars
-        const barGradient = mixCtx.createLinearGradient(0, 0, 0, 400);
-        barGradient.addColorStop(0, '#e65100'); // Deep Orange
-        barGradient.addColorStop(1, 'rgba(230, 81, 0, 0.1)');
-
-        new Chart(mixCtx, {
-            type: 'bar',
+        new Chart(revCtx, {
+            type: 'line',
             data: {
                 labels: barLabels,
-                datasets: [
-                    {
-                        label: 'Revenue (' + userCurrency + ')',
-                        data: barRevenue,
-                        backgroundColor: barGradient,
-                        borderColor: '#e65100',
-                        borderWidth: 1,
-                        borderRadius: 4,
-                        yAxisID: 'y'
-                    },
-                    {
-                        type: 'line',
-                        label: 'Hours',
-                        data: barHours,
-                        borderColor: '#90caf9', // Light Blue
-                        backgroundColor: 'rgba(144, 202, 249, 0.5)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        pointBackgroundColor: '#90caf9',
-                        pointBorderColor: '#fff',
-                        pointRadius: 4,
-                        yAxisID: 'y1'
-                    }
-                ]
+                datasets: [{
+                    label: 'Revenue',
+                    data: barRevenue,
+                    borderColor: '{{ theme_hex }}',
+                    backgroundColor: revGradient,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#0f172a',
+                    pointBorderColor: '{{ theme_hex }}',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4
+                }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
                 plugins: {
-                    legend: {
-                        position: 'top',
-                        align: 'end',
-                        labels: { boxWidth: 10, usePointStyle: true, pointStyle: 'circle' }
-                    },
+                    legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(0,0,0,0.8)',
-                        titleFont: { size: 14, weight: 'bold' },
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
                         padding: 12,
-                        cornerRadius: 8,
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        displayColors: false,
                         callbacks: {
-                            label: function (context) {
-                                let label = context.dataset.label || '';
-                                if (label) label += ': ';
-                                if (context.datasetIndex === 0) {
-                                    label += userCurrency + ' ' + context.parsed.y.toLocaleString();
-                                } else {
-                                    label += context.parsed.y + 'h';
-                                }
-                                return label;
-                            }
+                            label: function (context) { return '{{ user_currency|escapejs }} ' + context.parsed.y.toLocaleString(); }
                         }
                     }
                 },
                 scales: {
-                    x: {
-                        grid: { display: false, drawBorder: false },
-                        ticks: { font: { size: 11 } }
-                    },
                     y: {
-                        type: 'linear',
-                        display: false, // Hide the axis line, keep for scaling
-                        position: 'left',
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { callback: function (value) { return '{{ user_currency|escapejs }} ' + value; } }
                     },
-                    y1: {
-                        type: 'linear',
-                        display: false,
-                        position: 'right',
-                        grid: { drawOnChartArea: false }
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // --- 1b. Hours Tracked (Bar Chart) ---
+        const hoursCtx = document.getElementById('hoursChart').getContext('2d');
+        const hrsGradient = hoursCtx.createLinearGradient(0, 0, 0, 400);
+        hrsGradient.addColorStop(0, '#0dcaf0');
+        hrsGradient.addColorStop(1, 'rgba(13, 202, 240, 0.2)');
+
+        new Chart(hoursCtx, {
+            type: 'bar',
+            data: {
+                labels: barLabels,
+                datasets: [{
+                    label: 'Hours',
+                    data: barHours,
+                    backgroundColor: hrsGradient,
+                    borderRadius: 4,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function (context) { return context.parsed.y + ' hrs'; }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    },
+                    x: {
+                        grid: { display: false }
                     }
                 }
             }
@@ -308,71 +319,151 @@
     </div>
 </div>
 
+<style>
+    .kpi-container {
+        container-type: inline-size;
+    }
+
+    .kpi-value-text {
+        font-size: clamp(1rem, 15cqi, 2.5rem);
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .kpi-unit-text {
+        font-size: clamp(0.75rem, 8cqi, 1.25rem);
+        white-space: nowrap;
+    }
+</style>
 <!-- KPI Cards -->
 <div class="row g-3 mb-4">
     <!-- Billable Hours -->
-    <div class="col">
-        <div class="card glass-card h-100 p-4 border-0 rounded-4">
-            <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-2">Billable Hours</p>
-            <div class="d-flex align-items-end justify-content-between">
-                <h2 class="text-white mb-0 fw-bold">{{ total_billable_hours }}<span
-                        class="fs-4 text-white-50 ms-1">h</span></h2>
-                <span class="text-success fs-7 fw-bold"><i class="bi bi-arrow-up-right"></i> +12%</span>
+    <div class="col-12 col-md">
+        <div
+            class="card glass-card h-100 p-4 border-0 rounded-4 position-relative overflow-hidden group d-flex flex-column justify-content-between kpi-container">
+            <div class="position-absolute top-0 end-0 p-3 opacity-25" style="transform: translate(20%, -20%) scale(2);">
+                <i class="bi bi-clock-fill text-info display-1"></i>
+            </div>
+            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
+                <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-0 text-truncate me-2">Billable
+                    Hours</p>
+                <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i> +12%</span>
+            </div>
+            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
+                <h2 class="text-white mb-0 fw-bold kpi-value-text me-1" style="font-feature-settings: 'tnum';"
+                    title="{{ total_billable_hours }}">
+                    {{ total_billable_hours }}
+                </h2>
+                <span class="text-white-50 fw-normal kpi-unit-text">h</span>
             </div>
         </div>
     </div>
     <!-- Non-Billable -->
-    <div class="col">
-        <div class="card glass-card h-100 p-4 border-0 rounded-4">
-            <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-2">Non-Billable</p>
-            <div class="d-flex align-items-end justify-content-between">
-                <h2 class="text-white mb-0 fw-bold">{{ total_non_billable_hours }}<span
-                        class="fs-4 text-white-50 ms-1">h</span></h2>
-                <span class="text-success fs-7 fw-bold"><i class="bi bi-arrow-up-right"></i> +5%</span>
+    <div class="col-12 col-md">
+        <div
+            class="card glass-card h-100 p-4 border-0 rounded-4 position-relative overflow-hidden group d-flex flex-column justify-content-between kpi-container">
+            <div class="position-absolute top-0 end-0 p-3 opacity-25" style="transform: translate(20%, -20%) scale(2);">
+                <i class="bi bi-pause-circle text-secondary display-1"></i>
+            </div>
+            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
+                <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-0 text-truncate me-2">Non-Billable
+                </p>
+                <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i> +5%</span>
+            </div>
+            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
+                <h2 class="text-white mb-0 fw-bold kpi-value-text me-1" style="font-feature-settings: 'tnum';"
+                    title="{{ total_non_billable_hours }}">
+                    {{ total_non_billable_hours }}
+                </h2>
+                <span class="text-white-50 fw-normal kpi-unit-text">h</span>
             </div>
         </div>
     </div>
     <!-- Total Revenue -->
-    <div class="col">
-        <div class="card glass-card h-100 p-4 border-0 rounded-4"
+    <div class="col-12 col-md">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4 position-relative overflow-hidden group d-flex flex-column justify-content-between kpi-container"
             style="background: rgba(230, 81, 0, 0.05); border: 1px solid rgba(230, 81, 0, 0.2) !important;">
-            <p class="text-uppercase text-warning fs-7 fw-bold tracking-wider mb-2">Total Revenue</p>
-            <div class="d-flex align-items-end justify-content-between">
-                <h2 class="text-warning mb-0 fw-bold">{{ user_currency }} {{ total_revenue|floatformat:0 }}</h2>
-                <span class="text-success fs-7 fw-bold"><i class="bi bi-arrow-up-right"></i> +15%</span>
+            <div class="position-absolute top-0 end-0 p-3 opacity-25" style="transform: translate(20%, -20%) scale(2);">
+                <i class="bi {{ currency_icon }} text-warning display-1"></i>
+            </div>
+            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
+                <p class="text-uppercase text-warning fs-7 fw-bold tracking-wider mb-0 text-truncate me-2">Total Revenue
+                </p>
+                <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i> +15%</span>
+            </div>
+            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
+                <span class="text-warning fw-bold me-1 kpi-unit-text">{{ user_currency }}</span>
+                <h2 class="text-warning mb-0 fw-bold kpi-value-text" style="font-feature-settings: 'tnum';"
+                    title="{{ total_revenue|floatformat:0 }}">
+                    {{ total_revenue|floatformat:0 }}
+                </h2>
             </div>
         </div>
     </div>
     <!-- Avg Hourly Rate -->
-    <div class="col">
-        <div class="card glass-card h-100 p-4 border-0 rounded-4">
-            <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-2">Avg. Hourly Rate</p>
-            <div class="d-flex align-items-end justify-content-between">
-                <h2 class="text-white mb-0 fw-bold">{{ user_currency }} {{ avg_hourly_rate|floatformat:0 }}</h2>
-                <span class="text-danger fs-7 fw-bold"><i class="bi bi-arrow-down-right"></i> -2%</span>
+    <div class="col-12 col-md">
+        <div
+            class="card glass-card h-100 p-4 border-0 rounded-4 position-relative overflow-hidden group d-flex flex-column justify-content-between kpi-container">
+            <div class="position-absolute top-0 end-0 p-3 opacity-25" style="transform: translate(20%, -20%) scale(2);">
+                <i class="bi bi-graph-up text-primary display-1"></i>
+            </div>
+            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
+                <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-0 text-truncate me-2">Avg. Hourly
+                    Rate</p>
+                <span class="text-danger fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-down-right"></i> -2%</span>
+            </div>
+            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
+                <span class="text-white fw-bold me-1 kpi-unit-text">{{ user_currency }}</span>
+                <h2 class="text-white mb-0 fw-bold kpi-value-text" style="font-feature-settings: 'tnum';"
+                    title="{{ avg_hourly_rate|floatformat:0 }}">
+                    {{ avg_hourly_rate|floatformat:0 }}
+                </h2>
             </div>
         </div>
     </div>
     <!-- Utilization Rate -->
-    <div class="col">
-        <div class="card glass-card h-100 p-4 border-0 rounded-4">
-            <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-2">Utilization Rate</p>
-            <div class="d-flex align-items-end justify-content-between">
-                <h2 class="text-white mb-0 fw-bold">{{ utilization_rate|floatformat:0 }}<span
-                        class="fs-4 text-white-50 ms-1">%</span></h2>
-                <span class="text-success fs-7 fw-bold"><i class="bi bi-arrow-up-right"></i> +4%</span>
+    <div class="col-12 col-md">
+        <div
+            class="card glass-card h-100 p-4 border-0 rounded-4 position-relative overflow-hidden group d-flex flex-column justify-content-between kpi-container">
+            <div class="position-absolute top-0 end-0 p-3 opacity-25" style="transform: translate(20%, -20%) scale(2);">
+                <i class="bi bi-pie-chart text-success display-1"></i>
+            </div>
+            <div class="d-flex justify-content-between align-items-start mb-3 position-relative z-1">
+                <p class="text-uppercase text-white-50 fs-7 fw-bold tracking-wider mb-0 text-truncate me-2">Utilization
+                    Rate</p>
+                <span class="text-success fs-7 fw-bold flex-shrink-0"><i class="bi bi-arrow-up-right"></i> +4%</span>
+            </div>
+            <div class="mt-auto position-relative z-1 d-flex align-items-baseline" style="min-width: 0;">
+                <h2 class="text-white mb-0 fw-bold kpi-value-text me-1" style="font-feature-settings: 'tnum';"
+                    title="{{ utilization_rate|floatformat:0 }}">
+                    {{ utilization_rate|floatformat:0 }}
+                </h2>
+                <span class="text-white-50 fw-normal kpi-unit-text">%</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Main Chart Row -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card glass-card p-4 border-0 rounded-4">
-            <h5 class="text-white fw-bold mb-4">Revenue vs. Hours Tracked</h5>
-            <div style="height: 350px;">
-                <canvas id="mixChart"></canvas>
+<!-- Main Charts Section -->
+<div class="row g-4 mb-4">
+    <div class="col-12 col-lg-8">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="text-white fw-bold mb-0">Revenue Trend</h5>
+            </div>
+            <div style="height: 350px; width: 100%;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="text-white fw-bold mb-0">Hours Tracked</h5>
+            </div>
+            <div style="height: 350px; width: 100%;" class="d-flex align-items-center justify-content-center">
+                <canvas id="hoursChart"></canvas>
             </div>
         </div>
     </div>
@@ -437,7 +528,7 @@
                     <div class="progress"
                         style="height: 12px; background-color: rgba(255,255,255,0.1); border-radius: 6px;">
                         <div class="progress-bar" role="progressbar"
-                            style="width: {{ week.billable_pct }}%; background-color: #e65100; border-radius: 6px;">
+                            style="width: {{ week.billable_pct }}%; background-color: {{ theme_hex }}; border-radius: 6px;">
                         </div>
                     </div>
                 </div>
