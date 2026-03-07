@@ -108,6 +108,15 @@ class BasicAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analytics
             for e in time_entries
         ])
         
+        revenue_by_currency = {}
+        for e in time_entries:
+            curr = getattr(e.project, 'currency', 'USD')
+            revenue_by_currency[curr] = revenue_by_currency.get(curr, 0) + float(e.earnings)
+        
+        # Round the currency totals
+        for curr in revenue_by_currency:
+            revenue_by_currency[curr] = round(revenue_by_currency[curr], 2)
+        
         # Chart logic based on period length
         days_to_plot = 7 if period == '7d' else 30
         now = timezone.now().date()
@@ -162,6 +171,7 @@ class BasicAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analytics
         context.update({
             'total_hours': total_hours,
             'total_revenue': total_revenue,
+            'revenue_by_currency': dict(sorted(revenue_by_currency.items(), key=lambda item: item[1], reverse=True)),
             'active_projects_count': projects.filter(archived=False).count(),
             'chart_labels': chart_labels,
             'chart_revenue_data': chart_revenue_data,
@@ -203,6 +213,7 @@ class AdvancedAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analyt
         # We will collect detailed data for charts
         client_revenue_map = {}
         chart_dates_map = {} # {date_str: {'rev': x, 'hours': y}}
+        revenue_by_currency = {}
         
         members_query = Membership.objects.filter(organization__in=valid_orgs).select_related('user')
         contacts = Project.objects.filter(organization__in=valid_orgs).values('contact__id', 'contact__name').distinct()
@@ -222,6 +233,7 @@ class AdvancedAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analyt
             if is_billable:
                 total_billable_hours += hours
                 total_revenue += converted_revenue
+                revenue_by_currency[p_currency] = revenue_by_currency.get(p_currency, 0) + original_earnings
             else:
                 total_non_billable_hours += hours
                 
@@ -336,6 +348,7 @@ class AdvancedAnalyticsView(LoginRequiredMixin, AnalyticsPermissionMixin, Analyt
             'total_billable_hours': round(total_billable_hours, 1),
             'total_non_billable_hours': round(total_non_billable_hours, 1),
             'total_revenue': round(total_revenue, 2),
+            'revenue_by_currency': dict(sorted(revenue_by_currency.items(), key=lambda item: item[1], reverse=True)),
             'avg_hourly_rate': round(avg_hourly_rate, 2),
             'utilization_rate': round(utilization_rate, 1),
             'user_currency': user_currency,
