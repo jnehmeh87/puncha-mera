@@ -125,7 +125,7 @@
       <div class="glass-panel h-100 overflow-hidden d-flex flex-column">
         <div class="p-4 p-md-5 flex-grow-1">
           <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-light border-opacity-10">
-            <div class="avatar-circle me-4 text-white"
+            <div class="avatar-circle me-4 text-theme"
               style="width: 70px; height: 70px; font-size: 2rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
               {{ object.name|make_list|first|upper }}
             </div>
@@ -167,7 +167,7 @@
             {% for member in object.members.all %}
             <div class="member-item d-flex justify-content-between align-items-center p-3">
               <div class="d-flex align-items-center">
-                <div class="avatar-circle me-3 text-white"
+                <div class="avatar-circle me-3 text-theme"
                   style="background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 60%, black));">
                   {{ member.user.username|make_list|first|upper }}
                 </div>

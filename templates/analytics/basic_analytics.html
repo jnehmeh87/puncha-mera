@@ -8,10 +8,11 @@
 {% block content %}
 <div class="row mb-4 align-items-center">
     <div class="col-md-8">
-        <h1 class="display-4 fw-bolder mb-2 text-white page-title">
+        <h1 class="display-4 fw-bolder mb-2 text-theme page-title">
             <i class="bi bi-pie-chart text-primary me-2 flex-shrink-0"></i> Basic Analytics
         </h1>
-        <p class="lead text-white-50 fs-5 mb-0" style="max-width: 600px;"> High-level operational overview across your
+        <p class="lead text-theme-secondary fs-5 mb-0" style="max-width: 600px;"> High-level operational overview across
+            your
             organization(s). </p>
     </div>
 </div>
@@ -42,17 +43,18 @@
         <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
             <div class="card-body p-4 position-relative z-1 d-flex flex-column justify-content-between">
                 <div>
-                    <h5 class="card-title fw-medium text-white-50 mb-3 text-uppercase tracking-wide">Total Validated
+                    <h5 class="card-title fw-medium text-theme-secondary mb-3 text-uppercase tracking-wide">Total
+                        Validated
                         Hours </h5>
                     <div class="d-flex align-items-baseline" style="min-width: 0;">
-                        <h2 class="display-3 fw-bold mb-0 text-white kpi-value-text me-2"
+                        <h2 class="display-3 fw-bold mb-0 text-theme kpi-value-text me-2"
                             style="font-feature-settings: 'tnum';" title="{{ total_hours }}"> {{ total_hours }} </h2>
-                        <span class="text-white-50 fw-normal kpi-unit-text fs-5">hrs</span>
+                        <span class="text-theme-secondary fw-normal kpi-unit-text fs-5">hrs</span>
                     </div>
                 </div>
                 <div
                     class="mt-4 pt-4 border-top border-light border-opacity-25 d-flex justify-content-between align-items-center">
-                    <span class="text-white-50 fw-medium">Active Projects</span>
+                    <span class="text-theme-secondary fw-medium">Active Projects</span>
                     <span class="badge bg-white text-dark rounded-pill px-3 py-2 fw-bold fs-6 shadow-sm">
                         {{ active_projects_count|default:0 }}</span>
                 </div>
@@ -64,15 +66,17 @@
     <div class="col-12 col-md-7">
         <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
             <div class="card-body p-4 position-relative z-1">
-                <h5 class="card-title fw-medium text-white-50 mb-4 text-uppercase tracking-wide">Revenue Pipeline</h5>
+                <h5 class="card-title fw-medium text-theme-secondary mb-4 text-uppercase tracking-wide">Revenue Pipeline
+                </h5>
                 <div class="row g-3">
                     {% if revenue_by_currency %}
                     {% for curr, amt in revenue_by_currency.items %}
                     <div class="col-6 col-sm-4">
                         <div class="p-3 rounded-4 h-100 d-flex flex-column justify-content-center"
                             style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
-                            <span class="d-block text-white-50 fw-semibold mb-1 fs-7 tracking-wide">{{ curr }}</span>
-                            <h4 class="text-white mb-0 fw-bold" style="font-feature-settings: 'tnum';"> {{ amt }} </h4>
+                            <span class="d-block text-theme-secondary fw-semibold mb-1 fs-7 tracking-wide">{{ curr
+                                }}</span>
+                            <h4 class="text-theme mb-0 fw-bold" style="font-feature-settings: 'tnum';"> {{ amt }} </h4>
                         </div>
                     </div>
                     {% endfor %}
@@ -80,7 +84,7 @@
                     <div class="col-12">
                         <div class="p-4 rounded-4 text-center"
                             style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);">
-                            <p class="text-white-50 mb-0">No revenue data found for this period.</p>
+                            <p class="text-theme-secondary mb-0">No revenue data found for this period.</p>
                         </div>
                     </div>
                     {% endif %}
@@ -96,7 +100,7 @@
     <div class="col-12 col-lg-8">
         <div class="card glass-card h-100 p-4 border-0">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="text-white mb-0 fw-semibold">Revenue Trend ({{ current_period|upper }})</h4>
+                <h4 class="text-theme mb-0 fw-semibold">Revenue Trend ({{ current_period|upper }})</h4>
             </div>
             <div style="height: 300px; width: 100%;">
                 <canvas id="revenueChart"></canvas>
@@ -106,7 +110,7 @@
     <div class="col-12 col-lg-4">
         <div class="card glass-card h-100 p-4 border-0">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="text-white mb-0 fw-semibold">Hours Logged</h4>
+                <h4 class="text-theme mb-0 fw-semibold">Hours Logged</h4>
             </div>
             <div style="height: 300px; width: 100%;" class="d-flex align-items-center justify-content-center">
                 <canvas id="hoursChart"></canvas>
@@ -122,8 +126,14 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Elegant Chart defaults for dark theme
-        Chart.defaults.color = 'rgba(255, 255, 255, 0.6)';
+        const rootStyle = getComputedStyle(document.body);
+        const bgColor = rootStyle.getPropertyValue('--background-color').trim() || '#121212';
+        const textColor = rootStyle.getPropertyValue('--text-color').trim() || '#ffffff';
+        const textSecondaryColor = rootStyle.getPropertyValue('--text-secondary-color').trim() || 'rgba(255, 255, 255, 0.6)';
+        const gridColor = rootStyle.getPropertyValue('--input-border-color').trim() || 'rgba(255, 255, 255, 0.05)';
+        const tooltipBgColor = rootStyle.getPropertyValue('--surface-color').trim() || 'rgba(15, 23, 42, 0.9)';
+
+        Chart.defaults.color = textSecondaryColor;
         Chart.defaults.font.family = "'Inter', 'Poppins', sans-serif";
 
         const labels = JSON.parse(document.getElementById('chartLabels').textContent);
@@ -147,7 +157,7 @@
                     borderColor: '{{ theme_hex }}',
                     backgroundColor: gradientRev,
                     borderWidth: 3,
-                    pointBackgroundColor: '#0f172a',
+                    pointBackgroundColor: bgColor,
                     pointBorderColor: '{{ theme_hex }}',
                     pointBorderWidth: 2,
                     pointRadius: 4,
@@ -162,11 +172,11 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
+                        backgroundColor: tooltipBgColor,
+                        titleColor: textColor,
+                        bodyColor: textColor,
                         padding: 12,
-                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderColor: gridColor,
                         borderWidth: 1,
                         displayColors: false,
                         callbacks: {
@@ -179,7 +189,7 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        grid: { color: gridColor },
                         ticks: {
                             callback: function (value) {
                                 return '{{ user_currency|escapejs }} ' + value;
@@ -215,8 +225,12 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        backgroundColor: tooltipBgColor,
+                        titleColor: textColor,
+                        bodyColor: textColor,
                         padding: 12,
+                        borderColor: gridColor,
+                        borderWidth: 1,
                         displayColors: false,
                         callbacks: {
                             label: function (context) {
