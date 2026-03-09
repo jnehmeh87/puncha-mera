@@ -737,3 +737,21 @@ a:hover {
     filter: none;
     color: var(--text-secondary-color);
 }
+/* Global Filter Trigger Styles */
+.filter-trigger {
+    cursor: pointer;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50rem;
+    background: rgba(128, 128, 128, 0.08);
+    transition: all 0.2s ease;
+    border: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+.filter-trigger:hover {
+    background: rgba(128, 128, 128, 0.15);
+    transform: translateY(-1px);
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
