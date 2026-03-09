@@ -469,16 +469,16 @@
                         <th class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent">
                             Member</th>
                         <th
-                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">
+                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-center">
                             Total Hours</th>
                         <th
-                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">
+                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-center">
                             Billable %</th>
                         <th
-                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">
+                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-center">
                             Revenue Generated</th>
                         <th
-                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">
+                            class="py-3 px-4 text-white-50 fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-center">
                             Top Project</th>
                     </tr>
                 </thead>
@@ -486,20 +486,24 @@
                         class="align-middle border-bottom border-light border-opacity-10">
                         <td class="py-3 px-4 bg-transparent">
                             <div class="d-flex align-items-center">
-                                <div class="avatar-circle me-3 flex-shrink-0" style="width: 36px; height: 36px; font-size: 0.9rem; 
-                                            background: rgba(255,179,0,0.2) !important; color: #ffb300;">
+                                <div class="avatar-circle me-3 text-white" style="">
+                                    {{ member.user.username|make_list|first|upper }}
+                                </div>
+                                <div class="avatar-circle me-3 flex-shrink-0"
+                                    style="width: 36px; height: 36px; font-size: 1.5rem; text-align: center; border-radius: 10%;
+                                            background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 60%, black));">
                                     {{ member.name.0|upper }}
                                 </div>
                                 <span class="text-white fw-bold">{{ member.name }}</span>
                             </div>
                         </td>
-                        <td class="py-3 px-4 bg-transparent text-end text-white fs-6">{{ member.total_hours }}h</td>
-                        <td class="py-3 px-4 bg-transparent text-end text-white fs-6">{{ member.billable_pct }}%</td>
-                        <td class="py-3 px-4 bg-transparent text-end text-warning fw-bold fs-6">
+                        <td class="py-3 px-4 bg-transparent text-center text-white fs-6">{{ member.total_hours }}h</td>
+                        <td class="py-3 px-4 bg-transparent text-center text-white fs-6">{{ member.billable_pct }}%</td>
+                        <td class="py-3 px-4 bg-transparent text-center text-warning fw-bold fs-6">
                             {{ user_currency }} {{ member.revenue|floatformat:0 }} </td>
-                        <td class="py-3 px-4 bg-transparent text-end"> <span
+                        <td class="py-3 px-4 bg-transparent text-center"> <span
                                 class="badge bg-white bg-opacity-10 text-white-50 rounded-pill px-3 py-2 border border-light border-opacity-25">
-                                {{ member.top_project|truncatechars:18 }} </span> </td>
+                                {{ member.top_project|truncatechars:30 }} </span> </td>
                     </tr> {% empty %} <tr>
                         <td colspan="5" class="text-center py-5 text-white-50 bg-transparent">No team data found for the
                             selected period.</td>
