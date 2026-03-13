@@ -169,8 +169,8 @@
                   {% endif %}
                   {% endwith %}
 
-                  <span class="badge fs-6 rounded-pill px-3 py-2 text-theme text-center"
-                    style="background-color: #6c757d;">
+                  <span class="badge fs-6 rounded-pill px-3 py-2"
+                    style="background-color: var(--primary-color); color: var(--surface-color);">
                     {{ entry.date|date:"F j, Y" }}
                   </span>
                 </div>
@@ -268,7 +268,12 @@
                 <td class="text-center align-middle">
                   <input class="form-check-input entry-checkbox" type="checkbox" value="{{ entry.pk }}">
                 </td>
-                <td>{{ entry.date|date:"M d, Y" }}</td>
+                <td>
+                  <span class="badge rounded-pill px-2 py-1"
+                    style="background-color: var(--primary-color); color: var(--surface-color);">
+                    {{ entry.date|date:"M d, Y" }}
+                  </span>
+                </td>
                 <td>{{ entry.project.name }}</td>
                 <td>{{ entry.user.username }}</td>
                 <td><strong>{{ entry.title }}</strong></td>
