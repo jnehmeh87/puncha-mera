@@ -1,0 +1,527 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Income Calculator - {{ request.user.username|title }}{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+    .kpi-container {
+        container-type: inline-size;
+    }
+    .kpi-value-text {
+        font-size: clamp(2rem, 10vw, 3.5rem);
+        line-height: 1.1;
+        white-space: nowrap;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+    .kpi-unit-text {
+        font-size: clamp(0.9rem, 2vw, 1.25rem);
+        white-space: nowrap;
+    }
+    .fs-7 {
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="row align-items-center mb-4">
+    <div class="col-md-8">
+        <h1 class="display-4 fw-bolder mb-2 text-theme page-title">
+            <i class="bi bi-calculator text-primary me-2 flex-shrink-0"></i> Income Calculator
+        </h1>
+        <p class="lead text-theme-secondary fs-5 mb-0" style="max-width: 600px;">
+            Projection and split analysis based on logged billable hours.
+        </p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0 d-flex gap-2 justify-content-md-end">
+        <form id="monthFilterForm" method="get" class="d-flex">
+            <input type="month" id="monthSelector" name="month" class="form-control bg-transparent text-theme border-theme border-opacity-25" value="{{ current_month_str }}" onchange="this.form.submit()">
+        </form>
+        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#settingsModal">
+            <i class="bi bi-gear-fill me-1"></i> Settings
+        </button>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <!-- Revenue Card -->
+    <div class="col-12 col-md-5">
+        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+            <div class="card-body p-4 position-relative z-1 d-flex flex-column justify-content-between">
+                <div>
+                    <h5 class="card-title fw-medium text-theme-secondary mb-3 text-uppercase tracking-wide">Total Logged Revenue</h5>
+                    <div class="d-flex align-items-baseline" style="min-width: 0;">
+                        <h2 class="mb-0 text-theme kpi-value-text me-2" style="font-feature-settings: 'tnum';" id="totalRevenueDisplay">{{ total_revenue|floatformat:2 }}</h2>
+                        <span class="text-theme-secondary fw-normal kpi-unit-text fs-5" id="currencySymbol"></span>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-top border-light border-opacity-25 row g-2">
+                    <div class="col-6 border-end border-light border-opacity-25">
+                        <span class="d-block text-theme-secondary text-uppercase tracking-wider" style="font-size: 0.65rem;">Trend vs Last Month</span>
+                        <div class="d-flex align-items-center mt-1">
+                            {% if total_revenue > prev_total_revenue %}
+                                <span class="badge bg-success bg-opacity-25 text-white rounded-pill px-2 py-1 small">
+                                    <i class="bi bi-arrow-up-short"></i> Higher
+                                </span>
+                            {% elif total_revenue < prev_total_revenue %}
+                                <span class="badge bg-danger bg-opacity-25 text-white rounded-pill px-2 py-1 small">
+                                    <i class="bi bi-arrow-down-short"></i> Lower
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary bg-opacity-25 text-white rounded-pill px-2 py-1 small">
+                                    <i class="bi bi-dash"></i> Flat
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-6 ps-3">
+                        <span class="d-block text-theme-secondary text-uppercase tracking-wider" style="font-size: 0.65rem;">Active Projects</span>
+                        <span class="fw-bold text-theme fs-4" id="activeProjectsCount">0</span>
+                    </div>
+                </div>
+                <i class="bi bi-cash-stack card-icon-bg"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue Pipeline by Project -->
+    <div class="col-12 col-md-7">
+        <div class="card shadow border-0 h-100 dashboard-card gradient-primary">
+            <div class="card-body p-4 position-relative z-1">
+                <h5 class="card-title fw-medium text-theme-secondary mb-4 text-uppercase tracking-wide">Revenue Pipeline</h5>
+                <div class="row g-3" id="projectListGrid">
+                    <!-- JS Injected -->
+                </div>
+                <div id="noProjectsMsg" class="col-12 d-none">
+                    <div class="p-4 rounded-4 text-center" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);">
+                        <p class="text-theme-secondary mb-0">No time entries logged for this month.</p>
+                    </div>
+                </div>
+                <i class="bi bi-briefcase card-icon-bg"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <!-- Income Distribution Split -->
+    <div class="col-lg-7">
+        <div class="card glass-card h-100 p-4 border-0 rounded-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-theme fw-bold mb-0">Income Distribution Split</h5>
+            </div>
+            <p class="text-theme-secondary small mb-4">VAT is not calculated here as it sits outside your internal margins. This split outlines how your base earnings translate into estimated net take-home pay, buffers, and employer taxes according to your selected ruleset.</p>
+            
+            <div class="row align-items-center">
+                <div class="col-md-5 mb-4 mb-md-0">
+                    <div style="position: relative; height: 260px;">
+                        <canvas id="splitChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <label class="fw-bold small text-theme">Est. Net Take Home</label>
+                            <span class="badge" style="background-color: var(--primary-color); font-size: 0.95rem; font-weight: 700;" id="netSalaryVal">0.00</span>
+                        </div>
+                        <small class="text-theme-secondary d-block lh-sm" style="font-size: 0.75rem;">Projected earnings to your pocket after ~30% personal income tax deduction from Gross Salary.</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <label class="fw-bold small text-theme">Gross Salary Allocation</label>
+                            <span class="badge bg-secondary text-white" id="grossSalaryVal">0.00</span>
+                        </div>
+                        <small class="text-theme-secondary d-block lh-sm" style="font-size: 0.75rem;">Your official taxable payroll. Calculated to meet your Target Salary requirement.</small>
+                    </div>
+                    <div class="mb-3" id="socialContribContainer">
+                        <div class="d-flex justify-content-between mb-1">
+                            <label class="fw-bold small text-theme">Social Contributions <span id="socialContribLabel"></span></label>
+                            <span class="badge bg-info text-dark" id="socialContribVal">0.00</span>
+                        </div>
+                        <small class="text-theme-secondary d-block lh-sm" style="font-size: 0.75rem;">Mandatory employer payroll taxes (e.g. Arbetsgivaravgift) automatically withheld from corporate balance.</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <label class="fw-bold small text-theme">Buffers</label>
+                            <span class="badge bg-warning text-dark" id="bufferVal">0.00</span>
+                        </div>
+                        <small class="text-theme-secondary d-block lh-sm" style="font-size: 0.75rem;">Safety provisions: 12% Vacation pay & ~5% Pension allocation set aside from Revenue.</small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <label class="fw-bold small text-success">Generated Profit Margin</label>
+                            <span class="badge bg-success text-white" id="profitVal">0.00</span>
+                        </div>
+                        <small class="text-theme-secondary d-block lh-sm" style="font-size: 0.75rem;">Surplus remaining in the business after fully covering the Target Salary, Taxes, and Buffers above.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-top border-light border-opacity-10 text-end">
+                <button class="btn btn-primary rounded-3 px-4 py-2 mt-2" id="saveBookkeepingBtn">
+                    <i class="bi bi-journal-check me-2"></i> Save Snapshot to Bookkeeping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History -->
+    <div class="col-lg-5">
+        <div class="card glass-card h-100 p-0 border-0 rounded-4 overflow-hidden">
+            <div class="p-4 border-bottom border-light border-opacity-10">
+                <h5 class="text-theme fw-bold mb-0">Bookkeeping Registry</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-borderless table-hover mb-0">
+                    <thead class="border-bottom border-light border-opacity-10">
+                        <tr>
+                            <th class="py-3 px-4 text-theme-secondary fs-7 text-uppercase tracking-wider fw-bold bg-transparent">Month</th>
+                            <th class="py-3 px-4 text-theme-secondary fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">Rev</th>
+                            <th class="py-3 px-4 text-theme-secondary fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">Gross</th>
+                            <th class="py-3 px-4 text-theme-secondary fs-7 text-uppercase tracking-wider fw-bold bg-transparent text-end">Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in history %}
+                        <tr class="align-middle border-bottom border-light border-opacity-10">
+                            <td class="py-3 px-4 bg-transparent text-theme fw-bold small">{{ record.month|date:"M Y" }}</td>
+                            <td class="py-3 px-4 bg-transparent text-end text-theme small fw-medium">{{ record.total_revenue|floatformat:0 }}</td>
+                            <td class="py-3 px-4 bg-transparent text-end text-theme small">{{ record.gross_salary|floatformat:0 }}</td>
+                            <td class="py-3 px-4 bg-transparent text-end text-success fw-bold small">+{{ record.profit|floatformat:0 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-theme-secondary bg-transparent">No history saved. Calculate and snapshot to track.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-bottom border-light border-opacity-10">
+                <h5 class="modal-title fw-bold text-theme" id="settingsModalLabel">Calculator Settings & Logic</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="configForm">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-theme">Corporate Tax Ruleset</label>
+                        <select class="form-select bg-transparent text-theme border-theme border-opacity-25" id="countrySelect" name="country">
+                            <option value="SE" {% if config.country == 'SE' %}selected{% endif %}>Sweden (SE) - 31.42% Social</option>
+                            <option value="EU" {% if config.country == 'EU' %}selected{% endif %}>Europe Base (EU) - 20% Social</option>
+                            <option value="US" {% if config.country == 'US' %}selected{% endif %}>United States (US) - 7.65% FICA</option>
+                            <option value="GB" {% if config.country == 'GB' %}selected{% endif %}>United Kingdom (GB) - 13.8% NIC</option>
+                        </select>
+                        <small class="text-theme-secondary d-block mt-2 lh-sm">This strictly dictates automatic employer and social contribution calculations used in the pie chart. VAT is ignored.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-theme">Target Gross Monthly Salary</label>
+                        <input type="number" step="1" class="form-control bg-transparent text-theme border-theme border-opacity-25" id="grossSalaryInput" value="{{ config.base_gross_salary }}">
+                        <small class="text-theme-secondary d-block mt-2 lh-sm">The calculator prioritizes hitting this base target first, after securing your safety margin.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-theme">Safety Profit Margin (%)</label>
+                        <div class="input-group">
+                            <input type="number" step="0.1" class="form-control bg-transparent text-theme border-theme border-opacity-25" id="targetMarginInput" value="{{ config.target_profit_margin }}">
+                            <span class="input-group-text bg-transparent text-theme border-theme border-opacity-25">%</span>
+                        </div>
+                        <small class="text-theme-secondary d-block mt-2 lh-sm">Guaranteed percentage of all revenue to be locked away as company profit before calculating salaries and buffers.</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary border-0 bg-secondary bg-opacity-25 text-theme" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveConfigBtn">Save Configuration</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Inject Data
+    const timeEntries = JSON.parse('{{ entries_json|escapejs }}');
+    const config = JSON.parse('{{ config_json|escapejs }}');
+    const csrfToken = '{{ csrf_token }}';
+    const monthStr = '{{ current_month_str }}';
+    const userCurrency = '{{ user_currency }}';
+    
+    // Core Logic Elements
+    const totalRev = parseFloat('{{ total_revenue }}'.replace(',',''));
+    const countrySelect = document.getElementById('countrySelect');
+    const targetGrossInput = document.getElementById('grossSalaryInput');
+    const targetMarginInput = document.getElementById('targetMarginInput');
+    
+    // UI Elements
+    let themePrimaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#0d6efd';
+
+    let splitChartInstance = null;
+    let distribution = {
+        social: 0,
+        buffer: 0, 
+        gross: 0,
+        profit: 0
+    };
+
+    function init() {
+        renderProjectList();
+        calculateSplit();
+        renderChart();
+        updateDisplayValues();
+    }
+
+    function renderProjectList() {
+        const grid = document.getElementById('projectListGrid');
+        grid.innerHTML = '';
+        
+        if (timeEntries.length === 0) {
+            document.getElementById('noProjectsMsg').classList.remove('d-none');
+            return;
+        }
+        
+        // Group by project
+        const grouped = {};
+        timeEntries.forEach(entry => {
+            if (!grouped[entry.project]) {
+                grouped[entry.project] = { hours: 0, rev: 0 };
+            }
+            grouped[entry.project].hours += entry.duration;
+            grouped[entry.project].rev += parseFloat(entry.earnings.replace(',',''));
+        });
+        
+        if (document.getElementById('currencySymbol')) {
+             document.getElementById('currencySymbol').innerText = userCurrency;
+        }
+
+        const projectKeys = Object.keys(grouped);
+        document.getElementById('activeProjectsCount').innerText = projectKeys.length;
+
+        projectKeys.forEach(proj => {
+            const div = document.createElement('div');
+            div.className = 'col-6 col-md-4';
+            div.innerHTML = `
+                <div class="p-3 rounded-4 h-100 d-flex flex-column justify-content-center"
+                     style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                    <span class="d-block text-theme-secondary fw-semibold mb-1 fs-7 tracking-wide truncate-long text-truncate" title="${proj}">${proj}</span>
+                    <h4 class="text-theme mb-1 fw-bold" style="font-feature-settings: 'tnum';">${grouped[proj].rev.toFixed(2)}</h4>
+                    <small class="text-theme-secondary d-block" style="font-size: 0.70rem;">${grouped[proj].hours.toFixed(1)} hrs</small>
+                </div>
+            `;
+            grid.appendChild(div);
+        });
+    }
+
+    function calculateSplit() {
+        const rev = totalRev; 
+        
+        let socialRate = 0;
+        let vacPensionRate = 0.17; 
+        let targetGross = parseFloat(targetGrossInput.value) || 0;
+        let targetMargin = parseFloat(targetMarginInput.value) || 0;
+        
+        const loc = countrySelect.value;
+        if (loc === 'SE') {
+            socialRate = 0.3142; 
+        } else if (loc === 'GB') {
+            socialRate = 0.138; 
+        } else if (loc === 'US') {
+            socialRate = 0.0765; 
+        } else if (loc === 'EU') {
+            socialRate = 0.20;
+        }
+
+        // Apply rules
+        const costPerGrossDollar = 1 + socialRate + vacPensionRate;
+        const requiredRevForTarget = targetGross * costPerGrossDollar;
+        const safeMarginRate = targetMargin / 100;
+        const allocatedForSalary = rev * (1 - safeMarginRate);
+
+        if (allocatedForSalary >= requiredRevForTarget) {
+            distribution.gross = targetGross;
+            distribution.social = targetGross * socialRate;
+            distribution.buffer = targetGross * vacPensionRate;
+            distribution.profit = rev - requiredRevForTarget; // Profit absorbs overflow, guaranteed to be > allocated margin
+        } else {
+            distribution.profit = rev * safeMarginRate; // Safety margin locked away
+            distribution.gross = allocatedForSalary / costPerGrossDollar; // Salary scales down
+            distribution.social = distribution.gross * socialRate;
+            distribution.buffer = distribution.gross * vacPensionRate;
+        }
+
+        // Labels
+        document.getElementById('socialContribLabel').innerText = `(${(socialRate*100).toFixed(1)}%)`;
+    }
+
+    function updateDisplayValues() {
+        // Average personal tax 30% calculation just for visual net
+        const personalTax = 0.30;
+        const takeHome = distribution.gross * (1 - personalTax);
+        const actualMarginPct = totalRev > 0 ? (distribution.profit / totalRev * 100).toFixed(1) : 0;
+
+        document.getElementById('netSalaryVal').innerText = takeHome.toLocaleString('en-US', {maximumFractionDigits:0});
+        document.getElementById('profitVal').innerHTML = distribution.profit.toLocaleString('en-US', {maximumFractionDigits:0}) + ` <small class="fw-normal opacity-75 ms-1">(${actualMarginPct}%)</small>`;
+        
+        document.getElementById('grossSalaryVal').innerText = distribution.gross.toLocaleString('en-US', {maximumFractionDigits:0});
+        document.getElementById('socialContribVal').innerText = distribution.social.toLocaleString('en-US', {maximumFractionDigits:0});
+        document.getElementById('bufferVal').innerText = distribution.buffer.toLocaleString('en-US', {maximumFractionDigits:0});
+    }
+
+    function renderChart() {
+        const ctx = document.getElementById('splitChart').getContext('2d');
+        if (splitChartInstance) {
+            splitChartInstance.destroy();
+        }
+
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+        const textColor = isDarkMode ? '#e0e0e0' : '#495057';
+
+        // Re-read primary on render to ensure sync
+        themePrimaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#0d6efd';
+
+        splitChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Gross Salary', 'Social Contrib', 'Buffers (Vac/Pen)', 'Company Profit'],
+                datasets: [{
+                    data: [
+                        distribution.gross,
+                        distribution.social,
+                        distribution.buffer,
+                        distribution.profit
+                    ],
+                    backgroundColor: ['#6c757d', '#0dcaf0', '#ffc107', themePrimaryColor],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: textColor, font: { size: 11 } }
+                    },
+                    tooltip: {
+                        backgroundColor: isDarkMode ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255,255,255,0.9)',
+                        titleColor: isDarkMode ? '#fff' : '#000',
+                        bodyColor: isDarkMode ? '#fff' : '#000',
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed !== null) label += new Intl.NumberFormat().format(context.parsed);
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    document.getElementById('saveConfigBtn').addEventListener('click', () => {
+        const payload = {
+            country: countrySelect.value,
+            base_gross_salary: targetGrossInput.value || 0,
+            target_profit_margin: targetMarginInput.value || 0,
+            us_sales_tax: 0 // deprecated for now
+        };
+
+        fetch('{% url "income_calculator:update_config" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                calculateSplit();
+                updateDisplayValues();
+                renderChart();
+                const modalEl = document.getElementById('settingsModal');
+                const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                modal.hide();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        });
+    });
+
+    document.getElementById('saveBookkeepingBtn').addEventListener('click', () => {
+        const payload = {
+            month: monthStr,
+            total_revenue: totalRev,
+            vat_amount: 0,
+            gross_salary: distribution.gross,
+            vacation_pay: distribution.buffer * (12/17),
+            pension: distribution.buffer * (5/17),
+            social_contributions: distribution.social,
+            profit: distribution.profit
+        };
+
+        const btn = document.getElementById('saveBookkeepingBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+
+        fetch('{% url "income_calculator:save_bookkeeping" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.reload(); 
+            } else {
+                alert('Error: ' + data.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-journal-check me-2"></i> Save Snapshot to Bookkeeping';
+            }
+        });
+    });
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'data-theme' || mutation.attributeName === 'data-color-theme') {
+                setTimeout(() => {
+                    const newPrimary = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+                    if(splitChartInstance) {
+                        splitChartInstance.data.datasets[0].backgroundColor[3] = newPrimary;
+                        
+                        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                        splitChartInstance.options.plugins.legend.labels.color = isDark ? '#e0e0e0' : '#495057';
+                        splitChartInstance.update();
+                        
+                        document.getElementById('netSalaryVal').style.backgroundColor = newPrimary;
+                    }
+                }, 100);
+            }
+        });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+
+    init();
+});
+</script>
+
+{% endblock %}

@@ -30,6 +30,8 @@ urlpatterns = [
     path('analytics/', include('analytics.urls')),
     path('timer/', include('time_stamp.urls')),
     path('time-entries/', include('time_entries.urls')),
+    path('income-calculator/', include('income_calculator.urls')),
+    path('bookkeeping/', include('bookkeeping.urls')),
     path('', include('home.urls')),
 ]
 

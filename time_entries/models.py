@@ -16,6 +16,12 @@ class TimeEntry(models.Model):
     image = models.ImageField(upload_to='time_entry_images/', blank=True, null=True)
     pause_duration = models.DurationField(default=datetime.timedelta(0))
 
+    def save(self, *args, **kwargs):
+        if self.image:
+            from core.utils.image_compression import compress_image
+            self.image = compress_image(self.image)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f'{self.user.username} - {self.project.name} ({self.date})'
 

@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'daily_earnings',
     'income_calculator',
     'invoices',
+    'bookkeeping',
     'analytics',
     'core',
     'schedule',

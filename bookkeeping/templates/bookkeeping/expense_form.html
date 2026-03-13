@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row align-items-start">
+        <div class="col-lg-5 mb-4 mb-lg-0">
+            <!-- AI Scanner Card -->
+            <div class="card glass-card border-0 shadow-sm gradient-primary text-white h-100">
+                <div class="card-body p-5 text-center d-flex flex-column justify-content-center">
+                    <i class="bi bi-magic fs-1 mb-3"></i>
+                    <h3 class="fw-bold">AI Receipt Scanner</h3>
+                    <p class="opacity-75 mb-4">Upload a picture of your receipt or invoice. Our Gemini AI will instantly analyze it and fill out the details for you.</p>
+                    
+                    <input type="file" id="aiReceiptUpload" class="d-none" accept="image/*">
+                    <button id="scanBtn" type="button" class="btn btn-light btn-lg rounded-pill fw-bold text-primary shadow-sm" onclick="document.getElementById('aiReceiptUpload').click()">
+                        <i class="bi bi-camera"></i> Upload & Scan
+                    </button>
+                    
+                    <div id="scanStatus" class="mt-4 d-none">
+                        <div class="spinner-border spinner-border-sm text-light me-2" role="status"></div>
+                        <span class="opacity-75">Analyzing receipt with Gemini Flash...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card glass-card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="h4 mb-4 text-theme fw-bold">Log Expense</h2>
+                    <form method="post" enctype="multipart/form-data" id="expenseForm">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-flex justify-content-end mt-4">
+                            <a href="{% url 'bookkeeping:ledger' %}" class="btn btn-light me-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary gradient-primary border-0">Save Expense</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('aiReceiptUpload').addEventListener('change', function(e) {
+    if (!this.files.length) return;
+    
+    const file = this.files[0];
+    const formData = new FormData();
+    formData.append('receipt', file);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    // Copy the file into the actual form's file input so it gets saved when submitting
+    const formInput = document.getElementById('id_receipt_image');
+    if (formInput) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        formInput.files = dataTransfer.files;
+    }
+
+    const btn = document.getElementById('scanBtn');
+    const status = document.getElementById('scanStatus');
+    
+    btn.classList.add('d-none');
+    status.classList.remove('d-none');
+    
+    fetch('{% url "bookkeeping:parse_receipt" %}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert("Error analyzing receipt: " + data.error);
+        } else {
+            // Auto-fill form
+            if (data.vendor) document.getElementById('id_vendor').value = data.vendor;
+            if (data.amount) document.getElementById('id_amount').value = data.amount;
+            if (data.date) document.getElementById('id_date_incurred').value = data.date;
+            if (data.currency) document.getElementById('id_currency').value = data.currency;
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("A network error occurred.");
+    })
+    .finally(() => {
+        btn.classList.remove('d-none');
+        status.classList.add('d-none');
+    });
+});
+</script>
+{% endblock %}

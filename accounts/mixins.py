@@ -27,3 +27,7 @@ class OrganizationPermissionMixin(AccessMixin):
             return self.handle_no_permission()
 
         return super().dispatch(request, *args, **kwargs)
+
+    def get_organizations(self):
+        from .models import Organization
+        return Organization.objects.filter(members__user=self.request.user, archived=False, deleted=False)

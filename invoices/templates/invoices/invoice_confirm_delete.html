@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <div class="card glass-card border-0 shadow-sm p-5">
+                <h1 class="h3 text-danger fw-bold mb-3"><i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Invoice</h1>
+                <p class="text-theme-secondary mb-4">Are you sure you want to permanently delete Invoice <strong>#{{ object.invoice_number }}</strong>? This action cannot be undone.</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <a href="{% url 'invoices:invoice-list' %}" class="btn btn-light px-4 me-2">Cancel</a>
+                    <button type="submit" class="btn btn-danger px-4">Delete Permanently</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

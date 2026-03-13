@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card glass-card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="h4 mb-4 text-theme fw-bold">
+                        {% if object %}Edit Invoice {{ object.invoice_number }}{% else %}New Invoice{% endif %}
+                    </h2>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">{{ form.organization|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.contact|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.invoice_number|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.total_amount|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.issue_date|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.due_date|as_crispy_field }}</div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <a href="{% url 'invoices:invoice-list' %}" class="btn btn-light me-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary gradient-primary border-0">
+                                {% if object %}Save Changes{% else %}Create Invoice{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

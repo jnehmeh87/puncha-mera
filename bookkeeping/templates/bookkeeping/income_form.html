@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card glass-card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="h4 mb-4 text-theme fw-bold">Log Income</h2>
+                    <p class="text-theme-secondary mb-4">Record income when it hits your bank registry. You can link this to an existing Invoice.</p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-flex justify-content-end mt-4">
+                            <a href="{% url 'bookkeeping:ledger' %}" class="btn btn-light me-2">Cancel</a>
+                            <button type="submit" class="btn btn-success">Save Income</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

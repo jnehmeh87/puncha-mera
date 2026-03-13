@@ -1,37 +1,59 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="card">
-    <div class="card-header">
-      <h1 class="card-title">Invoices</h1>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-theme fw-bold mb-0">Invoices</h1>
+        <a href="{% url 'invoices:invoice-create' %}" class="btn btn-primary gradient-primary border-0 shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> New Invoice
+        </a>
     </div>
-    <div class="card-body">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Invoice Number</th>
-            <th>Contact</th>
-            <th>Issue Date</th>
-            <th>Due Date</th>
-            <th>Total Amount</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for invoice in invoices %}
-            <tr>
-              <td>{{ invoice.invoice_number }}</td>
-              <td>{{ invoice.contact }}</td>
-              <td>{{ invoice.issue_date }}</td>
-              <td>{{ invoice.due_date }}</td>
-              <td>{{ invoice.total_amount }}</td>
-              <td>
-                <a href="{% url 'invoices:invoice-pdf' invoice.pk %}" class="btn btn-sm btn-info">View PDF</a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+
+    <div class="card glass-card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover text-theme mb-0">
+                    <thead class="bg-transparent border-bottom">
+                        <tr>
+                            <th class="ps-4">Invoice #</th>
+                            <th>Contact</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Amount</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in invoices %}
+                        <tr>
+                            <td class="ps-4 fw-bold">#{{ invoice.invoice_number }}</td>
+                            <td>{{ invoice.contact }}</td>
+                            <td>{{ invoice.issue_date }}</td>
+                            <td>{{ invoice.due_date }}</td>
+                            <td class="fw-bold">{{ invoice.total_amount }}</td>
+                            <td class="text-end pe-4">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-icon border-0 text-theme-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 glass-card">
+                                        <li><a class="dropdown-item py-2" href="{% url 'invoices:invoice-edit' invoice.pk %}"><i class="bi bi-pencil me-2 text-primary"></i> Edit</a></li>
+                                        <li><a class="dropdown-item py-2" href="{% url 'invoices:invoice-pdf' invoice.pk %}"><i class="bi bi-file-pdf me-2 text-danger"></i> PDF Document</a></li>
+                                        <li><hr class="dropdown-divider opacity-25"></li>
+                                        <li><a class="dropdown-item py-2 text-danger" href="{% url 'invoices:invoice-delete' invoice.pk %}"><i class="bi bi-trash me-2"></i> Delete</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">No invoices found. Click "New Invoice" to create one.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
 {% endblock %}
