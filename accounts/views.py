@@ -163,17 +163,30 @@ class ContactListView(LoginRequiredMixin, OrganizationPermissionMixin, ListView)
 
     def get_queryset(self):
         user = self.request.user
+        org_id = self.request.GET.get('org')
         memberships = Membership.objects.filter(user=user)
         if not memberships.exists():
             return Contact.objects.none()
-        organizaciones = [m.organization for m in memberships]
-        return Contact.objects.filter(organization__in=organizaciones, deleted=False)
+            
+        if org_id:
+            organizaciones = [m.organization for m in memberships if str(m.organization.id) == str(org_id)]
+        else:
+            organizaciones = [m.organization for m in memberships]
+            
+        return Contact.objects.filter(organization__in=organizaciones, deleted=False).order_by('-id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         queryset = self.get_queryset()
         context['active_contacts'] = queryset.filter(archived=False)
         context['archived_contacts'] = queryset.filter(archived=True)
+        
+        user = self.request.user
+        memberships = Membership.objects.filter(user=user)
+        context['user_has_orgs'] = memberships.exists()
+        context['user_organizations'] = [m.organization for m in memberships if not m.organization.deleted]
+        context['selected_org_id'] = self.request.GET.get('org', '')
+        
         return context
 
 class ContactDetailView(OrganizationPermissionMixin, DetailView):

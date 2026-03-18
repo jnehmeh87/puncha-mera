@@ -14,20 +14,50 @@ class ProjectListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
+        org_id = self.request.GET.get('org')
+        client_id = self.request.GET.get('client')
+        
         if not user.is_authenticated:
             return Project.objects.none()
 
         memberships = Membership.objects.filter(user=user)
         if not memberships.exists():
             return Project.objects.none()
-        organizaciones = [m.organization for m in memberships]
-        return Project.objects.filter(organization__in=organizaciones, deleted=False)
+            
+        if org_id:
+            organizaciones = [m.organization for m in memberships if str(m.organization.id) == str(org_id)]
+        else:
+            organizaciones = [m.organization for m in memberships]
+            
+        qs = Project.objects.filter(organization__in=organizaciones, deleted=False).order_by('-id')
+        
+        if client_id:
+            qs = qs.filter(contact_id=client_id)
+            
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         queryset = self.get_queryset()
         context['active_projects'] = queryset.filter(archived=False)
         context['archived_projects'] = queryset.filter(archived=True)
+        
+        user = self.request.user
+        memberships = Membership.objects.filter(user=user)
+        context['user_has_orgs'] = memberships.exists()
+        context['user_organizations'] = [m.organization for m in memberships if not m.organization.deleted]
+        
+        context['selected_org_id'] = self.request.GET.get('org', '')
+        context['selected_client_id'] = self.request.GET.get('client', '')
+        
+        from accounts.models import Contact
+        if context['selected_org_id']:
+            context['available_clients'] = Contact.objects.filter(organization_id=context['selected_org_id'], deleted=False).order_by('name')
+            context['user_has_clients'] = True
+        else:
+            context['available_clients'] = Contact.objects.none()
+            context['user_has_clients'] = Contact.objects.filter(organization__in=context['user_organizations'], deleted=False).exists()
+            
         return context
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):

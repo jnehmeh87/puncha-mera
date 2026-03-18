@@ -173,9 +173,19 @@
                       {{ org.name|make_list|first|upper }}
                     </div>
                     <div>
-                      <h5 class="card-title fw-bold mb-0 text-theme">{{ org.name }}</h5>
-                      <span class="badge rounded-pill fw-medium fs-6 mt-2 px-3"
-                        style="background-color: color-mix(in srgb, var(--primary-color) 15%, transparent); color: var(--primary-color); border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent);">Active</span>
+                      <h5 class="card-title fw-bold mb-1 text-theme">{{ org.name }}</h5>
+                      <span class="badge rounded-pill fw-medium fs-6 px-3 me-2"
+                        style="background-color: color-mix(in srgb, var(--primary-color) 15%, transparent); color: var(--primary-color); border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent);">Active Workspace</span>
+                    </div>
+                  </div>
+                  <div class="px-2 mb-3 d-flex gap-3">
+                    <div class="d-flex align-items-center text-muted small fw-medium">
+                        <i class="bi bi-person-lines-fill me-2 fs-5" style="color: var(--secondary-color);"></i>
+                        {{ org.contact_set.count }} Client{{ org.contact_set.count|pluralize }}
+                    </div>
+                    <div class="d-flex align-items-center text-muted small fw-medium">
+                        <i class="bi bi-briefcase-fill me-2 fs-5" style="color: #0dcaf0;"></i>
+                        {{ org.project_set.count }} Project{{ org.project_set.count|pluralize }}
                     </div>
                   </div>
                   <div class="mt-auto pt-4 border-top border-light border-opacity-10 d-flex justify-content-end gap-2">
@@ -195,15 +205,54 @@
               </div>
             </div>
             {% empty %}
-            <div class="col-12">
-              <div class="text-center py-5 glass-panel rounded-4 border-dashed border-light border-opacity-25 border-1">
-                <div class="mb-3" style="color: var(--text-secondary-color);"><i
-                    class="bi bi-building fs-1 opacity-50"></i></div>
-                <h5 class="fw-normal text-theme">No active organizations</h5>
-                <p class="mb-4" style="color: var(--text-secondary-color);">Get started by creating your first
-                  organization.</p>
-                <a href="{% url 'accounts:organization-create' %}"
-                  class="btn btn-glow btn-primary-glow rounded-pill px-4">Start a new organization</a>
+            <div class="col-12 mt-4">
+              <div class="py-5 px-4 glass-panel rounded-4 border-dashed border-light border-opacity-25 border-1 mx-auto" style="max-width: 900px;">
+                <div class="text-center mb-5">
+                    <div class="mb-4" style="color: var(--primary-color);">
+                        <i class="bi bi-stars" style="font-size: 3.5rem;"></i>
+                    </div>
+                    <h2 class="fw-bold text-theme mb-3">Welcome to your new Command Center!</h2>
+                    <p class="fs-5 text-secondary" style="color: var(--text-secondary-color) !important;">Puncha Mera uses a simple 3-tier hierarchy. Let's build your structural foundation.</p>
+                </div>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4 position-relative">
+                        <div class="text-center p-4 h-100 glass-panel border-light border-opacity-10 d-flex flex-column align-items-center" style="box-shadow: 0 4px 20px rgba(230,57,114,0.15);">
+                            <div class="avatar-circle mb-3 text-white fs-4 d-flex align-items-center justify-content-center" style="background: var(--primary-color); width: 48px; height: 48px;">1</div>
+                            <h5 class="fw-bold text-theme mb-3">The Workspace</h5>
+                            <p class="small text-secondary mb-0 flex-grow-1" style="line-height: 1.6;">
+                              This is your root <strong>Organization</strong>. Think of it as your Agency name or your main Freelance Studio. <br><br><em>You usually only need to create ONE of these! Everything else you do lives inside it!</em>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Connector arrow (desktop only) -->
+                    <div class="col-md-4 position-relative">
+                        <div class="text-center p-4 h-100 glass-panel border-light border-opacity-10 d-flex flex-column align-items-center" style="opacity: 0.65;">
+                            <div class="avatar-circle mb-3 text-white fs-4 d-flex align-items-center justify-content-center" style="background: var(--text-secondary-color); width: 48px; height: 48px;">2</div>
+                            <h5 class="fw-bold text-theme mb-3">The Clients</h5>
+                            <p class="small text-secondary mb-0 flex-grow-1" style="line-height: 1.6;">
+                              Once you have a Workspace, you add <strong>Client Contacts</strong> into it. These represent the real-world people or companies you do work for (e.g., <em>"Acme Corp"</em>).
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 position-relative">
+                        <div class="text-center p-4 h-100 glass-panel border-light border-opacity-10 d-flex flex-column align-items-center" style="opacity: 0.65;">
+                            <div class="avatar-circle mb-3 text-white fs-4 d-flex align-items-center justify-content-center" style="background: var(--text-secondary-color); width: 48px; height: 48px;">3</div>
+                            <h5 class="fw-bold text-theme mb-3">The Projects</h5>
+                            <p class="small text-secondary mb-0 flex-grow-1" style="line-height: 1.6;">
+                              Finally, you start <strong>Projects</strong> designed specifically for those Clients. This is what you actually track your time against (e.g., <em>"Website Redesign"</em>).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center bg-transparent mt-2">
+                    <p class="mb-4 fw-medium" style="color: var(--text-secondary-color);">Ready to take the very first step?</p>
+                    <a href="{% url 'accounts:organization-create' %}"
+                    class="btn btn-lg btn-glow btn-primary-glow rounded-pill px-5 py-3 shadow-lg fs-5">
+                    <i class="bi bi-building-add me-2"></i>Create my first Workspace
+                    </a>
+                </div>
               </div>
             </div>
             {% endfor %}
