@@ -15,6 +15,7 @@ class TimeEntry(models.Model):
     notes = models.TextField(blank=True)
     image = models.ImageField(upload_to='time_entry_images/', blank=True, null=True)
     pause_duration = models.DurationField(default=datetime.timedelta(0))
+    archived = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if self.image:

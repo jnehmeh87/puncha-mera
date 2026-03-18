@@ -74,7 +74,28 @@ class TimeEntryListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         from .forms import TimeEntryFilterForm
         context['form'] = TimeEntryFilterForm(self.request.GET or None, user=self.request.user)
+        
+        queryset = self.get_queryset()
+        context['active_entries'] = queryset.filter(archived=False)
+        context['archived_entries'] = queryset.filter(archived=True)
         return context
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def archive_time_entry(request, pk):
+    entry = get_object_or_404(TimeEntry, pk=pk)
+    entry.archived = True
+    entry.save()
+    return redirect('time_entries:time_entry-list')
+
+@login_required
+def unarchive_time_entry(request, pk):
+    entry = get_object_or_404(TimeEntry, pk=pk)
+    entry.archived = False
+    entry.save()
+    return redirect('time_entries:time_entry-list')
 
 class TimeEntryDetailView(LoginRequiredMixin, DetailView):
     model = TimeEntry

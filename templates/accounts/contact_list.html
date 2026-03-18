@@ -152,26 +152,25 @@
     </div>
   </div>
 
-  <div class="glass-panel overflow-hidden">
-    <div class="border-bottom border-light border-opacity-10 bg-transparent pt-4 pb-0 px-4">
-      <ul class="nav nav-tabs border-0 gap-4" id="contactTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link custom-tab border-0 fs-5 fw-medium active" id="active-tab" data-bs-toggle="tab"
-            data-bs-target="#active" type="button" role="tab" aria-controls="active" aria-selected="true">Active
-            Contacts</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link custom-tab border-0 fs-5 fw-medium bg-transparent" id="archived-tab"
-            data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archived"
-            aria-selected="false">Archived Contacts</button>
-        </li>
-      </ul>
-    </div>
+  <!-- Tabs for Active & Archived -->
+  <ul class="nav nav-tabs border-0 mb-4 gap-2" id="contactTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active rounded-pill px-4 border shadow-sm fw-bold glass-panel" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab" aria-controls="active" aria-selected="true" style="color: var(--text-color);">
+        <i class="bi bi-person-lines-fill me-2"></i>Active Contacts
+        <span class="badge bg-primary ms-2 rounded-pill">{{ active_contacts|length }}</span>
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link rounded-pill px-4 border shadow-sm fw-medium glass-panel opacity-75" id="archived-tab" data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archived" aria-selected="false" style="color: var(--text-color);">
+        <i class="bi bi-archive me-2"></i>Archived
+        <span class="badge bg-secondary ms-2 rounded-pill">{{ archived_contacts|length }}</span>
+      </button>
+    </li>
+  </ul>
 
-    <div class="p-0">
-      <div class="tab-content" id="contactTabsContent">
-
-        <!-- Active Tab -->
+  <div class="tab-content" id="contactTabsContent">
+    
+    <!-- ACTIVE TAB -->
         <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
           <div class="row g-4 p-4">
             {% for contact in active_contacts %}
@@ -319,9 +318,7 @@
           </div>
         </div>
 
-      </div>
-    </div>
-  </div>
+  </div> <!-- /tab-content -->
 </div>
 
 <script>

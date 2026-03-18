@@ -145,168 +145,264 @@
     </div>
   </div>
 
-  <!-- Card View Content -->
-  <div id="cardView" class="row">
-    {% for entry in time_entries %}
-    <div class="col-12 mb-3">
-      <div class="card shadow-sm border-0">
-        <div class="row g-0">
-          <div class="col-md-{% if entry.image %}9{% else %}12{% endif %}">
-            <div class="card-body p-4 row-selectable" data-entry-id="{{ entry.pk }}">
-              <div class="d-flex justify-content-between align-items-start mb-2">
-                <div class="d-flex align-items-center gap-3">
-                  <input class="form-check-input entry-checkbox" type="checkbox" value="{{ entry.pk }}">
-                  <h5 class="card-title fw-bold mb-0">{{ entry.title }}</h5>
-                </div>
+  <!-- Tabs for Active & Archived -->
+  <ul class="nav nav-tabs border-0 mb-4 gap-2" id="timeEntryTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active rounded-pill px-4 border shadow-sm fw-bold glass-panel" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab" aria-controls="active" aria-selected="true" style="color: var(--text-color);">
+        <i class="bi bi-clock-history me-2"></i>Active Entries
+        <span class="badge bg-primary ms-2 rounded-pill">{{ active_entries|length }}</span>
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link rounded-pill px-4 border shadow-sm fw-medium glass-panel opacity-75" id="archived-tab" data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archived" aria-selected="false" style="color: var(--text-color);">
+        <i class="bi bi-archive me-2"></i>Archived
+        <span class="badge bg-secondary ms-2 rounded-pill">{{ archived_entries|length }}</span>
+      </button>
+    </li>
+  </ul>
 
-                <div class="d-flex align-items-center gap-3">
-                  {% with role=request.user.memberships.first.role %}
-                  {% if role == 'admin' or role == 'owner' %}
-                  <a href="{% url 'time_entries:time_entry-update' entry.pk %}"
-                    class="btn btn-sm btn-link text-secondary p-0 text-decoration-none open-form-modal" title="Edit">
-                    <i class="bi bi-pencil fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
-                  </a>
+  <div class="tab-content" id="timeEntryTabsContent">
+    
+    <!-- ACTIVE TAB -->
+    <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
+      <!-- Card View Content -->
+      <div id="cardView" class="row">
+        {% for entry in active_entries %}
+        <div class="col-12 mb-3">
+          <div class="card shadow-sm border-0 position-relative overflow-hidden">
+            <div class="row g-0">
+              <div class="col-md-{% if entry.image %}9{% else %}12{% endif %}">
+                <div class="card-body p-4 row-selectable" data-entry-id="{{ entry.pk }}">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="d-flex align-items-center gap-3">
+                      <input class="form-check-input entry-checkbox" type="checkbox" value="{{ entry.pk }}">
+                      <h5 class="card-title fw-bold mb-0">{{ entry.title }}</h5>
+                    </div>
+    
+                    <div class="d-flex align-items-center gap-3 pe-5">
+                      {% with role=request.user.memberships.first.role %}
+                      {% if role == 'admin' or role == 'owner' %}
+                      <a href="{% url 'time_entries:time_entry-update' entry.pk %}"
+                        class="btn btn-sm btn-link text-secondary p-0 text-decoration-none open-form-modal" title="Edit">
+                        <i class="bi bi-pencil fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
+                      </a>
+                      <form action="{% url 'time_entries:time_entry-archive' entry.pk %}" method="post" class="d-inline border-0 m-0 p-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-link text-warning p-0 text-decoration-none" title="Archive">
+                          <i class="bi bi-archive-fill fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
+                        </button>
+                      </form>
+                      {% endif %}
+                      {% endwith %}
+    
+                      <span class="badge fs-6 rounded-pill px-3 py-2"
+                        style="background-color: var(--primary-color); color: var(--surface-color);">
+                        {{ entry.date|date:"F j, Y" }}
+                      </span>
+                    </div>
+                  </div>
+                  <h6 class="card-subtitle mb-3 text-muted">
+                    <i class="bi bi-briefcase me-1"></i> {{ entry.project.name }}
+                    <span class="mx-2">|</span>
+                    <i class="bi bi-person me-1"></i> {{ entry.user.username }}
+                  </h6>
+    
+                  <div class="d-flex gap-5 mt-3">
+                    <div>
+                      <small class="text-muted d-block">{% trans "Time" %}</small>
+                      <span class="fw-semibold">
+                        <span>{{ entry.start_time|time:"H:i"|default:"-" }}</span>
+                        <span>-</span>
+                        <span>{{ entry.end_time|time:"H:i"|default:"-" }}</span>
+                      </span>
+                    </div>
+                    <div>
+                      <small class="text-muted d-block">{% trans "Pause" %}</small>
+                      <span class="fw-semibold">
+                        {{ entry.pause_duration|format_duration }}
+                      </span>
+                    </div>
+                    <div>
+                      <small class="text-muted d-block">{% trans "Duration" %}</small>
+                      <span class="fw-semibold">
+                        {{ entry.actual_duration|format_duration }}
+                      </span>
+                    </div>
+                  </div>
+    
+                  {% if entry.description or entry.notes %}
+                  <div class="mt-4 pt-3 border-top">
+                    {% if entry.description %}
+                    <p class="mb-2"><strong class="text-muted">{% trans "Description:" %}</strong>
+                      {{ entry.description }}
+                    </p>
+                    {% endif %}
+                    {% if entry.notes %}
+                    <p class="mb-0"><strong class="text-muted">{% trans "Notes:" %}</strong>
+                      {{ entry.notes }}
+                    </p>
+                    {% endif %}
+                  </div>
                   {% endif %}
-                  {% endwith %}
-
-                  <span class="badge fs-6 rounded-pill px-3 py-2"
-                    style="background-color: var(--primary-color); color: var(--surface-color);">
-                    {{ entry.date|date:"F j, Y" }}
-                  </span>
                 </div>
               </div>
-              <h6 class="card-subtitle mb-3 text-muted">
-                <i class="bi bi-briefcase me-1"></i> {{ entry.project.name }}
-                <span class="mx-2">|</span>
-                <i class="bi bi-person me-1"></i> {{ entry.user.username }}
-              </h6>
-
-              <div class="d-flex gap-5 mt-3">
-                <div>
-                  <small class="text-muted d-block">{% trans "Time" %}</small>
-                  <span class="fw-semibold">
-                    <span>{{ entry.start_time|time:"H:i"|default:"-" }}</span>
-                    <span>-</span>
-                    <span>{{ entry.end_time|time:"H:i"|default:"-" }}</span>
-                  </span>
+              {% if entry.image %}
+              <div class="col-md-3 border-start d-flex align-items-center justify-content-center rounded-end">
+                <div class="p-3 text-center w-100">
+                  <a href="{{ entry.image.url }}" target="_blank">
+                    <img src="{{ entry.image.url }}" alt="Attachment" class="img-fluid rounded shadow-sm"
+                      style="max-height: 200px; object-fit: contain;">
+                  </a>
                 </div>
-                <div>
-                  <small class="text-muted d-block">{% trans "Pause" %}</small>
-                  <span class="fw-semibold">
-                    {{ entry.pause_duration|format_duration }}
-                  </span>
-                </div>
-                <div>
-                  <small class="text-muted d-block">{% trans "Duration" %}</small>
-                  <span class="fw-semibold">
-                    {{ entry.actual_duration|format_duration }}
-                  </span>
-                </div>
-              </div>
-
-              {% if entry.description or entry.notes %}
-              <div class="mt-4 pt-3 border-top">
-                {% if entry.description %}
-                <p class="mb-2"><strong class="text-muted">{% trans "Description:" %}</strong>
-                  {{ entry.description }}
-                </p>
-                {% endif %}
-                {% if entry.notes %}
-                <p class="mb-0"><strong class="text-muted">{% trans "Notes:" %}</strong>
-                  {{ entry.notes }}
-                </p>
-                {% endif %}
               </div>
               {% endif %}
             </div>
           </div>
-          {% if entry.image %}
-          <div class="col-md-3 border-start d-flex align-items-center justify-content-center rounded-end">
-            <div class="p-3 text-center w-100">
-              <a href="{{ entry.image.url }}" target="_blank">
-                <img src="{{ entry.image.url }}" alt="Attachment" class="img-fluid rounded shadow-sm"
-                  style="max-height: 200px; object-fit: contain;">
-              </a>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="alert alert-info border-0 shadow-sm p-4 text-center">
+            {% trans "No active time entries found matching your filters." %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    
+      <!-- Table View Content -->
+      <div id="tableView" class="d-none">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 40px;" class="text-center align-middle">
+                      <input class="form-check-input selectAll" type="checkbox">
+                    </th>
+                    <th>{% trans "Date" %}</th>
+                    <th>{% trans "Project" %}</th>
+                    <th>{% trans "User" %}</th>
+                    <th>{% trans "Title" %}</th>
+                    <th>{% trans "Duration" %}</th>
+                    <th class="text-end">{% trans "Actions" %}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for entry in active_entries %}
+                  <tr class="row-selectable" data-entry-id="{{ entry.pk }}">
+                    <td class="text-center align-middle">
+                      <input class="form-check-input entry-checkbox" type="checkbox" value="{{ entry.pk }}">
+                    </td>
+                    <td>
+                      <span class="badge rounded-pill px-2 py-1"
+                        style="background-color: var(--primary-color); color: var(--surface-color);">
+                        {{ entry.date|date:"M d, Y" }}
+                      </span>
+                    </td>
+                    <td>{{ entry.project.name }}</td>
+                    <td>{{ entry.user.username }}</td>
+                    <td><strong>{{ entry.title }}</strong></td>
+                    <td>{{ entry.actual_duration|format_duration }}</td>
+                    <td>
+                      <div class="d-flex align-items-center justify-content-end gap-2">
+                        <button type="button" class="btn btn-sm btn-link text-info p-0 text-decoration-none view-details"
+                          title="View" data-url="{% url 'time_entries:time_entry-detail' entry.pk %}">
+                          <i class="bi bi-eye fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
+                        </button>
+                        {% with role=request.user.memberships.first.role %}
+                        {% if role == 'admin' or role == 'owner' %}
+                        <a href="{% url 'time_entries:time_entry-update' entry.pk %}"
+                          class="btn btn-sm btn-link text-secondary p-0 text-decoration-none open-form-modal" title="Edit">
+                          <i class="bi bi-pencil fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
+                        </a>
+                        <form action="{% url 'time_entries:time_entry-archive' entry.pk %}" method="post" class="d-inline border-0 m-0 p-0">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-link text-warning p-0 text-decoration-none" title="Archive">
+                            <i class="bi bi-archive-fill fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
+                          </button>
+                        </form>
+                        {% endif %}
+                        {% endwith %}
+                      </div>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">{% trans "No active entries found." %}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
-          {% endif %}
         </div>
       </div>
-    </div>
-    {% empty %}
-    <div class="col-12">
-      <div class="alert alert-info border-0 shadow-sm p-4 text-center">
-        {% trans "No time entries found matching your filters." %}
-      </div>
-    </div>
-    {% endfor %}
-  </div>
+    </div> <!-- /#active -->
 
-  <!-- Table View Content (Hidden by default) -->
-  <div id="tableView" class="d-none">
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-hover mb-0 align-middle">
-            <thead class="table-light">
-              <tr>
-                <th style="width: 40px;" class="text-center align-middle">
-                  <input class="form-check-input" type="checkbox" id="selectAll">
-                </th>
-                <th>{% trans "Date" %}</th>
-                <th>{% trans "Project" %}</th>
-                <th>{% trans "User" %}</th>
-                <th>{% trans "Title" %}</th>
-                <th>{% trans "Pause" %}</th>
-                <th>{% trans "Duration" %}</th>
-                <th class="text-end">{% trans "Actions" %}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for entry in time_entries %}
-              <tr class="row-selectable" data-entry-id="{{ entry.pk }}">
-                <td class="text-center align-middle">
-                  <input class="form-check-input entry-checkbox" type="checkbox" value="{{ entry.pk }}">
-                </td>
-                <td>
-                  <span class="badge rounded-pill px-2 py-1"
-                    style="background-color: var(--primary-color); color: var(--surface-color);">
-                    {{ entry.date|date:"M d, Y" }}
-                  </span>
-                </td>
-                <td>{{ entry.project.name }}</td>
-                <td>{{ entry.user.username }}</td>
-                <td><strong>{{ entry.title }}</strong></td>
-                <td>{{ entry.pause_duration|format_duration }}</td>
-                <td>{{ entry.actual_duration|format_duration }}</td>
-                <td>
-                  <div class="d-flex align-items-center justify-content-end gap-2">
-                    <button type="button" class="btn btn-sm btn-link text-info p-0 text-decoration-none view-details"
-                      title="View" data-url="{% url 'time_entries:time_entry-detail' entry.pk %}">
-                      <i class="bi bi-eye fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
-                    </button>
-                    {% with role=request.user.memberships.first.role %}
-                    {% if role == 'admin' or role == 'owner' %}
-                    <a href="{% url 'time_entries:time_entry-update' entry.pk %}"
-                      class="btn btn-sm btn-link text-secondary p-0 text-decoration-none open-form-modal" title="Edit">
-                      <i class="bi bi-pencil fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
-                    </a>
-                    {% endif %}
-                    {% endwith %}
+    <!-- ARCHIVED TAB -->
+    <div class="tab-pane fade" id="archived" role="tabpanel" aria-labelledby="archived-tab">
+      <div class="row">
+        {% for entry in archived_entries %}
+        <div class="col-12 mb-3">
+          <div class="card shadow-sm border-0 position-relative overflow-hidden bg-white" style="opacity: 0.8;">
+            <div class="position-absolute top-0 end-0 mt-3 me-3 z-1">
+                <span class="badge bg-secondary rounded-pill shadow-sm"><i class="bi bi-archive me-1"></i> Archived</span>
+            </div>
+            <div class="row g-0">
+              <div class="col-md-{% if entry.image %}9{% else %}12{% endif %}">
+                <div class="card-body p-4 row-selectable" data-entry-id="{{ entry.pk }}">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="d-flex align-items-center gap-3">
+                      <input class="form-check-input entry-checkbox opacity-50 pe-none" type="checkbox" value="{{ entry.pk }}" disabled>
+                      <h5 class="card-title fw-bold mb-0 text-muted">{{ entry.title }}</h5>
+                    </div>
+    
+                    <div class="d-flex align-items-center gap-3 pe-5">
+                      {% with role=request.user.memberships.first.role %}
+                      {% if role == 'admin' or role == 'owner' %}
+                      <form action="{% url 'time_entries:time_entry-unarchive' entry.pk %}" method="post" class="d-inline border-0 m-0 p-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-link text-success p-0 text-decoration-none" title="Restore Time Entry">
+                          <i class="bi bi-arrow-counterclockwise fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
+                        </button>
+                      </form>
+                      {% endif %}
+                      {% endwith %}
+    
+                      <span class="badge fs-6 rounded-pill px-3 py-2 bg-secondary text-white border">
+                        {{ entry.date|date:"F j, Y" }}
+                      </span>
+                    </div>
                   </div>
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="7" class="text-center py-4 text-muted">{% trans "No entries found." %}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                  <h6 class="card-subtitle mb-3 text-muted">
+                    <i class="bi bi-briefcase me-1"></i> <span class="text-decoration-line-through">{{ entry.project.name }}</span>
+                    <span class="mx-2">|</span>
+                    <i class="bi bi-person me-1"></i> {{ entry.user.username }}
+                  </h6>
+    
+                  <div class="d-flex gap-5 mt-3">
+                    <div>
+                      <small class="text-muted d-block">{% trans "Duration" %}</small>
+                      <span class="fw-semibold text-muted">
+                        {{ entry.actual_duration|format_duration }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="alert alert-secondary border-0 shadow-sm p-4 text-center">
+            {% trans "No archived entries." %}
+          </div>
+        </div>
+        {% endfor %}
       </div>
-    </div>
-  </div>
+    </div> <!-- /#archived -->
+  </div> <!-- /tab-content -->
 </div>
 
 <div class="modal fade" id="entry-modal" tabindex="-1" role="dialog" aria-labelledby="entry-modal-label"

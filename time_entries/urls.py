@@ -9,5 +9,7 @@ urlpatterns = [
     path('<int:pk>/', views.TimeEntryDetailView.as_view(), name='time_entry-detail'),
     path('<int:pk>/edit/', views.TimeEntryUpdateView.as_view(), name='time_entry-update'),
     path('<int:pk>/delete/', views.TimeEntryDeleteView.as_view(), name='time_entry-delete'),
+    path('<int:pk>/archive/', views.archive_time_entry, name='time_entry-archive'),
+    path('<int:pk>/unarchive/', views.unarchive_time_entry, name='time_entry-unarchive'),
     path('bulk-delete/', views.bulk_delete_entries, name='time_entry-bulk-delete'),
 ]

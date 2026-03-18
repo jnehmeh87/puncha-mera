@@ -142,6 +142,11 @@ def archive_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     project.archived = True
     project.save()
+    
+    # Cascade to Time Entries
+    from time_entries.models import TimeEntry
+    TimeEntry.objects.filter(project=project).update(archived=True)
+    
     return redirect('projects:project-list')
 
 @login_required
@@ -149,4 +154,9 @@ def unarchive_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     project.archived = False
     project.save()
+    
+    # Revert Cascade to Time Entries
+    from time_entries.models import TimeEntry
+    TimeEntry.objects.filter(project=project).update(archived=False)
+    
     return redirect('projects:project-list')

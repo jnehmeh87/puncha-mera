@@ -230,24 +230,54 @@ def archive_contact(request, pk):
     contact = get_object_or_404(Contact, pk=pk)
     contact.archived = True
     contact.save()
+    
+    # Cascade to Projects and Time Entries
+    from projects.models import Project
+    from time_entries.models import TimeEntry
+    Project.objects.filter(contact=contact).update(archived=True)
+    TimeEntry.objects.filter(project__contact=contact).update(archived=True)
+    
     return redirect('accounts:contact-list')
 
 def unarchive_contact(request, pk):
     contact = get_object_or_404(Contact, pk=pk)
     contact.archived = False
     contact.save()
+    
+    # Revert Cascade to Projects and Time Entries
+    from projects.models import Project
+    from time_entries.models import TimeEntry
+    Project.objects.filter(contact=contact).update(archived=False)
+    TimeEntry.objects.filter(project__contact=contact).update(archived=False)
+    
     return redirect('accounts:contact-list')
 
 def archive_organization(request, pk):
     organization = get_object_or_404(Organization, pk=pk)
     organization.archived = True
     organization.save()
+    
+    # Cascade to Contacts, Projects, and Time Entries
+    from projects.models import Project
+    from time_entries.models import TimeEntry
+    Contact.objects.filter(organization=organization).update(archived=True)
+    Project.objects.filter(organization=organization).update(archived=True)
+    TimeEntry.objects.filter(organization=organization).update(archived=True)
+    
     return redirect('accounts:organization-list')
 
 def unarchive_organization(request, pk):
     organization = get_object_or_404(Organization, pk=pk)
     organization.archived = False
     organization.save()
+    
+    # Revert Cascade to Contacts, Projects, and Time Entries
+    from projects.models import Project
+    from time_entries.models import TimeEntry
+    Contact.objects.filter(organization=organization).update(archived=False)
+    Project.objects.filter(organization=organization).update(archived=False)
+    TimeEntry.objects.filter(organization=organization).update(archived=False)
+    
     return redirect('accounts:organization-list')
 
 class ProfileAndSettingsView(LoginRequiredMixin, TemplateView):
