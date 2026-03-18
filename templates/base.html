@@ -295,6 +295,65 @@
             }
         });
     </script>
+    <script>
+        // Global widget for TimerSession
+        {% if user.is_authenticated %}
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for drafts and active timers
+            fetch("/timer/api/session/active/")
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success' && data.sessions.length > 0) {
+                    let hasDrafts = false;
+                    let activeSession = null;
+                    
+                    data.sessions.forEach(s => {
+                        if(s.status === 'DRAFT') hasDrafts = true;
+                        if(s.status === 'RUNNING' || s.status === 'PAUSED') activeSession = s;
+                    });
+                    
+                    // Show notification for drafts
+                    if (hasDrafts && !sessionStorage.getItem('draftNotified')) {
+                        if(typeof showToast === 'function') {
+                            showToast("You have unfinished timer drafts waiting to be saved.", "warning");
+                            sessionStorage.setItem('draftNotified', 'true');
+                        }
+                    }
+                    
+                    // Show dock widget if active and not on timer page
+                    if (activeSession && window.location.pathname.indexOf("{% url 'time_stamp:timer' %}") === -1) {
+                        const widgetHtml = `
+                        <div id="global-timer-widget" class="position-fixed bottom-0 start-0 m-4 p-3 bg-white shadow-lg rounded-4 border d-flex align-items-center gap-3 z-3" style="cursor: pointer;" onclick="window.location.href='{% url 'time_stamp:timer' %}'">
+                            <i class="bi bi-stopwatch fs-3 text-primary heartbeat"></i>
+                            <div>
+                                <h6 class="mb-0 fw-bold pb-1 text-dark">Active Timer</h6>
+                                <small class="text-muted" id="global-timer-display">
+                                    ${activeSession.status === 'PAUSED' ? 'Paused' : 'Running...'}
+                                </small>
+                            </div>
+                        </div>`;
+                        document.body.insertAdjacentHTML('beforeend', widgetHtml);
+                        
+                        if (activeSession.status === 'RUNNING') {
+                            const globalDisplay = document.getElementById('global-timer-display');
+                            const start = new Date(activeSession.start_time);
+                            setInterval(() => {
+                                const now = new Date();
+                                const elapsed = (now - start) / 1000;
+                                const net = Math.max(0, elapsed - activeSession.accumulated_time);
+                                
+                                const h = Math.floor(net / 3600).toString().padStart(2, '0');
+                                const m = Math.floor((net % 3600) / 60).toString().padStart(2, '0');
+                                const s = Math.floor(net % 60).toString().padStart(2, '0');
+                                globalDisplay.textContent = `${h}:${m}:${s}`;
+                            }, 1000);
+                        }
+                    }
+                }
+            });
+        });
+        {% endif %}
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 

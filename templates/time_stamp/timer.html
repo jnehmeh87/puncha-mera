@@ -2,101 +2,320 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load time_filters %}
+
+{% block extra_js %}
+<style>
+    /* 2026 Dynamic UI Enhancements */
+    .glass-panel-2026 {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 2rem;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    [data-theme="dark"] .glass-panel-2026 {
+        background: rgba(10, 10, 15, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .timer-display-2026 {
+        font-family: 'Poppins', system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 5.5rem;
+        letter-spacing: -2px;
+        font-feature-settings: "tnum" 1;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: all 0.2s;
+    }
+
+    .btn-2026 {
+        border-radius: 50rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-2026:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 24px color-mix(in srgb, var(--primary-color) 40%, transparent);
+    }
+    
+    /* Unified Dropdown Form Elements */
+    #project-org-inputs label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        font-family: 'Inter', sans-serif;
+    }
+    #project-org-inputs .form-select {
+        font-size: 1.1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;
+        border: 1px solid rgba(0,0,0,0.1);
+        background-color: rgba(255,255,255,0.7);
+    }
+    #project-org-inputs .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(230, 57, 114, 0.25);
+        border-color: var(--primary-color);
+    }
+
+    .activity-log-item {
+        border-left: 3px solid var(--primary-color);
+        padding-left: 1rem;
+        margin-bottom: 0.8rem;
+        background: linear-gradient(90deg, color-mix(in srgb, var(--primary-color) 10%, transparent), transparent);
+        border-radius: 0 0.5rem 0.5rem 0;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6 text-center">
-        <h1 class="mb-4">Puncha Mera</h1>
-        <div id="timer-display" class="display-1 mb-4">00:00:00</div>
-        <div class="mb-4">
-            <button id="start-btn" class="btn btn-primary btn-lg">Puncha In</button>
-            <button id="pause-btn" class="btn btn-secondary btn-lg" style="display:none;">Pause</button>
-            <button id="stop-btn" class="btn btn-danger btn-lg" style="display:none;">Puncha Out</button>
+    <div class="col-md-7 text-center mt-3">
+        
+        <h1 class="mb-2 fw-bolder" style="font-size: 3rem;">Puncha Mera</h1>
+        <p class="text-muted mb-4">Ultra-precision background time tracking.</p>
+
+        <div id="timer-display" class="timer-display-2026 mb-4">00:00:00</div>
+        
+        <!-- Global Action Controls -->
+        <div class="mb-5 d-flex justify-content-center gap-3">
+            <button type="button" id="main-start-btn" class="btn btn-primary btn-lg px-5 py-3 btn-2026 shadow-lg" data-bs-toggle="modal" data-bs-target="#startTimerModal">
+                <i class="bi bi-play-circle-fill me-2"></i> Puncha Mera
+            </button>
+            <button type="button" id="pause-btn" class="btn btn-warning btn-lg px-5 py-3 btn-2026 shadow text-white" style="display:none;">
+                <i class="bi bi-pause-circle-fill me-2"></i> Pause
+            </button>
+            <button type="button" id="stop-btn" class="btn btn-danger btn-lg px-5 py-3 btn-2026 shadow" style="display:none;">
+                <i class="bi bi-stop-circle-fill me-2"></i> Punch Out
+            </button>
         </div>
-        <div id="entry-form" style="display:none;" class="card p-4">
-            <form id="time-entry-form" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <input type="hidden" name="pause_duration" id="id_pause_duration">
-                <button type="submit" class="btn btn-primary mt-3">Save</button>
-                <button type="button" id="cancel-btn" class="btn btn-secondary mt-3">Cancel</button>
-            </form>
-        </div>
+
+        <form id="time-entry-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Start Mission Modal -->
+            <div class="modal fade" id="startTimerModal" tabindex="-1" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content glass-panel-2026 border-0 shadow-lg p-2">
+                        <div class="modal-header border-0 pb-0">
+                            <h4 class="modal-title fw-bold" style="color: var(--primary-color);">
+                                <i class="bi bi-rocket-takeoff me-2"></i>Mission Details
+                            </h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body py-4 text-start">
+                            <div id="project-org-inputs">
+                                {% if user.is_staff or user.is_superuser %}
+                                <div class="form-group mb-4">
+                                    <label for="id_assigned_user" class="requiredField">Assign to User (Admin Access)<span class="asteriskField">*</span></label>
+                                    <select id="id_assigned_user" class="form-select">
+                                        <option value="">-- Self Assignment --</option>
+                                        {% for u in all_users %}
+                                            <option value="{{ u.id }}">{{ u.get_full_name|default:u.username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="mb-4">
+                                    {{ form.organization|as_crispy_field }}
+                                </div>
+                                
+                                <!-- Client Optional Filter -->
+                                <div class="mb-4">
+                                    <label for="id_contact" class="form-label requiredField">Client Contact (Optional)<span class="asteriskField">*</span></label>
+                                    <select id="id_contact" class="form-select">
+                                        <option value="">-- All Clients --</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    {{ form.project|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 pt-0">
+                            <button type="button" id="modal-start-btn" class="btn btn-primary btn-lg w-100 btn-2026 shadow-lg disabled" disabled>
+                                <i class="bi bi-play-circle-fill me-2"></i> Puncha Mera
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Information & Logs -->
+            <div id="active-timer-info" style="display:none;" class="mb-5">
+                <div class="row px-1">
+                    <div class="col-md-6 mb-4">
+                        <div class="glass-panel-2026 p-4 h-100 text-start d-flex flex-column justify-content-center position-relative overflow-hidden">
+                            <div style="position: absolute; top:0; left:0; height:100%; width: 4px; background: var(--primary-color); opacity: 0.8;"></div>
+                            <h6 class="fw-bold border-bottom pb-2 mb-3 text-muted">
+                                <i class="bi bi-rocket-takeoff me-2"></i>Mission Focus
+                            </h6>
+                            <p class="mb-1 small text-muted text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Project</p>
+                            <p class="fw-bold mb-3 fs-5 text-theme-primary" id="display-project-name" style="line-height:1.2;">-</p>
+                            
+                            <p class="mb-1 small text-muted text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Organization</p>
+                            <p class="fw-bold mb-0 text-dark" id="display-org-name">-</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="glass-panel-2026 p-4 h-100 d-flex flex-column justify-content-center align-items-center">
+                            <h6 class="fw-bold border-bottom pb-2 mb-3 w-100 text-muted text-start">
+                                <i class="bi bi-cash-coin me-2"></i>Live Earnings
+                            </h6>
+                            <div class="h1 fw-bolder text-success mb-0 mt-3" id="earnings-display">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row px-1">
+                    <div class="col-12 mb-3">
+                        <div class="glass-panel-2026 p-4 text-start" style="max-height: 250px; overflow-y: auto;">
+                            <h6 class="fw-bold border-bottom pb-2 mb-3 text-muted">
+                                <i class="bi bi-activity me-2"></i>Event Logs
+                            </h6>
+                            <ul id="activity-log-list" class="list-unstyled mb-0 small"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finalize Entry Modal -->
+            <div class="modal fade" id="finalizeTimerModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content glass-panel-2026 border-0 shadow-lg p-3">
+                        <div class="modal-header border-0 pb-0">
+                            <h4 class="modal-title fw-bold" style="color: var(--primary-color);">Finalize Entry</h4>
+                        </div>
+                        <div class="modal-body py-4 text-start">
+                            <div class="alert alert-warning border-0 shadow-sm mb-4" style="border-radius: 1rem;">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i> You have an unfinished timer draft. Please save or discard it before starting a new mission.
+                            </div>
+                            
+                            <!-- Detailed Duration Display -->
+                            <div class="glass-panel-2026 p-4 mb-4 rounded-4" style="background: rgba(var(--bs-primary-rgb), 0.03); border: 1px solid rgba(var(--bs-primary-rgb), 0.1);">
+                                <h5 class="fw-bold fs-6 text-uppercase text-muted mb-3 pb-3 border-bottom" style="letter-spacing:1px;"><i class="bi bi-clipboard-data me-2"></i>Mission Debrief</h5>
+                                <div class="row text-center mb-4 mt-3">
+                                    <div class="col-6 mb-3 border-end">
+                                        <span class="d-block text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">Start Time</span>
+                                        <span class="fs-4 fw-bolder" id="modal-report-start">-</span>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <span class="d-block text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">End Time</span>
+                                        <span class="fs-4 fw-bolder" id="modal-report-end">-</span>
+                                    </div>
+                                </div>
+                                <div class="row text-center">
+                                    <div class="col-4 border-end">
+                                        <span class="d-block text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">Worked</span>
+                                        <span class="fs-5 fw-bolder text-success" id="modal-report-worked">-</span>
+                                    </div>
+                                    <div class="col-4 border-end">
+                                        <span class="d-block text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">Paused</span>
+                                        <span class="fs-5 fw-bolder text-warning" id="modal-report-paused">-</span>
+                                    </div>
+                                    <div class="col-4">
+                                        <span class="d-block text-muted small fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px;">Total Span</span>
+                                        <span class="fs-5 fw-bolder" id="modal-report-total">-</span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-4 border-top text-center">
+                                    <span class="d-block text-muted small fw-bold text-uppercase mb-2" style="letter-spacing: 0.5px;">Total Entry Earning</span>
+                                    <span class="fs-1 fw-bolder text-primary" id="modal-report-earnings" style="letter-spacing: -1px;">-</span>
+                                </div>
+                            </div>
+
+                            {{ form.title|as_crispy_field }}
+                            <div class="row">
+                                <div class="col-md-12 mb-3">{{ form.date|as_crispy_field }}</div>
+                                <div class="col-6" style="display:none;">{{ form.start_time|as_crispy_field }}</div>
+                                <div class="col-6" style="display:none;">{{ form.end_time|as_crispy_field }}</div>
+                            </div>
+                            {{ form.description|as_crispy_field }}
+                            {{ form.notes|as_crispy_field }}
+                            <div class="mt-4">
+                                {{ form.image|as_crispy_field }}
+                            </div>
+                            
+                            <input type="hidden" name="pause_duration" id="id_pause_duration">
+                            <input type="hidden" name="session_id" id="id_session_id">
+                        </div>
+                        <div class="modal-footer border-0 pb-0">
+                            <button type="button" id="cancel-btn" class="btn btn-light btn-lg flex-grow-1 rounded-pill fw-bold text-muted shadow-sm">Discard Draft</button>
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1 btn-2026 shadow-lg">Save Record</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
-<div class="row mt-5">
-    <div class="col">
-        <div class="d-flex justify-content-between align-items-center mb-3 mt-5">
-            <h2 class="h4 fw-bold mb-0">Latest Time Entries</h2>
-        </div>
+<!-- History Log -->
+<div class="row mt-5 pt-5 border-top">
+    <div class="col-md-10 mx-auto">
+        <h3 class="fw-bold mb-4 opacity-75">Recent Chronicles</h3>
         <div id="cardView" class="row">
             {% for entry in time_entries %}
-            <div class="col-12 mb-3">
-                <div class="card shadow-sm border-0"
-                    style="border-radius: 1rem; transition: transform 0.2s, box-shadow 0.2s;">
-                    <div class="row g-0">
-                        <div class="col-12">
-                            <div class="card-body p-4">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <h5 class="card-title fw-bold mb-0">{{ entry.title }}</h5>
-                                    </div>
-                                    <div class="d-flex align-items-center gap-3">
-                                        <span class="badge fs-6 rounded-pill px-3 py-2 text-theme text-center"
-                                            style="background-color: #6c757d;">
-                                            {{ entry.date|date:"F j, Y" }}
-                                        </span>
-                                    </div>
-                                </div>
-                                <h6 class="card-subtitle mb-3 text-muted">
-                                    <i class="bi bi-briefcase me-1"></i> {{ entry.project.name|default:entry.project }}
-                                    <span class="mx-2">|</span>
-                                    <i class="bi bi-person me-1"></i> {{ entry.user.username }}
-                                </h6>
+            <div class="col-md-6 mb-4">
+                <div class="glass-panel-2026 p-4 h-100 position-relative overflow-hidden">
+                    <!-- Subtle accent bar -->
+                    <div style="position: absolute; top:0; left:0; height:100%; width: 6px; background: var(--primary-color); opacity: 0.8;"></div>
+                    
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="fw-bold mb-0 text-truncate pe-3">{{ entry.title|default:"Unnamed Mission" }}</h5>
+                        <span class="badge rounded-pill bg-secondary bg-opacity-25 text-body fw-medium py-2 px-3">
+                            {{ entry.date|date:"M j, Y" }}
+                        </span>
+                    </div>
+                    
+                    <div class="text-muted small mb-3">
+                        <i class="bi bi-briefcase-fill me-1 opacity-75"></i> 
+                        <span class="me-3">{{ entry.project.name|default:entry.project }}</span>
+                        <i class="bi bi-person-fill me-1 opacity-75"></i> 
+                        <span>{{ entry.user.username }}</span>
+                    </div>
 
-                                <div class="d-flex gap-5 mt-3">
-                                    <div>
-                                        <small class="text-muted d-block">{% trans "Time" %}</small>
-                                        <span class="fw-semibold fs-5">
-                                            <span>{{ entry.start_time|time:"H:i"|default:"-" }}</span>
-                                            <span>-</span>
-                                            <span>{{ entry.end_time|time:"H:i"|default:"-" }}</span>
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block">{% trans "Pause" %}</small>
-                                        <span class="fw-semibold fs-5">
-                                            {{ entry.pause_duration|format_duration }}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block">{% trans "Duration" %}</small>
-                                        <span class="fw-semibold fs-5">
-                                            {% if entry.actual_duration %}
-                                            {{ entry.actual_duration|format_duration }}
-                                            {% else %}
-                                            {{ entry.duration|format_duration }}
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {% if entry.description %}
-                                <div class="mt-4 pt-3 border-top">
-                                    <p class="mb-2"><strong class="text-muted">{% trans "Description:" %}</strong>
-                                        {{ entry.description|truncatechars:100 }}
-                                    </p>
-                                </div>
-                                {% endif %}
-                            </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <div>
+                            <span class="d-block text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Window</span>
+                            <span class="fw-semibold">
+                                {{ entry.start_time|time:"H:i"|default:"-" }} - {{ entry.end_time|time:"H:i"|default:"-" }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="d-block text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Breaks</span>
+                            <span class="fw-semibold">{{ entry.pause_duration|format_duration }}</span>
+                        </div>
+                        <div class="text-end">
+                            <span class="d-block text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Net Duration</span>
+                            <span class="fw-bold text-primary fs-5" style="line-height:1;">
+                                {% if entry.actual_duration %}{{ entry.actual_duration|format_duration }}{% else %}{{ entry.duration|format_duration }}{% endif %}
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
             {% empty %}
             <div class="col-12">
-                <div class="alert alert-info border-0 shadow-sm p-4 text-center" style="border-radius: 1rem;">
-                    {% trans "No entries found for today." %}
+                <div class="glass-panel-2026 p-5 text-center text-muted">
+                    <i class="bi bi-wind fs-1 mb-3 opacity-50 d-block"></i>
+                    No entries tracked yet. Start your journey above.
                 </div>
             </div>
             {% endfor %}
@@ -104,53 +323,421 @@
     </div>
 </div>
 
-<!-- Cancel Confirmation Modal -->
-<div class="modal fade" id="cancelTimerModal" tabindex="-1" aria-labelledby="cancelTimerModalLabel" aria-hidden="true">
+<!-- Discard Modal -->
+<div class="modal fade" id="cancelTimerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
+        <div class="glass-panel-2026 modal-content border-0 shadow-lg p-2">
             <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold" id="cancelTimerModalLabel">
-                    <i class="bi bi-question-circle text-primary me-2"></i> {% trans "Cancel Entry" %}
-                </h5>
+                <h4 class="modal-title fw-bold text-danger">Discard Session?</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body py-4">
-                <p class="mb-0 fs-5">
-                    {% trans "Are you sure you want to cancel this time entry?" %}
-                </p>
-                <p class="text-muted small mt-2 mb-0">{% trans "Your tracked time will be lost." %}</p>
+                <p class="fs-5 mb-1">Are you sure you want to completely erase this session draft?</p>
+                <p class="text-muted small">This action cannot be undone and recorded time will vanish.</p>
             </div>
             <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
-                    {% trans "Go Back" %}
-                </button>
-                <button type="button" class="btn btn-danger rounded-pill px-4" id="confirmCancelTimerBtn">
-                    {% trans "Cancel Entry" %}
-                </button>
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Return to Draft</button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 shadow" id="confirmCancelTimerBtn">Erase Data</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    let timer;
-    let startTime;
-    let elapsedTime = 0;
-    let paused = true;
-    let totalPausedTime = 0;
-    let pauseStartTime;
-
-    const timerDisplay = document.getElementById('timer-display');
-    const startBtn = document.getElementById('start-btn');
+    let timerInterval = null;
+    let sessionId = null;
+    let isRunning = false;
+    let serverStartTime = null;
+    let accumulatedPauseSeconds = 0;
+    let hourlyRate = 0.0;
+    
+    // UI Elements
+    const formProject = document.getElementById('id_project');
+    const formOrg = document.getElementById('id_organization');
+    const formContact = document.getElementById('id_contact');
+    const assignedUserEl = document.getElementById('id_assigned_user');
+    
+    const mainStartBtn = document.getElementById('main-start-btn');
+    const modalStartBtn = document.getElementById('modal-start-btn');
     const pauseBtn = document.getElementById('pause-btn');
     const stopBtn = document.getElementById('stop-btn');
-    const entryForm = document.getElementById('entry-form');
+    
+    const activeTimerInfo = document.getElementById('active-timer-info');
+    const timerDisplay = document.getElementById('timer-display');
+    const earningsDisplay = document.getElementById('earnings-display');
+    const activityLogList = document.getElementById('activity-log-list');
     const timeEntryForm = document.getElementById('time-entry-form');
-    const pauseDurationInput = document.getElementById('id_pause_duration');
     const cancelBtn = document.getElementById('cancel-btn');
+    
+    let startModalInstance = null;
+    let finalizeModalInstance = null;
+    let projectCurrency = 'USD';
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        startModalInstance = new bootstrap.Modal(document.getElementById('startTimerModal'));
+        finalizeModalInstance = new bootstrap.Modal(document.getElementById('finalizeTimerModal'));
+    });
+
+    function updateActiveInfoDisplay() {
+        if(formProject && formProject.selectedIndex >= 0 && formProject.value) {
+            document.getElementById('display-project-name').textContent = formProject.options[formProject.selectedIndex].text;
+        } else {
+            document.getElementById('display-project-name').textContent = 'N/A';
+        }
+        if(formOrg && formOrg.selectedIndex > 0 && formOrg.value) {
+            document.getElementById('display-org-name').textContent = formOrg.options[formOrg.selectedIndex].text;
+        } else {
+            document.getElementById('display-org-name').textContent = 'N/A';
+        }
+    }
+
+    function checkStartAvailability() {
+        if (formProject && formProject.value && formOrg && formOrg.value) {
+            modalStartBtn.disabled = false;
+            modalStartBtn.classList.remove('disabled');
+        } else {
+            modalStartBtn.disabled = true;
+            modalStartBtn.classList.add('disabled');
+        }
+    }
+    
+    async function fetchOptions(updateOrgs=false) {
+        const userId = assignedUserEl ? assignedUserEl.value : '';
+        const orgId = formOrg ? formOrg.value : '';
+        const contactId = formContact ? formContact.value : '';
+        
+        let url = "{% url 'time_stamp:get_timer_options' %}?";
+        if (userId) url += `user_id=${userId}&`;
+        if (orgId) url += `org_id=${orgId}&`;
+        if (contactId) url += `contact_id=${contactId}&`;
+        url += `_t=${new Date().getTime()}`; // Completely bypass browser caching
+        
+        try {
+            const res = await fetch(url, { cache: 'no-store' });
+            const data = await res.json();
+            
+            if (updateOrgs && formOrg) {
+                const currentOrg = formOrg.value;
+                formOrg.innerHTML = '<option value="">---------</option>';
+                let validOrg = false;
+                data.organizations.forEach(o => {
+                    const opt = new Option(o.name, o.id);
+                    if (o.id.toString() === currentOrg) {
+                        opt.selected = true;
+                        validOrg = true;
+                    }
+                    formOrg.add(opt);
+                });
+                if (!validOrg && data.organizations.length > 0) {
+                    formOrg.value = data.organizations[0].id;
+                    setTimeout(() => fetchOptions(false), 20); // Refetch cascade
+                    return;
+                }
+            }
+            
+            if (formContact) {
+                const currentContact = formContact.value;
+                formContact.innerHTML = '<option value="">-- All Clients --</option>';
+                let validContact = false;
+                data.contacts.forEach(c => {
+                    const opt = new Option(c.name, c.id);
+                    if (c.id.toString() === currentContact) {
+                        opt.selected = true;
+                        validContact = true;
+                    }
+                    formContact.add(opt);
+                });
+                if (!validContact && data.contacts.length > 0) {
+                    formContact.value = data.contacts[0].id;
+                    setTimeout(() => fetchOptions(false), 20); // Refetch cascade
+                    return;
+                }
+            }
+            
+            if (formProject) {
+                const currentProj = formProject.value;
+                formProject.innerHTML = '<option value="">---------</option>';
+                let validProj = false;
+                data.projects.forEach(p => {
+                    const opt = new Option(p.name, p.id);
+                    if (p.id.toString() === currentProj) {
+                        opt.selected = true;
+                        validProj = true;
+                    }
+                    formProject.add(opt);
+                });
+                if (!validProj && data.projects.length > 0) {
+                    formProject.value = data.projects[0].id;
+                }
+                checkStartAvailability();
+            }
+        } catch(e) { console.error("Fetch Options Error:", e); }
+    }
+
+    if(assignedUserEl) assignedUserEl.addEventListener('change', () => fetchOptions(true));
+    if(formOrg) formOrg.addEventListener('change', () => {
+        if(formContact) formContact.value = '';
+        fetchOptions(false);
+        checkStartAvailability();
+    });
+    if(formContact) formContact.addEventListener('change', () => {
+        fetchOptions(false);
+    });
+    if(formProject) formProject.addEventListener('change', checkStartAvailability);
+
+
+
+    function formatTime(totalSeconds) {
+        totalSeconds = Math.max(0, Math.floor(totalSeconds));
+        const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+        const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+    }
+
+    function renderActivityLog(logArray) {
+        activityLogList.innerHTML = '';
+        logArray.forEach(entry => {
+            const timeStr = new Date(entry.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const li = document.createElement('li');
+            li.className = "activity-log-item";
+            li.innerHTML = `<strong style="color:var(--primary-color);">${entry.action}</strong> <span class="ms-2 opacity-75">${timeStr}</span>`;
+            activityLogList.appendChild(li);
+        });
+        activityLogList.parentElement.scrollTop = activityLogList.parentElement.scrollHeight;
+    }
+
+    function updateTimer() {
+        if (!isRunning || !serverStartTime) return;
+        
+        const now = new Date();
+        const start = new Date(serverStartTime);
+        const elapsedSeconds = (now - start) / 1000;
+        const netTime = Math.max(0, elapsedSeconds - accumulatedPauseSeconds);
+        
+        timerDisplay.textContent = formatTime(netTime);
+        const earnings = (netTime / 3600) * hourlyRate;
+        earningsDisplay.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: projectCurrency }).format(earnings);
+    }
+
+    function setUIMode(mode) {
+        if (mode === 'IDLE') {
+            mainStartBtn.style.display = 'inline-block';
+            pauseBtn.style.display = 'none';
+            stopBtn.style.display = 'none';
+            activeTimerInfo.style.display = 'none';
+            timerDisplay.textContent = '00:00:00';
+            earningsDisplay.textContent = '$0.00';
+        } else if (mode === 'RUNNING') {
+            mainStartBtn.style.display = 'none';
+            pauseBtn.style.display = 'inline-block';
+            pauseBtn.innerHTML = '<i class="bi bi-pause-circle-fill me-2"></i> Pause';
+            pauseBtn.classList.replace('btn-success', 'btn-warning');
+            stopBtn.style.display = 'inline-block';
+            activeTimerInfo.style.display = 'block';
+            if(startModalInstance) startModalInstance.hide();
+            if(finalizeModalInstance) finalizeModalInstance.hide();
+        } else if (mode === 'PAUSED') {
+            mainStartBtn.style.display = 'none';
+            pauseBtn.style.display = 'inline-block';
+            pauseBtn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Puncha Mera';
+            pauseBtn.classList.replace('btn-warning', 'btn-success');
+            stopBtn.style.display = 'inline-block';
+            activeTimerInfo.style.display = 'block';
+            if(startModalInstance) startModalInstance.hide();
+            if(finalizeModalInstance) finalizeModalInstance.hide();
+        } else if (mode === 'DRAFT') {
+            mainStartBtn.style.display = 'none';
+            pauseBtn.style.display = 'none';
+            stopBtn.style.display = 'none';
+            activeTimerInfo.style.display = 'none';
+            if(startModalInstance) startModalInstance.hide();
+            if(finalizeModalInstance) finalizeModalInstance.show();
+        }
+    }
+
+    function getCsrfToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    modalStartBtn.addEventListener('click', async () => {
+        // Prevent double click
+        modalStartBtn.disabled = true;
+        
+        const res = await fetch("{% url 'time_stamp:start_timer_session' %}", {
+            method: 'POST',
+            headers: {'X-CSRFToken': getCsrfToken(), 'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                project_id: formProject ? formProject.value : null,
+                organization_id: formOrg ? formOrg.value : null,
+                assigned_user_id: assignedUserEl ? assignedUserEl.value : null
+            })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+            await fetchActiveSessions();
+            if(startModalInstance) startModalInstance.hide();
+            modalStartBtn.disabled = false;
+        } else {
+            modalStartBtn.disabled = false;
+            if(typeof showToast === 'function') showToast(data.message, 'danger');
+        }
+    });
+
+    pauseBtn.addEventListener('click', async () => {
+        pauseBtn.disabled = true;
+        if (isRunning) {
+            const res = await fetch(`/timer/api/session/${sessionId}/pause/`, {
+                method: 'POST', headers: {'X-CSRFToken': getCsrfToken()}
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                isRunning = false;
+                clearInterval(timerInterval);
+                setUIMode('PAUSED');
+                fetchActiveSessions();
+            }
+        } else {
+            const res = await fetch(`/timer/api/session/${sessionId}/resume/`, {
+                method: 'POST', headers: {'X-CSRFToken': getCsrfToken()}
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                isRunning = true;
+                accumulatedPauseSeconds = data.accumulated_time;
+                setUIMode('RUNNING');
+                // fetchActiveSessions will set the interval and start time accurately
+                fetchActiveSessions();
+            }
+        }
+        pauseBtn.disabled = false;
+    });
+
+    stopBtn.addEventListener('click', async () => {
+        stopBtn.disabled = true;
+        const res = await fetch(`/timer/api/session/${sessionId}/stop/`, {
+            method: 'POST', headers: {'X-CSRFToken': getCsrfToken()}
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+            isRunning = false;
+            if (timerInterval) clearInterval(timerInterval);
+            
+            document.getElementById('id_pause_duration').value = data.accumulated_pause_seconds;
+            document.getElementById('id_session_id').value = sessionId;
+            
+            const startDate = new Date(data.start_time);
+            const endDate = new Date(data.end_time);
+            
+            if(document.getElementById('id_date')) {
+                document.getElementById('id_date').value = startDate.toISOString().slice(0, 10);
+            }
+            
+            const pad = num => num.toString().padStart(2, '0');
+            const formatInputTime = d => `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+            
+            if(document.getElementById('id_start_time')) document.getElementById('id_start_time').value = formatInputTime(startDate);
+            if(document.getElementById('id_end_time')) document.getElementById('id_end_time').value = formatInputTime(endDate);
+            
+            document.getElementById('modal-report-start').textContent = formatInputTime(startDate);
+            document.getElementById('modal-report-end').textContent = formatInputTime(endDate);
+            
+            const totalSpanSecs = (endDate - startDate) / 1000;
+            document.getElementById('modal-report-total').textContent = formatTime(totalSpanSecs);
+            
+            const workedSecs = Math.max(0, totalSpanSecs - data.accumulated_pause_seconds);
+            document.getElementById('modal-report-worked').textContent = formatTime(workedSecs);
+            document.getElementById('modal-report-paused').textContent = formatTime(data.accumulated_pause_seconds);
+            
+            const earned = (workedSecs / 3600) * hourlyRate;
+            document.getElementById('modal-report-earnings').textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: projectCurrency }).format(earned);
+            
+            setUIMode('DRAFT');
+        }
+        stopBtn.disabled = false;
+    });
+
+    async function fetchActiveSessions() {
+        const res = await fetch("{% url 'time_stamp:get_active_sessions' %}");
+        const data = await res.json();
+        if (data.status === 'success' && data.sessions.length > 0) {
+            const session = data.sessions[0];
+            sessionId = session.id;
+            hourlyRate = session.hourly_rate;
+            accumulatedPauseSeconds = session.accumulated_time;
+            projectCurrency = session.currency || 'USD';
+            
+            if(formOrg && session.organization_id) formOrg.value = session.organization_id;
+            if(formProject) formProject.value = session.project_id;
+            
+            if (session.status === 'RUNNING' || session.status === 'PAUSED') {
+                renderActivityLog(session.activity_log);
+                updateActiveInfoDisplay();
+            }
+            
+            if (session.status === 'RUNNING') {
+                serverStartTime = session.start_time;
+                isRunning = true;
+                setUIMode('RUNNING');
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 1000);
+                updateTimer();
+            } else if (session.status === 'PAUSED') {
+                serverStartTime = session.start_time;
+                isRunning = false;
+                
+                const start = new Date(serverStartTime);
+                const pauseT = new Date(session.pause_time);
+                const elapsedSeconds = (pauseT - start) / 1000;
+                const netTime = Math.max(0, elapsedSeconds - accumulatedPauseSeconds);
+                timerDisplay.textContent = formatTime(netTime);
+                
+                const earnings = (netTime / 3600) * hourlyRate;
+                earningsDisplay.textContent = `$${earnings.toFixed(2)}`;
+                
+                setUIMode('PAUSED');
+            } else if (session.status === 'DRAFT') {
+                document.getElementById('id_session_id').value = sessionId;
+                document.getElementById('id_pause_duration').value = session.accumulated_time;
+                
+                if (session.start_time && session.end_time) {
+                    const startDate = new Date(session.start_time);
+                    const endDate = new Date(session.end_time);
+                    
+                    if(document.getElementById('id_date')) {
+                        document.getElementById('id_date').value = startDate.toISOString().slice(0, 10);
+                    }
+                    
+                    const pad = num => num.toString().padStart(2, '0');
+                    const formatInputTime = d => `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+                    
+                    if(document.getElementById('id_start_time')) document.getElementById('id_start_time').value = formatInputTime(startDate);
+                    if(document.getElementById('id_end_time')) document.getElementById('id_end_time').value = formatInputTime(endDate);
+                    
+                    document.getElementById('modal-report-start').textContent = formatInputTime(startDate);
+                    document.getElementById('modal-report-end').textContent = formatInputTime(endDate);
+                    
+                    const totalSpanSecs = (endDate - startDate) / 1000;
+                    document.getElementById('modal-report-total').textContent = formatTime(totalSpanSecs);
+                    
+                    const workedSecs = Math.max(0, totalSpanSecs - session.accumulated_time);
+                    document.getElementById('modal-report-worked').textContent = formatTime(workedSecs);
+                    document.getElementById('modal-report-paused').textContent = formatTime(session.accumulated_time);
+                    
+                    const earned = (workedSecs / 3600) * hourlyRate;
+                    document.getElementById('modal-report-earnings').textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: projectCurrency }).format(earned);
+                }
+                setUIMode('DRAFT');
+            }
+        } else {
+            // First load idle with no sessions? Pop up the mission selection instantly.
+            setTimeout(() => {
+                if(startModalInstance) startModalInstance.show();
+            }, 500);
+        }
+    }
 
     let cancelModalInstance = null;
-
     cancelBtn.addEventListener('click', () => {
         if (!cancelModalInstance) {
             cancelModalInstance = new bootstrap.Modal(document.getElementById('cancelTimerModal'));
@@ -158,95 +745,48 @@
         cancelModalInstance.show();
     });
 
-    document.getElementById('confirmCancelTimerBtn').addEventListener('click', () => {
+    document.getElementById('confirmCancelTimerBtn').addEventListener('click', async () => {
+        if (sessionId) {
+            const btn = document.getElementById('confirmCancelTimerBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'Erasing...';
+            try {
+                await fetch(`/timer/api/session/${sessionId}/delete/`, {
+                    method: 'POST', headers: {'X-CSRFToken': getCsrfToken()}
+                });
+            } catch(e) {}
+        }
         cancelModalInstance.hide();
-        entryForm.style.display = 'none';
-        elapsedTime = 0;
-        totalPausedTime = 0;
-        timerDisplay.textContent = '00:00:00';
-        startBtn.style.display = 'inline-block';
-        pauseBtn.style.display = 'none';
-        stopBtn.style.display = 'none';
-    });
-
-    function formatTime(ms) {
-        const totalSeconds = Math.floor(ms / 1000);
-        const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-        const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-        const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-        return `${hours}:${minutes}:${seconds}`;
-    }
-
-    function updateTimer() {
-        const now = Date.now();
-        elapsedTime = now - startTime;
-        timerDisplay.textContent = formatTime(elapsedTime);
-    }
-
-    startBtn.addEventListener('click', () => {
-        if (paused) {
-            paused = false;
-            startTime = Date.now() - elapsedTime;
-            timer = setInterval(updateTimer, 1000);
-            startBtn.style.display = 'none';
-            pauseBtn.style.display = 'inline-block';
-            stopBtn.style.display = 'inline-block';
-            pauseBtn.textContent = 'Pause';
-        }
-    });
-
-    pauseBtn.addEventListener('click', () => {
-        if (!paused) {
-            paused = true;
-            clearInterval(timer);
-            pauseStartTime = Date.now();
-            pauseBtn.textContent = 'Puncha Mera';
-        } else {
-            paused = false;
-            totalPausedTime += Date.now() - pauseStartTime;
-            startTime = Date.now() - elapsedTime;
-            timer = setInterval(updateTimer, 1000);
-            pauseBtn.textContent = 'Pause';
-        }
-    });
-
-    stopBtn.addEventListener('click', () => {
-        paused = true;
-        clearInterval(timer);
-        entryForm.style.display = 'block';
-        pauseDurationInput.value = totalPausedTime / 1000; // Convert to seconds
-
-        const now = new Date();
-        const then = new Date(now.getTime() - elapsedTime);
-
-        const date = then.toISOString().slice(0, 10);
-        const startTimeStr = then.toTimeString().slice(0, 8);
-        const endTimeStr = now.toTimeString().slice(0, 8);
-
-        document.getElementById('id_date').value = date;
-        document.getElementById('id_start_time').value = startTimeStr;
-        document.getElementById('id_end_time').value = endTimeStr;
+        location.reload();
     });
 
     timeEntryForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        
+        if (formProject) formProject.disabled = false;
+        if (formOrg) formOrg.disabled = false;
+        if (assignedUserEl) assignedUserEl.disabled = false;
+        
         const formData = new FormData(timeEntryForm);
         fetch("{% url 'time_stamp:timer' %}", {
             method: 'POST',
             body: formData
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showToast('Time entry saved!', 'success');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
-                } else {
-                    showToast('Error saving time entry', 'danger');
-                }
-            });
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if(typeof showToast === 'function') showToast('Mission Success: Entry Saved', 'success');
+                setTimeout(() => { location.reload(); }, 1000);
+            } else {
+                if(typeof showToast === 'function') showToast('Error securing entry', 'danger');
+            }
+        });
     });
+
+    // Init
+    checkStartAvailability();
+    fetchOptions(true); // Loads dynamic filter states immediately
+    fetchActiveSessions();
 
 </script>
 {% endblock %}
