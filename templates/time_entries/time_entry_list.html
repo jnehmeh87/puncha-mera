@@ -148,13 +148,17 @@
   <!-- Tabs for Active & Archived -->
   <ul class="nav nav-tabs border-0 mb-4 gap-2" id="timeEntryTabs" role="tablist">
     <li class="nav-item" role="presentation">
-      <button class="nav-link active rounded-pill px-4 border shadow-sm fw-bold glass-panel" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab" aria-controls="active" aria-selected="true" style="color: var(--text-color);">
+      <button class="nav-link active rounded-pill px-4 border shadow-sm fw-bold glass-panel" id="active-tab"
+        data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab" aria-controls="active"
+        aria-selected="true" style="color: var(--text-color);">
         <i class="bi bi-clock-history me-2"></i>Active Entries
         <span class="badge bg-primary ms-2 rounded-pill">{{ active_entries|length }}</span>
       </button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link rounded-pill px-4 border shadow-sm fw-medium glass-panel opacity-75" id="archived-tab" data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archived" aria-selected="false" style="color: var(--text-color);">
+      <button class="nav-link rounded-pill px-4 border shadow-sm fw-medium glass-panel opacity-75" id="archived-tab"
+        data-bs-toggle="tab" data-bs-target="#archived" type="button" role="tab" aria-controls="archived"
+        aria-selected="false" style="color: var(--text-color);">
         <i class="bi bi-archive me-2"></i>Archived
         <span class="badge bg-secondary ms-2 rounded-pill">{{ archived_entries|length }}</span>
       </button>
@@ -162,7 +166,7 @@
   </ul>
 
   <div class="tab-content" id="timeEntryTabsContent">
-    
+
     <!-- ACTIVE TAB -->
     <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
       <!-- Card View Content -->
@@ -178,23 +182,26 @@
                       <input class="form-check-input entry-checkbox" type="checkbox" value="{{ entry.pk }}">
                       <h5 class="card-title fw-bold mb-0">{{ entry.title }}</h5>
                     </div>
-    
+
                     <div class="d-flex align-items-center gap-3 pe-5">
                       {% with role=request.user.memberships.first.role %}
                       {% if role == 'admin' or role == 'owner' %}
                       <a href="{% url 'time_entries:time_entry-update' entry.pk %}"
-                        class="btn btn-sm btn-link text-secondary p-0 text-decoration-none open-form-modal" title="Edit">
+                        class="btn btn-sm btn-link text-secondary p-0 text-decoration-none open-form-modal"
+                        title="Edit">
                         <i class="bi bi-pencil fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
                       </a>
-                      <form action="{% url 'time_entries:time_entry-archive' entry.pk %}" method="post" class="d-inline border-0 m-0 p-0">
+                      <form action="{% url 'time_entries:time_entry-archive' entry.pk %}" method="post"
+                        class="d-inline border-0 m-0 p-0">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-link text-warning p-0 text-decoration-none" title="Archive">
+                        <button type="submit" class="btn btn-sm btn-link text-warning p-0 text-decoration-none"
+                          title="Archive">
                           <i class="bi bi-archive-fill fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
                         </button>
                       </form>
                       {% endif %}
                       {% endwith %}
-    
+
                       <span class="badge fs-6 rounded-pill px-3 py-2"
                         style="background-color: var(--primary-color); color: var(--surface-color);">
                         {{ entry.date|date:"F j, Y" }}
@@ -206,7 +213,7 @@
                     <span class="mx-2">|</span>
                     <i class="bi bi-person me-1"></i> {{ entry.user.username }}
                   </h6>
-    
+
                   <div class="d-flex gap-5 mt-3">
                     <div>
                       <small class="text-muted d-block">{% trans "Time" %}</small>
@@ -229,7 +236,7 @@
                       </span>
                     </div>
                   </div>
-    
+
                   {% if entry.description or entry.notes %}
                   <div class="mt-4 pt-3 border-top">
                     {% if entry.description %}
@@ -267,7 +274,7 @@
         </div>
         {% endfor %}
       </div>
-    
+
       <!-- Table View Content -->
       <div id="tableView" class="d-none">
         <div class="card shadow-sm border-0">
@@ -305,19 +312,23 @@
                     <td>{{ entry.actual_duration|format_duration }}</td>
                     <td>
                       <div class="d-flex align-items-center justify-content-end gap-2">
-                        <button type="button" class="btn btn-sm btn-link text-info p-0 text-decoration-none view-details"
-                          title="View" data-url="{% url 'time_entries:time_entry-detail' entry.pk %}">
+                        <button type="button"
+                          class="btn btn-sm btn-link text-info p-0 text-decoration-none view-details" title="View"
+                          data-url="{% url 'time_entries:time_entry-detail' entry.pk %}">
                           <i class="bi bi-eye fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
                         </button>
                         {% with role=request.user.memberships.first.role %}
                         {% if role == 'admin' or role == 'owner' %}
                         <a href="{% url 'time_entries:time_entry-update' entry.pk %}"
-                          class="btn btn-sm btn-link text-secondary p-0 text-decoration-none open-form-modal" title="Edit">
+                          class="btn btn-sm btn-link text-secondary p-0 text-decoration-none open-form-modal"
+                          title="Edit">
                           <i class="bi bi-pencil fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
                         </a>
-                        <form action="{% url 'time_entries:time_entry-archive' entry.pk %}" method="post" class="d-inline border-0 m-0 p-0">
+                        <form action="{% url 'time_entries:time_entry-archive' entry.pk %}" method="post"
+                          class="d-inline border-0 m-0 p-0">
                           {% csrf_token %}
-                          <button type="submit" class="btn btn-sm btn-link text-warning p-0 text-decoration-none" title="Archive">
+                          <button type="submit" class="btn btn-sm btn-link text-warning p-0 text-decoration-none"
+                            title="Archive">
                             <i class="bi bi-archive-fill fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
                           </button>
                         </form>
@@ -346,40 +357,45 @@
         <div class="col-12 mb-3">
           <div class="card shadow-sm border-0 position-relative overflow-hidden bg-white" style="opacity: 0.8;">
             <div class="position-absolute top-0 end-0 mt-3 me-3 z-1">
-                <span class="badge bg-secondary rounded-pill shadow-sm"><i class="bi bi-archive me-1"></i> Archived</span>
+              <span class="badge bg-secondary rounded-pill shadow-sm"><i class="bi bi-archive me-1"></i> Archived</span>
             </div>
             <div class="row g-0">
               <div class="col-md-{% if entry.image %}9{% else %}12{% endif %}">
                 <div class="card-body p-4 row-selectable" data-entry-id="{{ entry.pk }}">
                   <div class="d-flex justify-content-between align-items-start mb-2">
                     <div class="d-flex align-items-center gap-3">
-                      <input class="form-check-input entry-checkbox opacity-50 pe-none" type="checkbox" value="{{ entry.pk }}" disabled>
+                      <input class="form-check-input entry-checkbox opacity-50 pe-none" type="checkbox"
+                        value="{{ entry.pk }}" disabled>
                       <h5 class="card-title fw-bold mb-0 text-muted">{{ entry.title }}</h5>
                     </div>
-    
+
                     <div class="d-flex align-items-center gap-3 pe-5">
                       {% with role=request.user.memberships.first.role %}
                       {% if role == 'admin' or role == 'owner' %}
-                      <form action="{% url 'time_entries:time_entry-unarchive' entry.pk %}" method="post" class="d-inline border-0 m-0 p-0">
+                      <form action="{% url 'time_entries:time_entry-unarchive' entry.pk %}" method="post"
+                        class="d-inline border-0 m-0 p-0">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-link text-success p-0 text-decoration-none" title="Restore Time Entry">
-                          <i class="bi bi-arrow-counterclockwise fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
+                        <button type="submit" class="btn btn-sm btn-link text-success p-0 text-decoration-none"
+                          title="Restore Time Entry">
+                          <i
+                            class="bi bi-arrow-counterclockwise fs-5 opacity-75 hover-opacity-100 transition-opacity"></i>
                         </button>
                       </form>
                       {% endif %}
                       {% endwith %}
-    
+
                       <span class="badge fs-6 rounded-pill px-3 py-2 bg-secondary text-white border">
                         {{ entry.date|date:"F j, Y" }}
                       </span>
                     </div>
                   </div>
                   <h6 class="card-subtitle mb-3 text-muted">
-                    <i class="bi bi-briefcase me-1"></i> <span class="text-decoration-line-through">{{ entry.project.name }}</span>
+                    <i class="bi bi-briefcase me-1"></i> <span class="text-decoration-line-through">{{
+                      entry.project.name }}</span>
                     <span class="mx-2">|</span>
                     <i class="bi bi-person me-1"></i> {{ entry.user.username }}
                   </h6>
-    
+
                   <div class="d-flex gap-5 mt-3">
                     <div>
                       <small class="text-muted d-block">{% trans "Duration" %}</small>
