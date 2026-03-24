@@ -35,132 +35,223 @@
         </div>
     </div>
 
-    <nav class="navbar navbar-expand-lg sticky-top glass-nav">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bolder bg-gradient-text" href="{% url 'time_stamp:timer' %}">Puncha Mera</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home:home' %}">Home</a>
-                    </li>
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="manageDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            Manage
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="manageDropdown">
-                            <li><a class="dropdown-item" href="{% url 'accounts:organization-list' %}">Organizations</a>
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'projects:project-list' %}">Projects</a></li>
-                            <li><a class="dropdown-item" href="{% url 'time_entries:time_entry-list' %}"><i class="bi bi-clock-history me-2"></i>Time Entries</a></li>
-                            <li><a class="dropdown-item" href="{% url 'bookkeeping:ledger' %}"><i class="bi bi-journal-text me-2"></i>Bookkeeping</a></li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:contact-list' %}">Contacts</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'invoices:invoice-list' %}">Invoices</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'time_entries:time_entry-list' %}">Time Entries</a>
-                    </li>
-                    <li class="nav-item me-3">
-                        <a class="nav-link" href="{% url 'income_calculator:dashboard' %}">Income Calculator</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'reports:dashboard' %}">Reports</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            Analytics
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="analyticsDropdown">
-                            <li><a class="dropdown-item" href="{% url 'analytics:basic' %}">Basic Analytics</a></li>
-                            <li><a class="dropdown-item" href="{% url 'analytics:advanced' %}">Advanced Insights</a>
-                            </li>
-                        </ul>
-                    </li>
-                    {% endif %}
-                </ul>
-                <div class="d-flex align-items-center">
-                    {% if user.is_authenticated %}
 
-                    <!-- Quick Currency Selector -->
-                    <form action="{% url 'accounts:quick-currency-update' %}" method="post" class="d-inline me-3 mb-0"
-                        id="globalCurrencyForm">
+    <!-- Desktop Sidebar Config -->
+    <div id="sidebar" class="sidebar shadow-lg d-flex flex-column transition-all glass-panel"
+        style="width: 280px; position: fixed; overflow-x: hidden; top: 0; left: 0; height: 100vh; z-index: 1040; border-right: 1px solid rgba(255,255,255,0.05); transform: translateX(0); background-color: color-mix(in srgb, var(--surface-color) 60%, transparent); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+        <div class="sidebar-header d-flex align-items-center justify-content-between p-4 pb-2">
+            <a href="{% url 'time_stamp:timer' %}"
+                class="fs-4 fw-bolder bg-gradient-text text-decoration-none nav-text">Puncha Mera</a>
+            <button class="btn btn-icon btn-outline-glow text-theme" id="sidebarToggle" aria-label="Toggle Sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+        <div id="sidebar-timer-container" class="px-3 pt-0 pb-1"></div>
+        <hr class="border-theme-primary opacity-25 m-0 mx-4" style="border-width: 1px;">
+        <div class="sidebar-body flex-grow-1 overflow-auto p-3 pt-1">
+            <ul class="nav flex-column gap-0 mb-2">
+                <li class="nav-item">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link hover-theme {% if request.resolver_match.app_name == 'home' %}active-link{% endif %}"
+                        href="{% url 'home:home' %}">
+                        <i
+                            class="bi bi-house-door fs-5 {% if request.resolver_match.app_name == 'home' %}text-theme-primary drop-shadow-sm{% else %}text-theme-50{% endif %}"></i>
+                        <span class="nav-text text-theme">Home</span>
+                    </a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link hover-theme {% if request.resolver_match.app_name == 'accounts' and 'organization' in request.resolver_match.view_name or 'contact' in request.resolver_match.view_name or 'project' in request.resolver_match.view_name %}active-link{% endif %}"
+                        href="{% url 'accounts:organization-list' %}">
+                        <i
+                            class="bi bi-briefcase fs-5 {% if request.resolver_match.app_name == 'accounts' and 'organization' in request.resolver_match.view_name or 'contact' in request.resolver_match.view_name or 'project' in request.resolver_match.view_name %}text-theme-primary drop-shadow-sm{% else %}text-theme-50{% endif %}"></i>
+                        <span class="nav-text text-theme">Manage</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link hover-theme {% if request.resolver_match.app_name == 'time_entries' %}active-link{% endif %}"
+                        href="{% url 'time_entries:time_entry-list' %}">
+                        <i
+                            class="bi bi-clock-history fs-5 {% if request.resolver_match.app_name == 'time_entries' %}text-theme-primary drop-shadow-sm{% else %}text-theme-50{% endif %}"></i>
+                        <span class="nav-text text-theme">Time Entries</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link hover-theme {% if request.resolver_match.app_name == 'reports' %}active-link{% endif %}"
+                        href="{% url 'reports:dashboard' %}">
+                        <i
+                            class="bi bi-graph-up fs-5 {% if request.resolver_match.app_name == 'reports' %}text-theme-primary drop-shadow-sm{% else %}text-theme-50{% endif %}"></i>
+                        <span class="nav-text text-theme">Reports</span>
+                    </a>
+                </li>
+
+                
+
+                <li class="nav-item">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link hover-theme {% if request.resolver_match.app_name == 'income_calculator' %}active-link{% endif %}"
+                        href="{% url 'income_calculator:dashboard' %}">
+                        <i
+                            class="bi bi-calculator fs-5 {% if request.resolver_match.app_name == 'income_calculator' %}text-theme-primary drop-shadow-sm{% else %}text-theme-50{% endif %}"></i>
+                        <span class="nav-text text-theme">Income Calc</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link hover-theme {% if request.resolver_match.app_name == 'invoices' %}active-link{% endif %}"
+                        href="{% url 'invoices:invoice-list' %}">
+                        <i
+                            class="bi bi-receipt fs-5 {% if request.resolver_match.app_name == 'invoices' %}text-theme-primary drop-shadow-sm{% else %}text-theme-50{% endif %}"></i>
+                        <span class="nav-text text-theme">Invoices</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link hover-theme {% if request.resolver_match.app_name == 'bookkeeping' %}active-link{% endif %}"
+                        href="{% url 'bookkeeping:ledger' %}">
+                        <i
+                            class="bi bi-journal-text fs-5 {% if request.resolver_match.app_name == 'bookkeeping' %}text-theme-primary drop-shadow-sm{% else %}text-theme-50{% endif %}"></i>
+                        <span class="nav-text text-theme">Bookkeeping</span>
+                    </a>
+                </li>
+                {% endif %}
+            <li class="nav-item mt-1 pt-1 pb-1">
+                    <span class="text-theme-50 small fw-bold px-3 text-uppercase nav-text">Analytics</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link hover-theme {% if request.resolver_match.url_name == 'basic' %}active-link{% endif %}"
+                        href="{% url 'analytics:basic' %}">
+                        <i
+                            class="bi bi-bar-chart fs-5 {% if request.resolver_match.url_name == 'basic' %}text-theme-primary drop-shadow-sm{% else %}text-theme-50{% endif %}"></i>
+                        <span class="nav-text text-theme">Basic Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link hover-theme {% if request.resolver_match.url_name == 'advanced' %}active-link{% endif %}"
+                        href="{% url 'analytics:advanced' %}">
+                        <i
+                            class="bi bi-pie-chart fs-5 {% if request.resolver_match.url_name == 'advanced' %}text-theme-primary drop-shadow-sm{% else %}text-theme-50{% endif %}"></i>
+                        <span class="nav-text text-theme">Advanced Analytics</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="sidebar-footer p-0 pb-3 mt-auto">
+            {% if user.is_authenticated %}
+            <hr class="border-theme-primary opacity-50 mt-0 mb-2 mx-4">
+            <ul class="nav flex-column gap-0 px-3">
+                <!-- User Profile Info -->
+                <li class="nav-item mb-2 mt-1 px-3 d-flex align-items-center gap-3">
+                    {% load profile_tags %}
+                    {% get_user_profile_img user as prof_img %}
+                    {% if prof_img %}
+                    <img src="{{ prof_img }}" alt="..." class="rounded-circle shadow-sm border border-theme-primary" style="width: 32px; height: 32px; object-fit: cover;">
+                    {% else %}
+                    <i class="bi bi-person-circle fs-3 text-theme-primary"></i>
+                    {% endif %}
+                    <div class="nav-text">
+                        <div class="d-flex flex-column overflow-hidden">
+                            <span class="fw-bold text-theme text-truncate" style="font-size: 0.95rem;">
+                                {{ user.username }}</span>
+                            <span class="text-theme-50 text-truncate" style="font-size: 0.75rem;">Administrator</span>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Light/Dark Mode -->
+                <li class="nav-item">
+                    <div class="nav-link rounded-3 px-3 py-2 d-flex align-items-center justify-content-between w-100 sidebar-link hover-theme cursor-pointer"
+                        onclick="const t = this.querySelector('.theme-toggle'); t.checked = !t.checked; t.dispatchEvent(new Event('change'));">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-moon-fill fs-5 text-theme-50 theme-icon" style="transition: all 0.3s;"></i>
+                            <span class="nav-text theme-text text-theme">Dark Mode</span>
+                        </div>
+                        <div class="form-check form-switch mb-0 nav-text">
+                            <input class="form-check-input theme-toggle" type="checkbox"
+                                onclick="event.stopPropagation()">
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Currency -->
+                <li class="nav-item nav-text">
+                    <form action="{% url 'accounts:quick-currency-update' %}" method="post"
+                        id="globalCurrencyFormSidebar" class="px-3 py-1">
                         {% csrf_token %}
                         <select name="currency"
-                            class="form-select border-0 bg-transparent text-theme-primary fw-bold shadow-none"
-                            onchange="this.form.submit()"
-                            style="cursor: pointer; padding-right: 2.25rem !important; background-position: right 0.5rem center;">
-                            {% with c=user.settings.currency %}
-                            <option class="text-dark hover-theme" value="USD" {% if 'USD' in c %}selected{% endif %}>USD
-                            </option>
-                            <option class="text-dark hover-theme" value="EUR" {% if 'EUR' in c %}selected{% endif %}>EUR
-                            </option>
-                            <option class="text-dark hover-theme" value="GBP" {% if 'GBP' in c %}selected{% endif %}>GBP
-                            </option>
-                            <option class="text-dark hover-theme" value="CAD" {% if 'CAD' in c %}selected{% endif %}>CAD
-                            </option>
-                            <option class="text-dark hover-theme" value="AUD" {% if 'AUD' in c %}selected{% endif %}>AUD
-                            </option>
-                            <option class="text-dark hover-theme" value="JPY" {% if 'JPY' in c %}selected{% endif %}>JPY
-                            </option>
-                            <option class="text-dark hover-theme" value="CHF" {% if 'CHF' in c %}selected{% endif %}>CHF
-                            </option>
-                            <option class="text-dark hover-theme" value="SEK" {% if 'SEK' in c %}selected{% endif %}>SEK
-                            </option>
+                            class="form-select form-select-sm bg-transparent text-theme-50 fw-bold hover-theme-primary"
+                            style="border: 1px solid rgba(128,128,128,0.2);" onchange="this.form.submit()">
+                            {% load profile_tags %}
+                            {% get_top_currencies as top_currencies %}
+                            {% with c=user.settings.currency|default:'USD' %}
+                            {% for code, name in top_currencies %}
+                            <option class="text-dark" value="{{ code }}" {% if code in c %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
                             {% endwith %}
                         </select>
                     </form>
+                </li>
 
-                    <ul class="navbar-nav">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-theme-primary" href="#" id="navbarDropdown"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{ user.username }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{% url 'accounts:profile-and-settings' %}">Profile &
-                                        Settings</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <div class="d-flex align-items-center justify-content-between px-3">
-                                        <i class="bi bi-moon-fill me-2"></i>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="theme-toggle">
-                                        </div>
-                                        <i class="bi bi-brightness-high-fill"></i>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    {% else %}
-                    <a href="{% url 'account_login' %}" class="btn btn-primary me-2">Login</a>
-                    <a href="{% url 'account_signup' %}" class="btn btn-secondary">Sign Up</a>
-                    {% endif %}
+                <!-- Settings -->
+                <li class="nav-item mt-1">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link hover-theme {% if 'profile' in request.resolver_match.url_name %}active-link{% endif %}"
+                        href="{% url 'accounts:profile-and-settings' %}">
+                        <i
+                            class="bi bi-gear fs-5 {% if 'profile' in request.resolver_match.url_name %}text-theme-primary drop-shadow-sm{% else %}text-theme-50{% endif %}"></i>
+                        <span class="nav-text text-theme">Settings</span>
+                    </a>
+                </li>
+
+                <!-- Logout -->
+                <li class="nav-item">
+                    <a class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 w-100 sidebar-link text-danger hover-theme"
+                        href="{% url 'account_logout' %}"
+                        style="background-color: color-mix(in srgb, var(--bs-danger) 5%, transparent);">
+                        <i class="bi bi-box-arrow-right fs-5 text-danger"></i>
+                        <span class="nav-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+            {% else %}
+            <div class="d-flex flex-column gap-2 nav-text">
+                <a href="{% url 'account_login' %}" class="btn btn-primary btn-glow w-100">Login</a>
+                <a href="{% url 'account_signup' %}" class="btn btn-outline-glow w-100 text-theme">Sign Up</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Mobile Topbar -->
+    <div class="mobile-topbar d-flex d-lg-none align-items-center justify-content-between px-3 py-2 sticky-top shadow-sm border-bottom glass-panel"
+        style="z-index: 1020; border-color: rgba(255,255,255,0.05) !important; background-color: color-mix(in srgb, var(--surface-color) 60%, transparent); border-radius: 0; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+        <button class="btn btn-icon btn-outline-glow text-theme me-2" id="mobileSidebarToggle"
+            aria-label="Toggle Sidebar">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+        <a href="{% url 'time_stamp:timer' %}" class="fs-4 fw-bolder bg-gradient-text text-decoration-none">Puncha
+            Mera</a>
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center cursor-pointer"
+                onclick="const t = this.querySelector('.theme-toggle'); t.checked = !t.checked; t.dispatchEvent(new Event('change'));">
+                <i class="bi bi-moon-fill fs-5 text-theme-primary me-2 theme-icon" style="transition: all 0.3s;"></i>
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input theme-toggle" type="checkbox" onclick="event.stopPropagation()">
                 </div>
             </div>
         </div>
-    </nav>
-
-    <div class="container mt-4">
-
-        {% block content %}
-        {% endblock %}
     </div>
+
+    <!-- Main Content Wrapper -->
+    <main id="main-content" class="transition-all">
+
+
+        <div class="container mt-4">
+
+            {% block content %}
+            {% endblock %}
+        </div>
+
+
+    </main>
+
+
+
 
     <!-- Global Toast Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 1055;"></div>
@@ -168,28 +259,134 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const themeToggle = document.getElementById('theme-toggle');
+
+        const themeToggles = document.querySelectorAll('.theme-toggle');
         const htmlEl = document.documentElement;
+
+        function applyThemeVisuals(isLight) {
+            document.querySelectorAll('.theme-icon').forEach(icon => {
+                if (isLight) {
+                    icon.classList.remove('bi-moon-fill');
+                    icon.classList.add('bi-sun-fill');
+                } else {
+                    icon.classList.remove('bi-sun-fill');
+                    icon.classList.add('bi-moon-fill');
+                }
+            });
+            document.querySelectorAll('.theme-text').forEach(text => {
+                text.textContent = isLight ? 'Light Mode' : 'Dark Mode';
+            });
+        }
 
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             htmlEl.setAttribute('data-theme', savedTheme);
             if (savedTheme === 'light') {
-                themeToggle.checked = true;
+                themeToggles.forEach(t => t.checked = true);
+                applyThemeVisuals(true);
+            } else {
+                applyThemeVisuals(false);
             }
+        } else {
+            // Default is dark initially (based on html attribute)
+            applyThemeVisuals(false);
         }
 
-        themeToggle.addEventListener('change', () => {
-            if (themeToggle.checked) {
-                htmlEl.setAttribute('data-theme', 'light');
-                localStorage.setItem('theme', 'light');
-            } else {
-                htmlEl.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
+        themeToggles.forEach(toggle => {
+            toggle.addEventListener('change', (e) => {
+                const isChecked = e.target.checked;
+                themeToggles.forEach(t => t.checked = isChecked); // sync all toggles
+                if (isChecked) {
+                    htmlEl.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                    applyThemeVisuals(true);
+                } else {
+                    htmlEl.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                    applyThemeVisuals(false);
+                }
+            });
+        });
+        // Global Notification function
+
+        // Sidebar & Mobile Drawer Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarBtn = document.getElementById('sidebarToggle');
+            const mobileBtn = document.getElementById('mobileSidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+
+            if (sidebar) {
+                let isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                let mobileOpen = false;
+
+                const applySidebarState = () => {
+                    if (window.innerWidth >= 992) {
+                        // Desktop
+                        sidebar.style.transform = 'translateX(0)';
+                        if (isCollapsed) {
+                            sidebar.style.width = '80px';
+                            mainContent.style.marginLeft = '80px';
+                            document.querySelectorAll('.nav-text').forEach(el => el.style.display = 'none');
+                            document.querySelectorAll('.sidebar-timer-details').forEach(el => el.style.setProperty('display', 'none', 'important'));
+                        } else {
+                            sidebar.style.width = '280px';
+                            mainContent.style.marginLeft = '280px';
+                            document.querySelectorAll('.nav-text').forEach(el => el.style.display = 'inline-block');
+                            document.querySelectorAll('.sidebar-timer-details').forEach(el => el.style.setProperty('display', 'block', 'important'));
+                        }
+                        mainContent.style.paddingBottom = '0px';
+                    } else {
+                        // Mobile overlay
+                        sidebar.style.width = '280px';
+                        mainContent.style.marginLeft = '0px';
+                        mainContent.style.paddingBottom = '0px';
+                        document.querySelectorAll('.nav-text').forEach(el => el.style.display = 'inline-block');
+                        document.querySelectorAll('.sidebar-timer-details').forEach(el => el.style.setProperty('display', 'block', 'important'));
+
+                        if (mobileOpen) {
+                            sidebar.style.transform = 'translateX(0)';
+                            sidebar.style.boxShadow = '0 0 50px rgba(0,0,0,0.5)';
+                        } else {
+                            sidebar.style.transform = 'translateX(-100%)';
+                            sidebar.style.boxShadow = 'none';
+                        }
+                    }
+                };
+
+                applySidebarState();
+                window.addEventListener('resize', applySidebarState);
+
+                if (sidebarBtn) {
+                    sidebarBtn.addEventListener('click', () => {
+                        if (window.innerWidth >= 992) {
+                            isCollapsed = !isCollapsed;
+                            localStorage.setItem('sidebarCollapsed', isCollapsed);
+                        } else {
+                            mobileOpen = !mobileOpen;
+                        }
+                        applySidebarState();
+                    });
+                }
+
+                if (mobileBtn) {
+                    mobileBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        mobileOpen = !mobileOpen;
+                        applySidebarState();
+                    });
+                }
+
+                // Close mobile sidebar if clicked outside
+                document.addEventListener('click', (e) => {
+                    if (window.innerWidth < 992 && mobileOpen && !sidebar.contains(e.target) && e.target !== mobileBtn && !mobileBtn.contains(e.target)) {
+                        mobileOpen = false;
+                        applySidebarState();
+                    }
+                });
             }
         });
 
-        // Global Notification function
         function showToast(message, type) {
             type = type || 'success';
             const toastContainer = document.querySelector('.toast-container');
@@ -298,59 +495,62 @@
     <script>
         // Global widget for TimerSession
         {% if user.is_authenticated %}
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Check for drafts and active timers
             fetch("/timer/api/session/active/")
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success' && data.sessions.length > 0) {
-                    let hasDrafts = false;
-                    let activeSession = null;
-                    
-                    data.sessions.forEach(s => {
-                        if(s.status === 'DRAFT') hasDrafts = true;
-                        if(s.status === 'RUNNING' || s.status === 'PAUSED') activeSession = s;
-                    });
-                    
-                    // Show notification for drafts
-                    if (hasDrafts && !sessionStorage.getItem('draftNotified')) {
-                        if(typeof showToast === 'function') {
-                            showToast("You have unfinished timer drafts waiting to be saved.", "warning");
-                            sessionStorage.setItem('draftNotified', 'true');
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success' && data.sessions.length > 0) {
+                        let hasDrafts = false;
+                        let activeSession = null;
+
+                        data.sessions.forEach(s => {
+                            if (s.status === 'DRAFT') hasDrafts = true;
+                            if (s.status === 'RUNNING' || s.status === 'PAUSED') activeSession = s;
+                        });
+
+                        // Show notification for drafts
+                        if (hasDrafts && !sessionStorage.getItem('draftNotified')) {
+                            if (typeof showToast === 'function') {
+                                showToast("You have unfinished timer drafts waiting to be saved.", "warning");
+                                sessionStorage.setItem('draftNotified', 'true');
+                            }
                         }
-                    }
-                    
-                    // Show dock widget if active and not on timer page
-                    if (activeSession && window.location.pathname.indexOf("{% url 'time_stamp:timer' %}") === -1) {
-                        const widgetHtml = `
-                        <div id="global-timer-widget" class="position-fixed bottom-0 start-0 m-4 p-3 bg-white shadow-lg rounded-4 border d-flex align-items-center gap-3 z-3" style="cursor: pointer;" onclick="window.location.href='{% url 'time_stamp:timer' %}'">
-                            <i class="bi bi-stopwatch fs-3 text-primary heartbeat"></i>
-                            <div>
-                                <h6 class="mb-0 fw-bold pb-1 text-dark">Active Timer</h6>
-                                <small class="text-muted" id="global-timer-display">
+
+                        // Show dock widget if active and not on timer page
+                        if (activeSession && window.location.pathname.indexOf("{% url 'time_stamp:timer' %}") === -1) {
+                            const widgetHtml = `
+                        <div id="global-timer-widget" class="p-2 mb-2 rounded-4 border border-primary border-opacity-25 d-flex align-items-center gap-3 transition-all hover-theme" style="cursor: pointer; background: color-mix(in srgb, var(--primary-color) 10%, transparent);" onclick="window.location.href='{% url 'time_stamp:timer' %}'">
+                            <i class="bi bi-stopwatch-fill fs-4 text-theme-primary ms-1 heartbeat drop-shadow-sm"></i>
+                            <div class="sidebar-timer-details overflow-hidden transition-all text-truncate">
+                                <h6 class="mb-0 fw-bold text-theme" style="font-size: 0.85rem;">Active Timer</h6>
+                                <small class="text-theme-primary fw-medium font-monospace" id="global-timer-display" style="letter-spacing: 0.5px;">
                                     ${activeSession.status === 'PAUSED' ? 'Paused' : 'Running...'}
                                 </small>
                             </div>
                         </div>`;
-                        document.body.insertAdjacentHTML('beforeend', widgetHtml);
-                        
-                        if (activeSession.status === 'RUNNING') {
-                            const globalDisplay = document.getElementById('global-timer-display');
-                            const start = new Date(activeSession.start_time);
-                            setInterval(() => {
-                                const now = new Date();
-                                const elapsed = (now - start) / 1000;
-                                const net = Math.max(0, elapsed - activeSession.accumulated_time);
-                                
-                                const h = Math.floor(net / 3600).toString().padStart(2, '0');
-                                const m = Math.floor((net % 3600) / 60).toString().padStart(2, '0');
-                                const s = Math.floor(net % 60).toString().padStart(2, '0');
-                                globalDisplay.textContent = `${h}:${m}:${s}`;
-                            }, 1000);
+                            const container = document.getElementById('sidebar-timer-container');
+                            if (container) {
+                                container.insertAdjacentHTML('beforeend', widgetHtml);
+                            }
+
+                            if (activeSession.status === 'RUNNING') {
+                                const globalDisplay = document.getElementById('global-timer-display');
+                                const start = new Date(activeSession.start_time);
+                                setInterval(() => {
+                                    const now = new Date();
+                                    const elapsed = (now - start) / 1000;
+                                    const net = Math.max(0, elapsed - activeSession.accumulated_time);
+
+                                    const h = Math.floor(net / 3600).toString().padStart(2, '0');
+                                    const m = Math.floor((net % 3600) / 60).toString().padStart(2, '0');
+                                    const s = Math.floor(net % 60).toString().padStart(2, '0');
+                                    globalDisplay.textContent = `${h}:${m}:${s}`;
+                                }, 1000);
+                            }
                         }
                     }
-                }
-            });
+                });
         });
         {% endif %}
     </script>

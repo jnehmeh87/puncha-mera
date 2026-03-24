@@ -755,3 +755,100 @@ a:hover {
 .rotate-180 {
     transform: rotate(180deg);
 }
+
+
+/* Responsive Navigation Additions */
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: var(--surface-color);
+}
+[data-theme="light"] .sidebar {
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+.sidebar-link {
+    color: var(--text-color);
+}
+.sidebar-link:hover, .sidebar-link.active {
+    background-color: color-mix(in srgb, var(--primary-color) 15%, transparent);
+    color: var(--primary-color);
+}
+.sidebar-link:hover .nav-text, .sidebar-link.active .nav-text {
+    color: var(--primary-color) !important;
+}
+
+#main-content {
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-bottom-nav {
+    display: none;
+    z-index: 1040;
+}
+.bottom-nav-link {
+    padding: 0.5rem;
+    color: var(--text-secondary-color);
+    transition: color 0.2s;
+}
+.bottom-nav-link.active, .bottom-nav-link:hover {
+    color: var(--primary-color);
+}
+
+@media (min-width: 992px) {
+    #main-content {
+        margin-left: 280px;
+        min-height: 100vh;
+    }
+}
+@media (max-width: 991px) {
+    .mobile-topbar {
+        display: flex !important;
+    }
+    .mobile-bottom-nav {
+        display: flex !important;
+    }
+    #main-content {
+        margin-left: 0 !important;
+        margin-bottom: 70px;
+        min-height: calc(100vh - 130px);
+    }
+}
+
+/* Card Design & Mobile Fit */
+.metric-icon-bg {
+    transition: all 0.3s;
+}
+@media (max-width: 768px) {
+    .dashboard-card {
+        margin-bottom: 1rem;
+    }
+    .card-metric h1, .card-metric h2, .card-metric h3, .card-metric h4 {
+        font-size: 1.5rem !important;
+    }
+    .card-metric .metric-icon-bg {
+        font-size: 6rem;
+        right: -15%;
+        top: -10%;
+    }
+    .card-icon-bg {
+        font-size: 4rem;
+        right: -5px;
+        bottom: -10px;
+    }
+    .table-responsive {
+        border-radius: 1rem;
+    }
+}
+
+/* Additional Mobile Layout Fixes */
+@media (max-width: 576px) {
+    .gap-5 { gap: 1rem !important; flex-wrap: wrap; }
+    .gap-4 { gap: 1rem !important; flex-wrap: wrap; }
+    .d-flex.justify-content-between.align-items-start { flex-direction: column; gap: 0.5rem; }
+    .pe-5 { padding-right: 0 !important; }
+}

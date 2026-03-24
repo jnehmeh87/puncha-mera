@@ -40,3 +40,17 @@ def get_profile_completion_percentage(context):
 
     completion_percentage = (completed_fields / total_fields) * 100
     return int(completion_percentage)
+
+@register.simple_tag
+def get_top_currencies():
+    from accounts.forms import TOP_CURRENCIES
+    return TOP_CURRENCIES
+
+@register.simple_tag
+def get_user_profile_img(user):
+    try:
+        if hasattr(user, 'userprofile') and user.userprofile and user.userprofile.profile_picture:
+            return user.userprofile.profile_picture.url
+    except Exception:
+        pass
+    return None
