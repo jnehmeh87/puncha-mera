@@ -9,7 +9,7 @@ import datetime
 import json
 from core.services import CurrencyConverter
 
-from accounts.models import Membership
+from accounts.models import Membership, Organization
 from time_entries.models import TimeEntry
 from projects.models import Project
 
@@ -20,7 +20,7 @@ class AnalyticsFilterMixin:
         memberships = Membership.objects.filter(user=user)
         
         if user.is_superuser:
-            valid_orgs = [m.organization for m in memberships]
+            valid_orgs = list(Organization.objects.filter(deleted=False))
         else:
             valid_orgs = [m.organization for m in memberships if hasattr(m.organization, 'subscription') and m.organization.subscription.status == 'active']
             
@@ -70,7 +70,7 @@ class AnalyticsPermissionMixin:
             return self.handle_no_permission()
             
         memberships = Membership.objects.filter(user=request.user)
-        if not memberships.exists():
+        if not memberships.exists() and not request.user.is_superuser:
             raise PermissionDenied("You must belong to an organization to view analytics.")
             
         # Temporarily bypassed strict subscription and superuser checks to prevent 403s on deployment
