@@ -1,6 +1,7 @@
 import requests
 import datetime
 import logging
+from django.core.cache import cache
 from .models import ExchangeRate
 
 logger = logging.getLogger(__name__)
@@ -29,14 +30,19 @@ class CurrencyConverter:
         except ExchangeRate.DoesNotExist:
             pass
 
-        # 2. If not in cache, fetch from API
+        # 2. Check if the API is known to be down (Circuit Breaker)
+        if cache.get('frankfurter_api_down'):
+            return 1.0
+            
+        # 3. If not in cache, fetch from API
         # Frankfurter API format for historical rates: {base_url}/{date}?from={base}&to={target}
         # e.g. https://api.frankfurter.app/2021-01-01?from=USD&to=EUR
         date_str = date.strftime("%Y-%m-%d")
         url = f"{cls.API_BASE_URL}/{date_str}?from={base_currency}&to={target_currency}"
 
         try:
-            response = requests.get(url, timeout=5)
+            # We use a very aggressive 1.5s timeout. If it's slower than that, we can't afford to block the web worker.
+            response = requests.get(url, timeout=1.5)
             response.raise_for_status()
             data = response.json()
             
@@ -57,6 +63,8 @@ class CurrencyConverter:
                 
         except Exception as e:
             logger.error(f"Failed to fetch exchange rate from Frankfurter API: {e}")
+            # Trip the circuit breaker for 10 minutes so subsequent calls don't also hang and stall the entire Gunicorn worker pool
+            cache.set('frankfurter_api_down', True, 600)
             return 1.0 # Fallback to 1:1 if API is down to not break analytics entirely
             
     @classmethod
