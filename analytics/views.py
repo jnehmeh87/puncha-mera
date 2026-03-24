@@ -19,10 +19,7 @@ class AnalyticsFilterMixin:
         user = self.request.user
         memberships = Membership.objects.filter(user=user)
         
-        if user.is_superuser:
-            valid_orgs = list(Organization.objects.filter(deleted=False))
-        else:
-            valid_orgs = [m.organization for m in memberships if hasattr(m.organization, 'subscription') and m.organization.subscription.status == 'active']
+        valid_orgs = [m.organization for m in memberships if hasattr(m.organization, 'subscription') and m.organization.subscription.status == 'active']
             
         org_id = self.request.GET.get('org')
         if org_id:
